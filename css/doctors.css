@@ -20,7 +20,7 @@ body {
 
 .doctor-container {
   max-width: 800px;
-  margin: 1 auto;
+  margin: 1rem;
   display: flex;
   gap: 18px;
   align-items: start;
