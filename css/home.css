@@ -1,0 +1,66 @@
+.hero-wrapper {
+    background: linear-gradient(135deg, #003366 0%, #005599 100%);
+    color: white;
+    padding: 100px 20px;
+    text-align: center;
+}
+
+.hero-title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+}
+
+.hero-subtitle {
+    font-size: 1.2rem;
+    max-width: 700px;
+    margin: 0 auto 40px;
+    opacity: 0.9;
+}
+
+.hero-wrapper .btn-cta {
+    background: white !important;
+    color: #003366 !important;
+    padding: 15px 45px !important;
+    border-radius: 50px !important;
+    font-weight: 700;
+}
+
+.specialties-section {
+    padding: 80px 0;
+    background-color: var(--white);
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.section-header h2 {
+    color: var(--ucn-blue);
+    font-size: 2.2rem;
+}
+
+.specialty-slider {
+    display: flex;
+    gap: 25px;
+    overflow-x: auto;
+    padding: 20px 5px;
+}
+
+.specialty-card {
+    flex: 0 0 280px;
+    background: white;
+    padding: 45px 30px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    border: 1px solid #eee;
+}
+
+.specialty-icon {
+    font-size: 3.5rem;
+    color: var(--ucn-light);
+    margin-bottom: 25px;
+    display: block;
+}
