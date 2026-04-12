@@ -1,0 +1,42 @@
+{
+    "doctors": [
+        {
+            "id":1,
+            "nombreCompleto":"Diego Messi",
+            "Especialidad":"Traumatología",
+            "AñosExperiencia":"12",
+            "Ubicacion":"Puente Alto",
+            "Calificacion":"4.6",
+            "FotoPerfil":"img/diegomessi.jpg",
+            "Disponibilidad":"Lunes a Viernes de 9:00 a 17:00",
+            "Biografia":"El Dr. Diego Messi es un reconocido traumatólogo con más de 12 años de experiencia en el campo de la medicina deportiva. Graduado de la Universidad de Cristo , ha trabajado en varios hospitales prestigiosos y ha sido parte de equipos médicos en eventos deportivos internacionales alrededor de puente alto con pablo chill-E. Su enfoque se centra en la recuperación rápida y efectiva de sus pacientes, utilizando técnicas avanzadas y personalizadas de mecanicas del fornait."
+        },
+
+        {
+            "id":2,
+            "nombreCompleto":"Daniel Durán",
+            "Especialidad":"Cardiología",
+            "AñosExperiencia":"15",
+            "Ubicacion":"Santiago Centro",
+            "Calificacion":"4.8",
+            "FotoPerfil":"img/danielduran.jpg",
+            "Disponibilidad":"Lunes a Viernes de 8:00 a 16:00",
+            "Biografia":"El Dr. Daniel Durán es un destacado cardiólogo con 5 certificados en albion online"
+
+        },
+        {
+            "id":3,
+            "nombreCompleto":"Martin Castillo",
+            "Especialidad":"Neurología",
+            "AñosExperiencia":"14",
+            "Ubicacion":"Cerro Navia",
+            "Calificacion":"4.7",
+            "FotoPerfil":"img/martincastillo.jpg",
+            "Disponibilidad":"Lunes a Viernes de 10:00 a 18:00",
+            "Biografia":"El Dr. Martin Castillo es un neurologo certificado en ciberseguridad hacker de minecraft."
+        }
+    ]
+
+
+
+}
