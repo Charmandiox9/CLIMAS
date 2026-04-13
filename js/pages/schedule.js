@@ -1,8 +1,10 @@
 const specialties = {
   "Cardiología": ["Dr. Juan Pérez", "Dra. María Gómez"],
-  "Dermatología": ["Dr. Carlos López", "Dra. Ana Martínez"],
+  "Neurología": ["Dr. Carlos López", "Dra. Ana Martínez"],
   "Pediatría": ["Dr. Luis Rodríguez", "Dra. Laura Sánchez"],
-  "Ginecología": ["Dr. Andrés Fernández", "Dra. Sofía Ramírez"]
+  "Medicina General": ["Dr. Andrés Fernández", "Dra. Sofía Ramírez"],
+  "Kinesiología": ["Dr. Pablo Torres", "Dra. Camila Díaz"],
+  "Traumatología": ["Dr. Diego Morales", "Dra. Valentina Castro"]
 }
 
 const schedules = {
