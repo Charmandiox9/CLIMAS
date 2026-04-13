@@ -5,17 +5,18 @@ body {
   color: #ffffff;
 
   /* Fondo general */
-  background: linear-gradient(135deg, #eef2ff 0%, #f8fafc 45%, #e0f2fe 100%);
+  background: linear-gradient(135deg, #213886 0%, #19191a 45%, #1b94e5 100%);
   min-height: 100vh;
   padding: 32px 16px;
 }
 
-.title1 {
-  margin: 0 0 24px 0;
-  font-size: 2rem;
-  font-weight: 700;
-  text-align: center;
-  color: #0f172a;
+.title1{
+    margin: 0 0 24px 0;
+    font-size: 3rem;
+    font-weight: 1000;
+    text-align: center;
+    color: #ffffff;
+    background: linear-gradient(150deg, #383f54 0%, #0e0f0f 45%, #7fbde7 100%);
 }
 
 .doctor-container {

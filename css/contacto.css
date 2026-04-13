@@ -1,0 +1,43 @@
+body{
+    margin: 0;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color: #ffffff;
+
+    /* Fondo general */
+    background: linear-gradient(135deg, #2f57dc 0%, #0e0f0f 45%, #7fbde7 100%);
+    min-height: 100vh;
+    padding: 32px 16px;
+}
+
+
+.title1{
+    margin: 0 0 24px 0;
+    font-size: 3rem;
+    font-weight: 1000;
+    text-align: center;
+    color: #ffffff;
+    background: linear-gradient(150deg, #383f54 0%, #0e0f0f 45%, #7fbde7 100%);
+}
+
+.title2{
+    margin: 0 30px 40px 50px;
+    font-size: 3rem;
+    font-weight: 700;
+    text-align: center;
+    color: #ffffff;
+}
+.contacto-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 70vh;
+}
+
+.contacto-info{
+    background: linear-gradient(135deg, #213886 0%, #4a4a50 45%, #1b94e5 100%);
+    border: 4px solid #67b4ee;
+    border-radius: 14px;
+    padding: 70px 220px 70px 40px;
+    box-shadow: 40px 8px 20px rgba(62, 96, 177, 0.08);
+    line-height: 1.5;
+}
