@@ -14,7 +14,7 @@ export function Navbar() {
                 <a href="index.html" class="nav-link ${isActive('index.html')}">Inicio</a>
                 <a href="doctors.html" class="nav-link ${isActive('doctors.html')}">Especialidades</a>
                 <a href="about.html" class="nav-link ${isActive('about.html')}">Sobre Nosotros</a>
-                <a href="appointment.html" class="btn-cta">Agendar Cita</a>
+                <a href="schedule.html" class="nav-link ${isActive('schedule.html')}">Agendar Cita</a>
             </div>
         </div>
     </nav>
