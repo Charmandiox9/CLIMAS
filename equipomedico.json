@@ -1,8 +1,28 @@
 {
+    "users": [
+        {
+            "id": 101,
+            "name": "Administrador General",
+            "email": "admin@climas.ucn.cl",
+            "password": "admin",
+            "role": "admin"
+        },
+        {
+            "id": 102,
+            "name": "Alan Brito",
+            "email": "paciente@gmail.com",
+            "password": "123",
+            "role": "user"
+        }
+    ],
+
     "doctors": [
         {
             "id":1,
             "nombreCompleto":"Diego Messi",
+            "email": "diego@climas.ucn.cl",
+            "password": "123",
+            "role": "doctor",
             "Especialidad":"Traumatología",
             "AñosExperiencia":"12",
             "Ubicacion":"Puente Alto",
@@ -15,6 +35,9 @@
         {
             "id":2,
             "nombreCompleto":"Daniel Durán",
+            "email": "daniel@climas.ucn.cl",
+            "password": "123",
+            "role": "doctor",
             "Especialidad":"Cardiología",
             "AñosExperiencia":"15",
             "Ubicacion":"Santiago Centro",
@@ -27,6 +50,9 @@
         {
             "id":3,
             "nombreCompleto":"Martin Castillo",
+            "email": "martin@climas.ucn.cl",
+            "password": "123",
+            "role": "doctor",
             "Especialidad":"Neurología",
             "AñosExperiencia":"14",
             "Ubicacion":"Cerro Navia",
