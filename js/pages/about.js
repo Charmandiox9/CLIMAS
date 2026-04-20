@@ -11,8 +11,8 @@ export function AboutPage() {
         <section class="about-content">
             <div class="container">
                 <div class="about-grid">
-                    <div class="about-image-placeholder">
-                        <i class="fa-solid fa-hospital-user fa-5x"></i>
+                    <div class="about-image-placeholder" style="overflow: hidden; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                        <img src="../assets/img/hospital-bg.png" alt="Hospital CLIMAS" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
                     <div class="about-text">
                         <h2>Historia y Compromiso</h2>

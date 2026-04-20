@@ -3,7 +3,6 @@ body{
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
     color: #ffffff;
 
-    /* Fondo general */
     background: linear-gradient(135deg, #2f57dc 0%, #0e0f0f 45%, #7fbde7 100%);
     min-height: 100vh;
     padding: 32px 16px;

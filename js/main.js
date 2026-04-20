@@ -1,16 +1,50 @@
-import { Navbar } from './components/navbar.js';
+import { Navbar, initLogoutEvent } from './components/navbar.js';
 import { Footer } from './components/footer.js';
 import { Hero } from './components/hero.js';
 import { Specialties } from './components/specialties.js';
 import { AboutPage } from './pages/about.js';
-import { initScheduleEvents, SchedulePage } from './pages/Schedule.js';
+import { initScheduleEvents, SchedulePage } from './pages/schedule.js';
+import { LoginPage, initLoginEvents } from './pages/login.js';
+import { DashboardPage, initDashboardEvents } from './pages/doctor_dashboard.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+
     const navbarElement = document.getElementById('navbar');
     const footerElement = document.getElementById('footer');
 
     if (navbarElement) navbarElement.innerHTML = Navbar();
     if (footerElement) footerElement.innerHTML = Footer();
+    
+    initLogoutEvent();
+
+    const path = window.location.pathname;
+    
+    let session = null;
+    try {
+        const stored = localStorage.getItem('user_session');
+        if (stored && stored !== 'undefined') {
+            session = JSON.parse(stored);
+        }
+    } catch (e) {
+        console.error("Invalid session JSON");
+    }
+
+    if (path.includes('dashboard') && !session) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    const loginContainer = document.getElementById('login-page');
+    const dashContainer = document.getElementById('dashboard-page');
+
+    if (loginContainer) {
+        loginContainer.innerHTML = LoginPage();
+        initLoginEvents();
+    }
+
+    if (dashContainer && session) {
+        dashContainer.innerHTML = DashboardPage(session);
+    }   
 
     const heroContainer = document.getElementById('hero');
     const aboutContainer = document.getElementById('about-page');
@@ -29,5 +63,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (scheduleContainer) {
         scheduleContainer.innerHTML = SchedulePage();
         initScheduleEvents(); 
+    }
+
+    const doctorDashContainer = document.getElementById('doctor_dashboard-page');
+
+    if (doctorDashContainer) {
+        const session = JSON.parse(localStorage.getItem('user_session'));
+
+        if (!session) {
+            window.location.href = 'login.html';
+        } else {
+
+            doctorDashContainer.innerHTML = DashboardPage(session);
+
+            initDashboardEvents();
+        }
     }
 });

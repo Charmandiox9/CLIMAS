@@ -1,4 +1,4 @@
-const req = await fetch("./equipomedico.json");
+const req = await fetch("../assets/data/equipomedico.json");
 
 if (!req.ok) {
   throw new Error(`HTTP ${req.status}`);
