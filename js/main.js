@@ -5,7 +5,7 @@ import { Specialties } from './components/specialties.js';
 import { AboutPage } from './pages/about.js';
 import { initScheduleEvents, SchedulePage } from './pages/schedule.js';
 import { LoginPage, initLoginEvents } from './pages/login.js';
-import { DashboardPage } from './pages/dashboard.js';
+import { DashboardPage, initDashboardEvents } from './pages/doctor_dashboard.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -44,7 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (dashContainer && session) {
         dashContainer.innerHTML = DashboardPage(session);
-        // if (typeof initDashboardTabs === "function") initDashboardTabs();
     }   
 
     const heroContainer = document.getElementById('hero');
@@ -64,5 +63,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (scheduleContainer) {
         scheduleContainer.innerHTML = SchedulePage();
         initScheduleEvents(); 
+    }
+
+    const doctorDashContainer = document.getElementById('doctor_dashboard-page');
+
+    if (doctorDashContainer) {
+        const session = JSON.parse(localStorage.getItem('user_session'));
+
+        if (!session) {
+            window.location.href = 'login.html';
+        } else {
+
+            doctorDashContainer.innerHTML = DashboardPage(session);
+
+            initDashboardEvents();
+        }
     }
 });

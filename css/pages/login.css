@@ -4,7 +4,7 @@
     align-items: center;
     justify-content: center;
     background: linear-gradient(rgba(248, 249, 250, 0.8), rgba(248, 249, 250, 0.8)), 
-                url('../img/hospital-bg.jpg') no-repeat center center/cover;
+                url('../../assets/img/hospital-bg.png') no-repeat center center/cover;
 }
 
 .login-card {
