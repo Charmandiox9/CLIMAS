@@ -1,0 +1,109 @@
+.schedule-page-wrapper {
+    background-color: var(--white);
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.schedule-hero {
+    background: linear-gradient(rgba(0,51,102,0.85), rgba(0,51,102,0.85));
+    color: white;
+    padding: 80px 0;
+    text-align: center;
+}
+
+.schedule-hero h1 {
+    font-size: 2.8rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.schedule-content {
+    padding: 60px 0;
+}
+
+.schedule-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.selection-card {
+    background: #f8fafc;
+    padding: 30px;
+    border-radius: 15px;
+    border-left: 6px solid var(--ucn-blue);
+    border-top: 1px solid #e2e8f0;
+    border-right: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+    transition: transform 0.3s ease;
+}
+
+.selection-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.selection-card h3 {
+    color: var(--ucn-blue);
+    margin-bottom: 15px;
+    font-size: 1.4rem;
+}
+
+.selection-card label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
+select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e0;
+    background-color: white;
+    font-family: inherit;
+    color: #334155;
+}
+
+select:focus {
+    outline: none;
+    border-color: var(--ucn-blue);
+}
+
+.form-actions {
+    grid-column: 1 / -1;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.submit-btn {
+    background-color: var(--ucn-blue);
+    color: white;
+    padding: 15px 40px;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.submit-btn:hover {
+    background-color: #002244;
+    transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+    .schedule-hero h1 {
+        font-size: 2rem;
+    }
+    .schedule-form-grid {
+        grid-template-columns: 1fr;
+    }
+}

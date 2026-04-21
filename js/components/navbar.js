@@ -1,19 +1,53 @@
 export function Navbar() {
-  return `
-    <nav class="px-4 py-4 sm:flex sm:items-center sm:justify-between">
-      <section class="flex justify-between">
-        <img src="/img/logo.svg" class="h-6" alt="CLIMAS" />
-        <button class="text-gray-700 sm:hidden">
-          <svg class="w-6 h-6 fill-current" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 50 50">
-            <path d="M 0 7.5 L 0 12.5 L 50 12.5 L 50 7.5 Z M 0 22.5 L 0 27.5 L 50 27.5 L 50 22.5 Z M 0 37.5 L 0 42.5 L 50 42.5 L 50 37.5 Z"></path>
-          </svg>
-        </button>
-      </section>
-      <div class="flex flex-col items-start mt-3 gap-2 sm:flex-row sm:m-0">
-        <button class="text-gray-600 hover:bg-gray-200 w-full text-left px-2 rounded hover:text-gray-900">Inicio</button>
-        <button class="text-gray-600 hover:bg-gray-200 w-full text-left px-2 rounded hover:text-gray-900">Doctores y Especialidades</button>
-        <button class="text-gray-600 hover:bg-gray-200 w-full text-left px-2 rounded hover:text-gray-900">Contacto</button>
-      </div>
+    const currentPath = window.location.pathname;
+    const isRoot = !currentPath.includes('/views/');
+    const r = isRoot ? '' : '../';
+    const b = isRoot ? 'views/' : '';
+
+    const isActive = (path) => currentPath.includes(path) ? 'active' : '';
+
+    let session = null;
+    try {
+        const stored = localStorage.getItem('user_session');
+        if (stored && stored !== 'undefined') {
+            session = JSON.parse(stored);
+        }
+    } catch (e) {
+        console.error('Error parsing session data');
+    }
+
+    return `
+    <nav class="nav-container">
+        <div class="container nav-content">
+            <a href="${r}index.html" class="nav-logo">
+                <i class="fa-solid fa-house-medical"></i>
+                <span>CLIMAS</span>
+            </a>
+
+            <div class="nav-links">
+                <a href="${r}index.html" class="nav-link ${isActive('index.html')}">Inicio</a>
+                <a href="${b}doctors.html" class="nav-link ${isActive('doctors.html')}">Especialidades</a>
+                <a href="${b}about.html" class="nav-link ${isActive('about.html')}">Sobre Nosotros</a>
+                <a href="${b}contacto.html" class="nav-link ${isActive('contacto.html')}">Contacto</a>
+                <a href="${b}schedule.html" class="nav-link ${isActive('schedule.html')}">Agendar Cita</a>
+                ${session ? `<a href="${b}doctor_dashboard.html" class="nav-link ${isActive('doctor_dashboard')}">Mi Panel</a>
+                       <a href="#" id="logout-link" class="nav-link" style="color: #e74c3c;">Salir</a>`
+                    : `<a href="${b}login.html" class="btn-cta">Portal Doctores</a>`
+                }
+            </div>
+        </div>
     </nav>
-  `
+    `;
+}
+
+export function initLogoutEvent() {
+    const logoutBtn = document.getElementById('logout-link');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('user_session');
+            const r = !window.location.pathname.includes('/views/') ? 'index.html' : '../index.html';
+            window.location.href = r;
+        });
+    }
 }

@@ -1,5 +1,15 @@
 
+.body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #ffffff;
 /* ── Doctors Page ── usa variables de global.css ── */
+
+  /* Fondo general */
+  background: linear-gradient(135deg, #213886 0%, #19191a 45%, #1b94e5 100%);
+  min-height: 100vh;
+  padding: 32px 16px;
+}
 
 .doctors-hero {
   background: linear-gradient(135deg, #003366 0%, #005599 100%);
@@ -8,12 +18,25 @@
   text-align: center;
 }
 
+.title1{
+    margin: 0 0 24px 0;
+    font-size: 3rem;
+    font-weight: 1000;
+    text-align: center;
+    color: #ffffff;
+    background: linear-gradient(150deg, #383f54 0%, #0e0f0f 45%, #7fbde7 100%);
 .doctors-hero h1 {
   font-size: 2.8rem;
   font-weight: 800;
   margin-bottom: 12px;
 }
 
+.doctor-container {
+  max-width: 800px;
+  margin: 1rem;
+  display: flex;
+  gap: 18px;
+  align-items: start;
 .doctors-hero p {
   font-size: 1.15rem;
   opacity: 0.88;
@@ -33,6 +56,13 @@
 
 /* ── Card ── */
 .doctor-card {
+  background: #3b528b;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 16px 18px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  line-height: 1.5;
+  cursor: pointer;
   background: white;
   border-radius: 20px;
   box-shadow: 0 4px 20px rgba(0, 51, 102, 0.09);
@@ -72,6 +102,7 @@
 }
 
 .doctor-name {
+  margin: 0;
   font-size: 1.2rem;
   font-weight: 700;
   color: var(--ucn-blue);
@@ -149,6 +180,8 @@
   max-height: 0;
   overflow: hidden;
   opacity: 0;
+  margin-top: 0;
+  transition: max-height 0.3s ease, opacity 0.25s ease, margin-top 0.25s ease;
   padding: 0 22px;
   background: #f8fafc;
   border-top: 1px solid transparent;
@@ -157,8 +190,11 @@
 }
 
 .doctor-card.is-open .doctor-details {
+  max-height: 240px;
   max-height: 420px;
   opacity: 1;
+  margin-top: 12px;
+}
   padding: 20px 22px;
   border-top-color: #e2e8f0;
 }
@@ -203,12 +239,4 @@
   background: var(--ucn-light);
 }
 
-/* ── Responsive ── */
-@media (max-width: 640px) {
-  .doctors-hero h1 {
-    font-size: 2rem;
-  }
-  .doctor-grid {
-    grid-template-columns: 1fr;
-  }
 }
