@@ -3,9 +3,9 @@
   margin: 0;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   color: #ffffff;
-/* ── Doctors Page ── usa variables de global.css ── */
 
-  /* Fondo general */
+
+
   background: linear-gradient(135deg, #213886 0%, #19191a 45%, #1b94e5 100%);
   min-height: 100vh;
   padding: 32px 16px;
@@ -18,13 +18,16 @@
   text-align: center;
 }
 
-.title1{
+.title1 {
     margin: 0 0 24px 0;
     font-size: 3rem;
     font-weight: 1000;
     text-align: center;
     color: #ffffff;
     background: linear-gradient(150deg, #383f54 0%, #0e0f0f 45%, #7fbde7 100%);
+
+}
+
 .doctors-hero h1 {
   font-size: 2.8rem;
   font-weight: 800;
@@ -37,12 +40,14 @@
   display: flex;
   gap: 18px;
   align-items: start;
+
+}
+
 .doctors-hero p {
   font-size: 1.15rem;
   opacity: 0.88;
 }
 
-/* ── Grid ── */
 .doctors-section {
   padding: 65px 0;
   background-color: var(--gray-bg);
@@ -54,7 +59,6 @@
   gap: 28px;
 }
 
-/* ── Card ── */
 .doctor-card {
   background: #3b528b;
   border: 1px solid #e5e7eb;
@@ -76,7 +80,6 @@
   box-shadow: 0 14px 35px rgba(0, 51, 102, 0.16);
 }
 
-/* ── Foto ── */
 .doctor-photo-wrap {
   background: linear-gradient(135deg, #003366 0%, #005599 100%);
   height: 200px;
@@ -95,7 +98,6 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
 }
 
-/* ── Cuerpo ── */
 .card-body {
   padding: 20px 22px 18px;
   text-align: center;
@@ -124,7 +126,6 @@
   margin-right: 5px;
 }
 
-/* Estrellas */
 .doctor-stars {
   color: #f59e0b;
   font-size: 0.95rem;
@@ -175,7 +176,6 @@
   background: var(--ucn-light);
 }
 
-/* ── Detalles expandibles ── */
 .doctor-details {
   max-height: 0;
   overflow: hidden;
@@ -194,9 +194,6 @@
   max-height: 420px;
   opacity: 1;
   margin-top: 12px;
-}
-  padding: 20px 22px;
-  border-top-color: #e2e8f0;
 }
 
 .detail-row {
@@ -237,6 +234,4 @@
 
 .btn-agendar:hover {
   background: var(--ucn-light);
-}
-
 }

@@ -3,53 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contáctanos - CLIMAS</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="../css/global.css">
+    <title>Contáctanos</title>
+
     <link rel="stylesheet" href="../css/pages/contacto.css">
+    <script type="module" src="../js/pages/contacto.js"></script>
 </head>
 
 <body>
     <header id="navbar"></header>
 
     <main>
-        <section class="contacto-hero">
+        <div class="contacto-hero">
             <div class="container">
                 <h1>Contáctanos</h1>
                 <p>Estamos aquí para ayudarte. Comunícate con nosotros cuando lo necesites.</p>
             </div>
-        </section>
+        </div>
 
-        <section class="contacto-section">
-            <div class="container contacto-grid">
+        <div class="contacto-section">
+            <div class="container">
+                <div class="contacto-grid">
 
-                <aside class="contacto-info">
-                    <h2>Información de contacto</h2>
-                    <ul>
-                        <li>Dirección: Larrondo 1281, Coquimbo</li>
-                        <li>Teléfono: +56 9 9084 7300</li>
-                        <li>Correo: contacto@climas.ucn.cl</li>
-                        <li>Horario: Lunes a Viernes, 8:00 - 18:00</li>
-                    </ul>
-                </aside>
+                    <div class="contacto-cards">
+                        <div class="contact-card">
+                            <div>
+                                <h3>Dirección</h3>
+                                <p>Larrondo 1281, Coquimbo</p>
+                            </div>
+                        </div>
+                        <div class="contact-card">
+                            <div>
+                                <h3>Teléfono</h3>
+                                <p>+56 9 9084 7300</p>
+                            </div>
+                        </div>
+                        <div class="contact-card">
+                            <div>
+                                <h3>Correo</h3>
+                                <p>contacto@climas.ucn.cl</p>
+                            </div>
+                        </div>
+                        <div class="contact-card">
+                            <div>
+                                <h3>Horario de Atención</h3>
+                                <p>Lunes a Viernes: 8:00 - 18:00</p>
+                            </div>
+                        </div>
+                    </div>
 
-                <form class="contacto-form" id="contacto-form">
-                    <h2>Envíanos un Mensaje</h2>
-                    <label for="cf-nombre">Nombre completo</label>
-                    <input id="cf-nombre" name="nombre" type="text" placeholder="Tu nombre" required>
+                    <form class="contacto-form" id="contacto-form">
+                        <h2>Envíanos un Mensaje</h2>
+                        <div class="form-group">
+                            <label for="cf-nombre">Nombre completo</label>
+                            <input id="cf-nombre" name="nombre" type="text" placeholder="Tu nombre" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cf-email">Correo electrónico</label>
+                            <input id="cf-email" name="email" type="email" placeholder="tu@email.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cf-mensaje">Mensaje</label>
+                            <input id="cf-mensaje" name="mensaje" type="text" placeholder="¿En qué podemos ayudarte?" required>
+                        </div>
+                        <button type="submit" class="btn-enviar">Enviar Mensaje</button>
+                        <p class="form-success" id="form-success" style="display:none">
+                            ¡Mensaje enviado con éxito!
+                        </p>
+                    </form>
 
-                    <label for="cf-email">Correo electrónico</label>
-                    <input id="cf-email" name="email" type="email" placeholder="tu@email.com" required>
-
-                    <label for="cf-mensaje">Mensaje</label>
-                    <input id="cf-mensaje" name="mensaje" type="text" placeholder="¿En qué podemos ayudarte?" required>
-
-                    <button type="submit" class="btn-enviar">Enviar Mensaje</button>
-                    <p class="form-success" id="form-success" style="display:none">¡Mensaje enviado con éxito!</p>
-                </form>
-
+                </div>
             </div>
-        </section>
+        </div>
     </main>
 
     <footer id="footer"></footer>

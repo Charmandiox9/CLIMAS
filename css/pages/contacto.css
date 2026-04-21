@@ -1,3 +1,4 @@
+
 .contacto-hero {
   background: linear-gradient(135deg, #003366 0%, #005599 100%);
   color: white;
@@ -12,9 +13,9 @@
 }
 
 .contacto-hero p {
-  font-size: 1.1rem;
-  opacity: 0.85;
-  max-width: 560px;
+  font-size: 1.15rem;
+  opacity: 0.88;
+  max-width: 600px;
   margin: 0 auto;
 }
 
@@ -27,95 +28,126 @@
 .contacto-grid {
   display: grid;
   grid-template-columns: 1fr 1.4fr;
-  gap: 48px;
+  gap: 40px;
   align-items: start;
 }
 
-/* ── Info lateral ── */
-.contacto-info h2 {
-  color: var(--ucn-blue);
-  font-size: 1.2rem;
-  margin-bottom: 20px;
-}
-
-.contacto-info ul {
-  list-style: none;
+/* ── Tarjetas de info ── */
+.contacto-cards {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 }
 
-.contacto-info li {
+.contact-card {
   background: white;
+  border-radius: 16px;
+  padding: 22px 24px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  box-shadow: 0 4px 15px rgba(0, 51, 102, 0.08);
   border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 14px 18px;
-  font-size: 0.92rem;
-  color: #475569;
-  box-shadow: 0 2px 8px rgba(0,51,102,0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.contacto-info li strong {
+.contact-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(0, 51, 102, 0.14);
+}
+
+.contact-icon {
+  background: linear-gradient(135deg, #003366, #005599);
+  color: white;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.contact-card h3 {
   color: var(--ucn-blue);
-  display: block;
-  margin-bottom: 2px;
+  margin: 0 0 4px 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.contact-card p {
+  color: #64748b;
+  margin: 0;
+  font-size: 0.9rem;
 }
 
 /* ── Formulario ── */
 .contacto-form {
   background: white;
-  border-radius: 16px;
-  padding: 36px;
-  box-shadow: 0 4px 20px rgba(0, 51, 102, 0.08);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 4px 20px rgba(0, 51, 102, 0.09);
   border: 1px solid #e2e8f0;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
 }
 
 .contacto-form h2 {
   color: var(--ucn-blue);
-  font-size: 1.5rem;
+  font-size: 1.6rem;
+  margin-bottom: 26px;
   font-weight: 800;
-  margin-bottom: 6px;
 }
 
-.contacto-form label {
-  font-size: 0.88rem;
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
   font-weight: 600;
-  color: #334155;
-  margin-bottom: -8px;
+  color: var(--text-dark);
+  margin-bottom: 7px;
+  font-size: 0.9rem;
 }
 
-.contacto-form input {
+.form-group input,
+.form-group textarea {
   width: 100%;
   border: 1.5px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 11px 14px;
+  border-radius: 10px;
+  padding: 12px 15px;
   font-size: 0.95rem;
   font-family: inherit;
   outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
   box-sizing: border-box;
   color: var(--text-dark);
-  transition: border-color 0.2s;
 }
 
-.contacto-form input:focus {
+.form-group input:focus,
+.form-group textarea:focus {
   border-color: var(--ucn-light);
+  box-shadow: 0 0 0 3px rgba(0, 85, 153, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
 }
 
 .btn-enviar {
   background: var(--ucn-blue);
   color: white;
   border: none;
-  padding: 12px;
-  border-radius: 8px;
-  font-size: 0.95rem;
+  padding: 12px 28px;
+  border-radius: 30px;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
   transition: background 0.2s;
-  margin-top: 4px;
+  font-family: inherit;
 }
 
 .btn-enviar:hover {
@@ -124,18 +156,12 @@
 
 .form-success {
   color: #16a34a;
+  margin-top: 16px;
   font-weight: 600;
-  font-size: 0.9rem;
-  margin: 0;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 7px;
 }
 
-@media (max-width: 860px) {
-  .contacto-grid {
-    grid-template-columns: 1fr;
-  }
-}
 
-@media (max-width: 600px) {
-  .contacto-hero h1 { font-size: 2rem; }
-  .contacto-form { padding: 24px 20px; }
-}
