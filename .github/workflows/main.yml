@@ -1,0 +1,20 @@
+name: Test Manual Dispatch (PROJEIC)
+
+on: 
+  workflow_dispatch:
+
+jobs:
+  probar-boton:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirmar conexión
+        run: echo "¡El botón de PROJEIC funciona perfectamente! Conexión exitosa."
+
+      - name: Verificar la rama
+        run: echo "Este flujo fue disparado en la rama -> ${{ github.ref }}"
+
+      - name: Simular trabajo de compilación
+        run: |
+          echo "Simulando carga pesada para que PROJEIC lo muestre 'En Progreso'..."
+          sleep 15
+          echo "¡Proceso terminado con éxito!"
