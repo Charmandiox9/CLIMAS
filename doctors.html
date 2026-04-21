@@ -1,17 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Equipo Médico</title>
 
-    <link rel="stylesheet" href="./css/doctors.css">
-    <script type="module" src="./js/pages/doctors.js"></script>
+    <link rel="stylesheet" href="../css/pages/doctors.css">
+    <script type="module" src="../js/pages/doctors.js"></script>
 </head>
 
 <body>
-    <h1 class="title1">Doctores y Especialidades</h1>
-    <div id="doctor-list" class="doctor-container"></div>    
-    
+    <header id="navbar"></header>
+
+    <main>
+        <div class="doctors-hero">
+            <div class="container">
+                <h1>Nuestro Equipo Médico</h1>
+                <p>Profesionales de excelencia comprometidos con tu salud</p>
+            </div>
+        </div>
+
+        <div class="doctors-section">
+            <div class="container">
+                <div id="doctor-list" class="doctor-grid"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer id="footer"></footer>
+    <script type="module" src="../js/main.js"></script>
+    <script type="module" src="../js/pages/doctors.js"></script>
 </body>
 </html>
