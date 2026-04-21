@@ -10,17 +10,74 @@
 </head>
 
 <body>
-    <h1 class="title1">Contáctanos</h1>
+    <header id="navbar"></header>
 
-    <div class="contacto-container">
-        <div class="contacto-info">
-            <h2 class="title2">Información de Contacto</h2>
-            <p>Dirección: Puente Alto Calle Balada 3500, #3446</p>
-            <p>Teléfono: +56990847300</p>
-            <p>Email: papidiegomanco2004@gmail.com</p>
+    <main>
+        <div class="contacto-hero">
+            <div class="container">
+                <h1>Contáctanos</h1>
+                <p>Estamos aquí para ayudarte. Comunícate con nosotros cuando lo necesites.</p>
+            </div>
         </div>
 
-    </div>
+        <div class="contacto-section">
+            <div class="container">
+                <div class="contacto-grid">
 
+                    <div class="contacto-cards">
+                        <div class="contact-card">
+                            <div>
+                                <h3>Dirección</h3>
+                                <p>Larrondo 1281, Coquimbo</p>
+                            </div>
+                        </div>
+                        <div class="contact-card">
+                            <div>
+                                <h3>Teléfono</h3>
+                                <p>+56 9 9084 7300</p>
+                            </div>
+                        </div>
+                        <div class="contact-card">
+                            <div>
+                                <h3>Correo</h3>
+                                <p>contacto@climas.ucn.cl</p>
+                            </div>
+                        </div>
+                        <div class="contact-card">
+                            <div>
+                                <h3>Horario de Atención</h3>
+                                <p>Lunes a Viernes: 8:00 - 18:00</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form class="contacto-form" id="contacto-form">
+                        <h2>Envíanos un Mensaje</h2>
+                        <div class="form-group">
+                            <label for="cf-nombre">Nombre completo</label>
+                            <input id="cf-nombre" name="nombre" type="text" placeholder="Tu nombre" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cf-email">Correo electrónico</label>
+                            <input id="cf-email" name="email" type="email" placeholder="tu@email.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cf-mensaje">Mensaje</label>
+                            <input id="cf-mensaje" name="mensaje" type="text" placeholder="¿En qué podemos ayudarte?" required>
+                        </div>
+                        <button type="submit" class="btn-enviar">Enviar Mensaje</button>
+                        <p class="form-success" id="form-success" style="display:none">
+                            ¡Mensaje enviado con éxito!
+                        </p>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer id="footer"></footer>
+    <script type="module" src="../js/main.js"></script>
+    <script type="module" src="../js/pages/contacto.js"></script>
 </body>
 </html>
