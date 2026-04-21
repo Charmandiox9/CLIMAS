@@ -1,20 +1,22 @@
-name: Test Manual Dispatch (PROJEIC)
+name: Test Artefactos (PROJEIC)
 
 on: 
   workflow_dispatch:
 
 jobs:
-  probar-boton:
+  construir-y-guardar:
     runs-on: ubuntu-latest
     steps:
-      - name: Confirmar conexión
-        run: echo "¡El botón de PROJEIC funciona perfectamente! Conexión exitosa."
-
-      - name: Verificar la rama
-        run: echo "Este flujo fue disparado en la rama -> ${{ github.ref }}"
-
-      - name: Simular trabajo de compilación
+      - name: 1. Crear carpeta y archivo de prueba
         run: |
-          echo "Simulando carga pesada para que PROJEIC lo muestre 'En Progreso'..."
-          sleep 15
-          echo "¡Proceso terminado con éxito!"
+          mkdir -p dist
+          echo "=== REPORTE DE COMPILACIÓN PROJEIC ===" > dist/reporte.txt
+          echo "Fecha: $(date)" >> dist/reporte.txt
+          echo "Estado: ÉXITO. El sistema de artefactos funciona perfecto." >> dist/reporte.txt
+
+      - name: 2. Subir Artefacto a GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-projeic-v1.0
+          path: dist/            
+          retention-days: 5      
