@@ -5,7 +5,8 @@ import { Specialties } from './components/specialties.js';
 import { AboutPage } from './pages/about.js';
 import { initScheduleEvents, SchedulePage } from './pages/schedule.js';
 import { LoginPage, initLoginEvents } from './pages/login.js';
-import { DashboardPage, initDashboardEvents } from './pages/doctor_dashboard.js';
+import { DashboardPage, initDashboardEvents as initDoctorDashboardEvents } from './pages/doctor_dashboard.js';
+import { AdminDashboardPage, initDashboardEvents as initAdminDashboardEvents } from './pages/admin_dashboard.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -76,7 +77,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
             doctorDashContainer.innerHTML = DashboardPage(session);
 
-            initDashboardEvents();
+            initDoctorDashboardEvents();
         }
     }
+
+    const adminDashContainer = document.getElementById('admin_dashboard-page');
+
+    if (adminDashContainer) {
+        const session = JSON.parse(localStorage.getItem('user_session'));
+        if (session && session.role === 'admin') {
+            AdminDashboardPage(session).then(html => {
+                adminDashContainer.innerHTML = html;
+                initAdminDashboardEvents();
+            });
+        } else {
+            window.location.href = 'login.html';
+        }
+    }
+
+
 });
