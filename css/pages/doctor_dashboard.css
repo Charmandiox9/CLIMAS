@@ -1,0 +1,185 @@
+/* ===== Estado activo en sidebar ===== */
+.nav-btn.activate {
+    background: var(--ucn-blue);
+    color: white;
+}
+
+/* ===== Filtro de citas ===== */
+.citas-filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ucn-blue);
+}
+
+.citas-filter select {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 0.875rem;
+    color: var(--text-dark);
+    background: white;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.citas-filter select:focus {
+    border-color: var(--ucn-blue);
+}
+
+/* ===== Badge de estado en citas ===== */
+.card-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.status-badge-confirmado { background: #d4edda; color: #1a7f37; }
+.status-badge-pendiente  { background: #fff3cd; color: #856404; }
+.status-badge-en-espera  { background: #ffe5c4; color: #a04000; }
+
+/* ===== Historial clínico — selector ===== */
+.historial-selector-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 25px;
+    background: white;
+    padding: 15px 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    color: var(--ucn-blue);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.historial-selector-wrapper select {
+    flex: 1;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.historial-selector-wrapper select:focus {
+    border-color: var(--ucn-blue);
+}
+
+/* ===== Historial clínico — empty state ===== */
+.historial-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    padding: 60px 20px;
+    color: #a0aec0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    text-align: center;
+}
+
+.historial-empty-state i {
+    font-size: 3rem;
+    color: #cbd5e0;
+}
+
+/* ===== Historial clínico — panel de paciente ===== */
+.historial-paciente-panel {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    overflow: hidden;
+}
+
+.historial-paciente-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px 25px;
+    background: linear-gradient(135deg, var(--ucn-blue), var(--ucn-light));
+    color: white;
+}
+
+.historial-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+}
+
+.historial-paciente-header h3 { margin-bottom: 3px; }
+.historial-paciente-header span { font-size: 0.85rem; opacity: 0.85; }
+
+.historial-consultas {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* ===== Historial clínico — tarjeta de consulta ===== */
+.historial-consulta-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.historial-consulta-fecha {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f1f5f9;
+    padding: 10px 15px;
+    font-weight: 600;
+    color: var(--ucn-blue);
+    font-size: 0.9rem;
+}
+
+.historial-consulta-body {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.historial-row {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 10px;
+    font-size: 0.9rem;
+    align-items: start;
+}
+
+.historial-label {
+    font-weight: 600;
+    color: var(--ucn-blue);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ===== Section subtitle ===== */
+.section-subtitle {
+    color: #64748b;
+    margin-bottom: 25px;
+    margin-top: 5px;
+}
+
+@media (max-width: 768px) {
+    .historial-row { grid-template-columns: 1fr; }
+    .historial-selector-wrapper { flex-direction: column; align-items: flex-start; }
+}

@@ -8,7 +8,7 @@ import { LoginPage, initLoginEvents } from './pages/login.js';
 import { DashboardPage, initDashboardEvents as initDoctorDashboardEvents } from './pages/doctor_dashboard.js';
 import { AdminDashboardPage, initDashboardEvents as initAdminDashboardEvents } from './pages/admin_dashboard.js';
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
 
     const navbarElement = document.getElementById('navbar');
     const footerElement = document.getElementById('footer');
@@ -69,13 +69,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const doctorDashContainer = document.getElementById('doctor_dashboard-page');
 
     if (doctorDashContainer) {
-        const session = JSON.parse(localStorage.getItem('user_session'));
-
         if (!session) {
             window.location.href = 'login.html';
         } else {
+            doctorDashContainer.innerHTML = await DashboardPage(session);
+            initDashboardEvents();
+        }
+    }
 
-            doctorDashContainer.innerHTML = DashboardPage(session);
+    const userDashContainer = document.getElementById('user_dashboard-page');
 
             initDoctorDashboardEvents();
         }
