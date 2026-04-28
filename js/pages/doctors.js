@@ -1,32 +1,155 @@
-const req = await fetch("../assets/data/equipomedico.json");
-
-if (!req.ok) {
-  throw new Error(`HTTP ${req.status}`);
+function crearIcono(clases) {
+    const i = document.createElement("i");
+    i.className = clases;
+    return i;
 }
 
-  const data = await req.json();
-  const doctors = (data.doctors ?? []).filter((d) => d.nombreCompleto);
-  const container = document.getElementById("doctor-list");
-  if (!container) return;
+function crearTarjeta(doctor) {
+    const card = document.createElement("div");
+    card.className = "doctor-card";
 
-  doctors.forEach((doctor) => {
-    const card = crearTarjeta(doctor);
-    container.appendChild(card);
-  });
+    const photoWrap = document.createElement("div");
+    photoWrap.className = "doctor-photo-wrap";
 
-  container.addEventListener("click", (e) => {
-    const btn = e.target.closest(".btn-ver-mas");
-    if (!btn) return;
+    const img = document.createElement("img");
+    img.className = "doctor-photo";
 
-    const card = btn.closest(".doctor-card");
-    const wasOpen = card.classList.contains("is-open");
+    img.src = `../assets/${doctor.FotoPerfil}`;
 
-    container.querySelectorAll(".doctor-card.is-open").forEach((c) => {
-      c.classList.remove("is-open");
-      c.querySelector(".btn-ver-mas").textContent = "Ver perfil";
+    img.alt = `Dr. ${doctor.nombreCompleto}`;
+
+    img.addEventListener("error", () => {
+        img.src = "../assets/img/drs/default.png";
+        img.onerror = null;
     });
+    photoWrap.appendChild(img);
 
-  if (!wasOpen) {
-    card.classList.add("is-open");
-  }
+
+
+    const cardBody = document.createElement("div");
+    cardBody.className = "card-body";
+
+    const nombre = document.createElement("h3");
+    nombre.className = "doctor-name";
+    nombre.textContent = doctor.nombreCompleto;
+
+    const especialidad = document.createElement("span");
+    especialidad.className = "doctor-specialty";
+    especialidad.appendChild(crearIcono("fa-solid fa-stethoscope"));
+    especialidad.append(` ${doctor.Especialidad}`);
+
+    const stars = document.createElement("div");
+    stars.className = "doctor-stars";
+    const calificacion = parseFloat(doctor.Calificacion) || 0;
+    const numEstrellas = Math.round(calificacion);
+    for (let i = 0; i < 5; i++) {
+        stars.appendChild(crearIcono(`fa-${i < numEstrellas ? "solid" : "regular"} fa-star`));
+    }
+    const ratingNum = document.createElement("span");
+    ratingNum.className = "rating-num";
+    ratingNum.textContent = doctor.Calificacion;
+    stars.appendChild(ratingNum);
+
+    const meta = document.createElement("div");
+    meta.className = "doctor-meta";
+
+    const spanUbicacion = document.createElement("span");
+    spanUbicacion.appendChild(crearIcono("fa-solid fa-location-dot"));
+    spanUbicacion.append(` ${doctor.Ubicacion}`);
+
+    const spanAnios = document.createElement("span");
+    spanAnios.appendChild(crearIcono("fa-solid fa-briefcase-medical"));
+    spanAnios.append(` ${doctor["AñosExperiencia"]} años`);
+
+    meta.appendChild(spanUbicacion);
+    meta.appendChild(spanAnios);
+
+    const btnVerMas = document.createElement("button");
+    btnVerMas.className = "btn-ver-mas";
+    btnVerMas.textContent = "Ver perfil ";
+    btnVerMas.appendChild(crearIcono("fa-solid fa-chevron-down"));
+
+    cardBody.appendChild(nombre);
+    cardBody.appendChild(especialidad);
+    cardBody.appendChild(stars);
+    cardBody.appendChild(meta);
+    cardBody.appendChild(btnVerMas);
+
+
+
+    const details = document.createElement("div");
+    details.className = "doctor-details";
+
+    const detailRow = document.createElement("div");
+    detailRow.className = "detail-row";
+    detailRow.appendChild(crearIcono("fa-solid fa-clock"));
+    const spanDisponibilidad = document.createElement("span");
+    spanDisponibilidad.textContent = doctor.Disponibilidad;
+    detailRow.appendChild(spanDisponibilidad);
+
+    const bio = document.createElement("p");
+    bio.className = "doctor-bio";
+    bio.textContent = doctor.Biografia ?? "";
+
+    const btnAgendar = document.createElement("a");
+    btnAgendar.className = "btn-agendar";
+    btnAgendar.href = "schedule.html";
+    btnAgendar.appendChild(crearIcono("fa-solid fa-calendar-check"));
+    btnAgendar.append(" Agendar cita");
+
+    details.appendChild(detailRow);
+    details.appendChild(bio);
+    details.appendChild(btnAgendar);
+
+    card.appendChild(photoWrap);
+    card.appendChild(cardBody);
+    card.appendChild(details);
+
+    return card;
+}
+
+
+document.addEventListener("DOMContentLoaded", async () => {
+    const container = document.getElementById("doctor-list");
+    if (!container) return;
+
+    try {
+        const req = await fetch("../assets/data/equipomedico.json");
+        if (!req.ok) throw new Error(`HTTP ${req.status}`);
+
+        const data = await req.json();
+        const doctors = (data.doctors ?? []).filter((d) => d.nombreCompleto);
+
+        doctors.forEach((doctor) => {
+            container.appendChild(crearTarjeta(doctor));
+        });
+
+        container.addEventListener("click", (e) => {
+            const btn = e.target.closest(".btn-ver-mas");
+            if (!btn) return;
+
+            const card = btn.closest(".doctor-card");
+            const wasOpen = card.classList.contains("is-open");
+
+            container.querySelectorAll(".doctor-card.is-open").forEach((c) => {
+                c.classList.remove("is-open");
+                const b = c.querySelector(".btn-ver-mas");
+                b.textContent = "Ver perfil ";
+                b.appendChild(crearIcono("fa-solid fa-chevron-down"));
+            });
+
+            if (!wasOpen) {
+                card.classList.add("is-open");
+                btn.textContent = "Ocultar ";
+                btn.appendChild(crearIcono("fa-solid fa-chevron-up"));
+            }
+        });
+
+    } catch (err) {
+        console.error("Error cargando médicos:", err);
+        const msg = document.createElement("p");
+        msg.textContent = "No se pudieron cargar los médicos.";
+        msg.style.cssText = "text-align:center;color:#64748b;padding:40px";
+        container.appendChild(msg);
+    }
 });
