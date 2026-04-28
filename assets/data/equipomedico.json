@@ -2,10 +2,10 @@
     "users": [
         {
             "id": 101,
-            "name": "Administrador General",
-            "email": "admin@climas.ucn.cl",
-            "password": "admin",
-            "role": "admin"
+            "name": "John Doe",
+            "email": "john.doe@gmail.com",
+            "password": "123",
+            "role": "user"
         },
         {
             "id": 102,
@@ -81,6 +81,17 @@
                 "Viernes": "10:00 - 18:00"
             },
             "Biografia":"El Dr. Martin Castillo es un neurologo certificado en ciberseguridad hacker de minecraft."
+        }
+    ],
+
+    "admins": [
+        {
+            "id": 999,
+            "name": "Administrador General",
+            "email": "admin@climas.ucn.cl",
+            "password": "admin",
+            "role": "admin",
+            "FotoPerfil": "img/drs/dr_daniel_duran.png"
         }
     ]
 

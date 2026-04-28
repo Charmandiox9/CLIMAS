@@ -27,7 +27,7 @@ export function initLoginEvents() {
         const res = await fetch('../assets/data/equipomedico.json');
         const data = await res.json();
 
-        const allUsers = [...data.doctors, ...data.users];
+        const allUsers = [...data.doctors, ...data.users, ...data.admins];
         const user = allUsers.find(u => u.email === email && u.password === pass);
 
         if (user) {

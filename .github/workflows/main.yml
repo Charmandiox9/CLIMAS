@@ -1,0 +1,22 @@
+name: Test Artefactos (PROJEIC)
+
+on: 
+  workflow_dispatch:
+
+jobs:
+  construir-y-guardar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 1. Crear carpeta y archivo de prueba
+        run: |
+          mkdir -p dist
+          echo "=== REPORTE DE COMPILACIÓN PROJEIC ===" > dist/reporte.txt
+          echo "Fecha: $(date)" >> dist/reporte.txt
+          echo "Estado: ÉXITO. El sistema de artefactos funciona perfecto." >> dist/reporte.txt
+
+      - name: 2. Subir Artefacto a GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-projeic-v1.0
+          path: dist/            
+          retention-days: 5      
