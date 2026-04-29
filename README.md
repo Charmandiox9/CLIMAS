@@ -16,3 +16,8 @@
 2. Commits descriptivos en español/inglés (acordar en equipo)
 3. Push y abrir PR hacia `develop`
 4. Requiere 1 aprobación para mergear a `develop`, 2 para `main`
+
+## Integrantes
+- Martín Castillo
+- Diego Contreras
+- Daniel Durán
