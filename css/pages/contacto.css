@@ -19,7 +19,6 @@
   margin: 0 auto;
 }
 
-/* ── Sección principal ── */
 .contacto-section {
   padding: 70px 0;
   background-color: var(--gray-bg);
@@ -32,7 +31,6 @@
   align-items: start;
 }
 
-/* ── Tarjetas de info ── */
 .contacto-cards {
   display: flex;
   flex-direction: column;
@@ -82,7 +80,6 @@
   font-size: 0.9rem;
 }
 
-/* ── Formulario ── */
 .contacto-form {
   background: white;
   border-radius: 20px;

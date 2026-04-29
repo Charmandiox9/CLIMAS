@@ -1,10 +1,8 @@
-/* ===== Estado activo en sidebar ===== */
 .nav-btn.activate {
     background: var(--ucn-blue);
     color: white;
 }
 
-/* ===== Filtro de citas ===== */
 .citas-filter {
     display: flex;
     align-items: center;
@@ -28,7 +26,6 @@
     border-color: var(--ucn-blue);
 }
 
-/* ===== Badge de estado en citas ===== */
 .card-badge {
     font-size: 0.75rem;
     font-weight: 600;
@@ -42,7 +39,6 @@
 .status-badge-pendiente  { background: #fff3cd; color: #856404; }
 .status-badge-en-espera  { background: #ffe5c4; color: #a04000; }
 
-/* ===== Historial clínico — selector ===== */
 .historial-selector-wrapper {
     display: flex;
     align-items: center;
@@ -72,7 +68,6 @@
     border-color: var(--ucn-blue);
 }
 
-/* ===== Historial clínico — empty state ===== */
 .historial-empty-state {
     display: flex;
     flex-direction: column;
@@ -92,7 +87,6 @@
     color: #cbd5e0;
 }
 
-/* ===== Historial clínico — panel de paciente ===== */
 .historial-paciente-panel {
     background: white;
     border-radius: 16px;
@@ -131,7 +125,6 @@
     gap: 15px;
 }
 
-/* ===== Historial clínico — tarjeta de consulta ===== */
 .historial-consulta-card {
     border: 1px solid #e2e8f0;
     border-radius: 10px;
@@ -172,7 +165,6 @@
     gap: 6px;
 }
 
-/* ===== Section subtitle ===== */
 .section-subtitle {
     color: #64748b;
     margin-bottom: 25px;
