@@ -1,0 +1,146 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Action {
+  CREATE
+  UPDATE
+  DELETE
+  ACCESS
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELED
+  NO_SHOW
+}
+
+model User {
+  id        String   @id @default(cuid())
+  firstName String
+  lastName  String
+  rut       String   @unique
+  email     String   @unique
+  password  String
+  phone     String?
+  roles     String[] // ej: ['ADMIN', 'DOCTOR', 'PATIENT']
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  auditLogs AuditLog[] 
+  doctor    Doctor?    
+  patient   Patient?  
+}
+
+model Doctor {
+  id             String        @id @default(cuid())
+  medicalLicense String?       
+  
+  areaId         String
+  area           Area          @relation(fields: [areaId], references: [id])
+  
+  userId         String        @unique
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  appointments   Appointment[]
+}
+
+model Patient {
+  id             String          @id @default(cuid())
+  dob            DateTime        
+  address        String?
+  bloodType      String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  userId         String          @unique
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  appointments   Appointment[]
+  medicalRecords MedicalRecord[]
+}
+
+model Appointment {
+  id          String            @id @default(cuid())
+  dateTime    DateTime
+  reason      String?           
+  status      AppointmentStatus @default(SCHEDULED)
+  
+  doctorId    String
+  doctor      Doctor            @relation(fields: [doctorId], references: [id])
+  
+  patientId   String
+  patient     Patient           @relation(fields: [patientId], references: [id])
+  
+  services    Service[]
+  
+  record      MedicalRecord?    
+
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}
+
+model Area {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String?
+
+  doctors     Doctor[]
+  services    Service[]
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Service {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  price       Float?   
+  duration    Int?      
+  areaId      String
+  area        Area      @relation(fields: [areaId], references: [id])
+  
+  appointments Appointment[] 
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model MedicalRecord {
+  id            String      @id @default(cuid())
+  clinicalNotes String      @db.Text 
+  prescription  String?     @db.Text 
+  diagnosis     String?
+  
+  appointmentId String      @unique
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+
+  patientId     String
+  patient       Patient     @relation(fields: [patientId], references: [id])
+
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model AuditLog {
+  id               String   @id @default(cuid())
+  userCode         String   
+  action           Action
+  resource         String  
+  resourceId       String  
+  dateTime         DateTime @default(now())
+  detalles_previos Json?  
+  detalles_nuevos  Json?  
+
+  usuario          User     @relation(fields: [userCode], references: [id])
+
+  @@map("audit_log")
+}
