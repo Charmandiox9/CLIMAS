@@ -14,12 +14,20 @@ enum Action {
   ACCESS
 }
 
-enum AppointmentStatus {
+enum ConsultationStatus {
   SCHEDULED
   COMPLETED
   CANCELED
   NO_SHOW
 }
+
+enum Role {
+  ADMIN
+  DOCTOR
+  PATIENT
+}
+
+
 
 model User {
   id        String   @id @default(cuid())
@@ -29,8 +37,8 @@ model User {
   email     String   @unique
   password  String
   phone     String?
-  roles     String[] // ej: ['ADMIN', 'DOCTOR', 'PATIENT']
-  activo    Boolean  @default(true)
+  roles     Role[] 
+  isActive    Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -49,7 +57,7 @@ model Doctor {
   userId         String        @unique
   user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  appointments   Appointment[]
+  consultations Consultation[]
 }
 
 model Patient {
@@ -63,15 +71,14 @@ model Patient {
   userId         String          @unique
   user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  appointments   Appointment[]
-  medicalRecords MedicalRecord[]
+  consultations Consultation[]
 }
 
-model Appointment {
+model Consultation {
   id          String            @id @default(cuid())
   dateTime    DateTime
   reason      String?           
-  status      AppointmentStatus @default(SCHEDULED)
+  status      ConsultationStatus @default(SCHEDULED)
   
   doctorId    String
   doctor      Doctor            @relation(fields: [doctorId], references: [id])
@@ -81,7 +88,7 @@ model Appointment {
   
   services    Service[]
   
-  record      MedicalRecord?    
+  medicalRecord MedicalRecord?    
 
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
@@ -91,6 +98,7 @@ model Area {
   id          String    @id @default(cuid())
   name        String    @unique
   description String?
+  isActive    Boolean   @default(true)
 
   doctors     Doctor[]
   services    Service[]
@@ -107,8 +115,9 @@ model Service {
   duration    Int?      
   areaId      String
   area        Area      @relation(fields: [areaId], references: [id])
+  isActive    Boolean   @default(true)
   
-  appointments Appointment[] 
+  consultations Consultation[] 
   
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -119,12 +128,9 @@ model MedicalRecord {
   clinicalNotes String      @db.Text 
   prescription  String?     @db.Text 
   diagnosis     String?
-  
-  appointmentId String      @unique
-  appointment   Appointment @relation(fields: [appointmentId], references: [id])
 
-  patientId     String
-  patient       Patient     @relation(fields: [patientId], references: [id])
+  consultationId String      @unique
+  consultation   Consultation @relation(fields: [consultationId], references: [id])
 
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
