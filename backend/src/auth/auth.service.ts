@@ -34,6 +34,7 @@ export class AuthService {
       roles: user.roles,
     };
     return {
+      message: 'Login exitoso',
       access_token: await this.jwtService.signAsync(payload),
       user: {
         id: user.id,
