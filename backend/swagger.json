@@ -425,14 +425,7 @@
         ],
         "responses": {
           "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
+            "description": ""
           }
         },
         "security": [
@@ -629,9 +622,9 @@
             "items": {
               "type": "string",
               "enum": [
-                "PATIENT",
                 "ADMIN",
-                "DOCTOR"
+                "DOCTOR",
+                "PATIENT"
               ]
             },
             "example": [
@@ -686,9 +679,9 @@
             "items": {
               "type": "string",
               "enum": [
-                "PATIENT",
                 "ADMIN",
-                "DOCTOR"
+                "DOCTOR",
+                "PATIENT"
               ]
             },
             "example": [
