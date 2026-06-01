@@ -7,14 +7,15 @@ import {
   IsArray,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Role } from '@prisma/client';
 
 export class CreateUserDto {
-  @ApiProperty({ example: 'Daniel' })
+  @ApiProperty({ example: 'John' })
   @IsString()
   @IsNotEmpty()
   firstName: string;
 
-  @ApiProperty({ example: 'Durán' })
+  @ApiProperty({ example: 'Doe' })
   @IsString()
   @IsNotEmpty()
   lastName: string;
@@ -24,7 +25,7 @@ export class CreateUserDto {
   @IsNotEmpty()
   rut: string;
 
-  @ApiProperty({ example: 'daniel@correo.com' })
+  @ApiProperty({ example: 'johndoe@climas.com' })
   @IsEmail()
   email: string;
 
@@ -38,9 +39,9 @@ export class CreateUserDto {
   @IsOptional()
   phone?: string;
 
-  @ApiProperty({ example: ['PATIENT'] })
+  @ApiProperty({ example: ['PATIENT'], enum: Role })
   @IsArray()
   @IsString({ each: true })
   @IsOptional()
-  roles?: string[];
+  roles?: Role[];
 }

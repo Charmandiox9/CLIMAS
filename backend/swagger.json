@@ -1,0 +1,877 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "AppController_getRoutes",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Obtener las rutas",
+        "tags": [
+          "App"
+        ]
+      }
+    },
+    "/user": {
+      "post": {
+        "operationId": "UserController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Crear un nuevo usuario",
+        "tags": [
+          "Users"
+        ]
+      },
+      "get": {
+        "operationId": "UserController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Obtener todos los usuarios",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/user/{id}": {
+      "get": {
+        "operationId": "UserController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      },
+      "patch": {
+        "operationId": "UserController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Actualizar un usuario",
+        "tags": [
+          "Users"
+        ]
+      },
+      "delete": {
+        "operationId": "UserController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_signIn",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Iniciar sesión y obtener un JWT",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Registrar un nuevo paciente",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/service": {
+      "post": {
+        "operationId": "ServiceController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateServiceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Crear un nuevo servicio",
+        "tags": [
+          "Service"
+        ]
+      },
+      "get": {
+        "operationId": "ServiceController_findAll",
+        "parameters": [
+          {
+            "name": "isActive",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Obtener todos los servicios",
+        "tags": [
+          "Service"
+        ]
+      }
+    },
+    "/service/{id}": {
+      "get": {
+        "operationId": "ServiceController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Obtener un servicio por ID",
+        "tags": [
+          "Service"
+        ]
+      },
+      "patch": {
+        "operationId": "ServiceController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateServiceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Actualizar un servicio",
+        "tags": [
+          "Service"
+        ]
+      }
+    },
+    "/service/{id}/disable": {
+      "patch": {
+        "operationId": "ServiceController_disable",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Desactivar un servicio",
+        "tags": [
+          "Service"
+        ]
+      }
+    },
+    "/medical-record": {
+      "post": {
+        "operationId": "MedicalRecordController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMedicalRecordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Crear un nuevo registro médico",
+        "tags": [
+          "Medical Record"
+        ]
+      },
+      "get": {
+        "operationId": "MedicalRecordController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obtener todos los registros médicos",
+        "tags": [
+          "Medical Record"
+        ]
+      }
+    },
+    "/medical-record/{id}": {
+      "get": {
+        "operationId": "MedicalRecordController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obtener un registro médico por ID",
+        "tags": [
+          "Medical Record"
+        ]
+      },
+      "patch": {
+        "operationId": "MedicalRecordController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMedicalRecordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Actualizar un registro médico",
+        "tags": [
+          "Medical Record"
+        ]
+      },
+      "delete": {
+        "operationId": "MedicalRecordController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Eliminar un registro médico",
+        "tags": [
+          "Medical Record"
+        ]
+      }
+    },
+    "/medical-record/patient/{patientId}": {
+      "get": {
+        "operationId": "MedicalRecordController_findByPatientId",
+        "parameters": [
+          {
+            "name": "patientId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obtener un registro médico por ID de paciente",
+        "tags": [
+          "Medical Record"
+        ]
+      }
+    },
+    "/medical-record/doctor/{doctorId}": {
+      "get": {
+        "operationId": "MedicalRecordController_findByDoctorId",
+        "parameters": [
+          {
+            "name": "doctorId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obtener un registro médico por ID de doctor",
+        "tags": [
+          "Medical Record"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "API CLIMAS",
+    "description": "Documentación API CLIMAS",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "Users",
+      "description": "Operaciones con usuarios del sistema"
+    },
+    {
+      "name": "Auth",
+      "description": "Autenticación y registro"
+    }
+  ],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "CreateUserDto": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "example": "John"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Doe"
+          },
+          "rut": {
+            "type": "string",
+            "example": "12345678-9"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "johndoe@climas.com"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "example": "MiSuperPassword123"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+56912345678"
+          },
+          "roles": {
+            "type": "string",
+            "items": {
+              "type": "string",
+              "enum": [
+                "PATIENT",
+                "ADMIN",
+                "DOCTOR"
+              ]
+            },
+            "example": [
+              "PATIENT"
+            ],
+            "enum": [
+              "ADMIN",
+              "DOCTOR",
+              "PATIENT"
+            ]
+          }
+        },
+        "required": [
+          "firstName",
+          "lastName",
+          "rut",
+          "email",
+          "password"
+        ]
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "example": "John"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Doe"
+          },
+          "rut": {
+            "type": "string",
+            "example": "12345678-9"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "johndoe@climas.com"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "example": "MiSuperPassword123"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+56912345678"
+          },
+          "roles": {
+            "type": "string",
+            "items": {
+              "type": "string",
+              "enum": [
+                "PATIENT",
+                "ADMIN",
+                "DOCTOR"
+              ]
+            },
+            "example": [
+              "PATIENT"
+            ],
+            "enum": [
+              "ADMIN",
+              "DOCTOR",
+              "PATIENT"
+            ]
+          }
+        }
+      },
+      "RegisterDto": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "example": "John"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Doe"
+          },
+          "rut": {
+            "type": "string",
+            "example": "12345678-9"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "jhondoe@climas.com"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "example": "securepassword"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+56987654321"
+          }
+        },
+        "required": [
+          "firstName",
+          "lastName",
+          "rut",
+          "email",
+          "password"
+        ]
+      },
+      "CreateServiceDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nombre del servicio",
+            "example": "Consulta Médica"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descripción del servicio",
+            "example": "Evaluación médica general por un profesional"
+          },
+          "price": {
+            "type": "number",
+            "minimum": 1,
+            "description": "Precio del servicio",
+            "example": 50000
+          },
+          "duration": {
+            "type": "number",
+            "minimum": 1,
+            "description": "Duración del servicio en minutos",
+            "example": 30
+          },
+          "areaId": {
+            "type": "string",
+            "description": "ID del área a la que pertenece el servicio",
+            "example": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Indica si el servicio está activo",
+            "example": true
+          }
+        },
+        "required": [
+          "name",
+          "areaId"
+        ]
+      },
+      "UpdateServiceDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nombre del servicio",
+            "example": "Consulta Médica"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descripción del servicio",
+            "example": "Evaluación médica general por un profesional"
+          },
+          "price": {
+            "type": "number",
+            "minimum": 1,
+            "description": "Precio del servicio",
+            "example": 50000
+          },
+          "duration": {
+            "type": "number",
+            "minimum": 1,
+            "description": "Duración del servicio en minutos",
+            "example": 30
+          },
+          "areaId": {
+            "type": "string",
+            "description": "ID del área a la que pertenece el servicio",
+            "example": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Indica si el servicio está activo",
+            "example": true
+          }
+        }
+      },
+      "CreateMedicalRecordDto": {
+        "type": "object",
+        "properties": {
+          "clinicalNotes": {
+            "type": "string",
+            "description": "Notas clinicas",
+            "example": "El paciente presenta dolor de cabeza"
+          },
+          "prescription": {
+            "type": "string",
+            "description": "Recetas",
+            "example": "Paracetamol 500mg cada 8 horas"
+          },
+          "diagnosis": {
+            "type": "string",
+            "description": "Diagnostico",
+            "example": "Migraña"
+          },
+          "consultationId": {
+            "type": "string",
+            "description": "ID de la consulta",
+            "example": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+          }
+        },
+        "required": [
+          "clinicalNotes",
+          "consultationId"
+        ]
+      },
+      "UpdateMedicalRecordDto": {
+        "type": "object",
+        "properties": {
+          "clinicalNotes": {
+            "type": "string",
+            "description": "Notas clinicas",
+            "example": "El paciente presenta dolor de cabeza"
+          },
+          "prescription": {
+            "type": "string",
+            "description": "Recetas",
+            "example": "Paracetamol 500mg cada 8 horas"
+          },
+          "diagnosis": {
+            "type": "string",
+            "description": "Diagnostico",
+            "example": "Migraña"
+          },
+          "consultationId": {
+            "type": "string",
+            "description": "ID de la consulta",
+            "example": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+          }
+        }
+      }
+    }
+  }
+}

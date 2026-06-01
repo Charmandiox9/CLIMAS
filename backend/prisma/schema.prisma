@@ -37,7 +37,7 @@ model User {
   email     String   @unique
   password  String
   phone     String?
-  roles     Role[] 
+  roles     Role[] @default([PATIENT])
   isActive    Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

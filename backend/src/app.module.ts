@@ -7,6 +7,8 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
+import { ServiceModule } from './service/service.module';
+import { MedicalRecordModule } from './medical-record/medical-record.module';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { AuthModule } from './auth/auth.module';
     UserModule,
     PrismaModule,
     AuthModule,
+    ServiceModule,
+    MedicalRecordModule,
   ],
   controllers: [AppController],
   providers: [

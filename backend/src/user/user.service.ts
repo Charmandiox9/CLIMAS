@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Role } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -36,13 +37,14 @@ export class UserService {
       saltSounds,
     );
 
-    const userData = {
-      ...createUserDto,
-      password: hashedPassword,
-    };
+    const { roles, ...rest } = createUserDto;
 
     return this.prisma.user.create({
-      data: userData,
+      data: {
+        ...rest,
+        password: hashedPassword,
+        roles: roles ? { set: roles as Role[] } : undefined,
+      },
     });
   }
 
@@ -52,8 +54,11 @@ export class UserService {
         id: true,
         firstName: true,
         lastName: true,
+        rut: true,
         email: true,
+        phone: true,
         roles: true,
+        isActive: true,
       },
     });
   }
@@ -66,8 +71,32 @@ export class UserService {
     });
   }
 
-  update(id: string, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) {
+      throw new BadRequestException('Usuario no encontrado');
+    }
+
+    const dataToUpdate = { ...updateUserDto };
+
+    if (dataToUpdate.password) {
+      dataToUpdate.password = await bcrypt.hash(dataToUpdate.password, 10);
+    }
+
+    return this.prisma.user.update({
+      where: { id },
+      data: { ...dataToUpdate },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        rut: true,
+        email: true,
+        phone: true,
+        roles: true,
+        isActive: true,
+      },
+    });
   }
 
   remove(id: string) {
