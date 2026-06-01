@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MedicalRecordController } from './medical-record.controller';
 import { MedicalRecordService } from './medical-record.service';
 
+
 describe('MedicalRecordController', () => {
   let controller: MedicalRecordController;
 

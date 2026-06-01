@@ -640,9 +640,9 @@
             "items": {
               "type": "string",
               "enum": [
-                "PATIENT",
                 "ADMIN",
-                "DOCTOR"
+                "DOCTOR",
+                "PATIENT"
               ]
             },
             "example": [
@@ -697,9 +697,9 @@
             "items": {
               "type": "string",
               "enum": [
-                "PATIENT",
                 "ADMIN",
-                "DOCTOR"
+                "DOCTOR",
+                "PATIENT"
               ]
             },
             "example": [
