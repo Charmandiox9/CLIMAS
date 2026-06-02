@@ -1,6 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateDoctorDto } from './dto/create-doctor.dto';
+import { CreatePatientDto } from './dto/create-patient.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Role } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
@@ -101,5 +103,159 @@ export class UserService {
 
   remove(id: string) {
     return `This action removes a #${id} user`;
+  }
+
+  async createDoctor(createDoctorDto: CreateDoctorDto) {
+    const user_rut = await this.prisma.user.findUnique({
+      where: { rut: createDoctorDto.rut },
+    });
+    if (user_rut) throw new BadRequestException('El RUT ya existe');
+
+    const user_email = await this.prisma.user.findUnique({
+      where: { email: createDoctorDto.email },
+    });
+    if (user_email) throw new BadRequestException('El email ya existe');
+
+    const { areaId, medicalLicense, ...userData } = createDoctorDto;
+    const hashedPassword = await bcrypt.hash(userData.password, 10);
+
+    return this.prisma.user.create({
+      data: {
+        ...userData,
+        password: hashedPassword,
+        roles: { set: [Role.DOCTOR] },
+        doctor: {
+          create: { areaId, medicalLicense },
+        },
+      },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        rut: true,
+        email: true,
+        phone: true,
+        roles: true,
+        isActive: true,
+        doctor: {
+          select: {
+            id: true,
+            medicalLicense: true,
+            area: { select: { id: true, name: true } },
+          },
+        },
+      },
+    });
+  }
+
+  async createPatient(createPatientDto: CreatePatientDto) {
+    const user_rut = await this.prisma.user.findUnique({
+      where: { rut: createPatientDto.rut },
+    });
+    if (user_rut) throw new BadRequestException('El RUT ya existe');
+
+    const user_email = await this.prisma.user.findUnique({
+      where: { email: createPatientDto.email },
+    });
+    if (user_email) throw new BadRequestException('El email ya existe');
+
+    const { dob, address, bloodType, ...userData } = createPatientDto;
+    const hashedPassword = await bcrypt.hash(userData.password, 10);
+
+    return this.prisma.user.create({
+      data: {
+        ...userData,
+        password: hashedPassword,
+        roles: { set: [Role.PATIENT] },
+        patient: {
+          create: { dob: new Date(dob), address, bloodType },
+        },
+      },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        rut: true,
+        email: true,
+        phone: true,
+        roles: true,
+        isActive: true,
+        patient: {
+          select: {
+            id: true,
+            dob: true,
+            address: true,
+            bloodType: true,
+          },
+        },
+      },
+    });
+  }
+
+  getDoctors() {
+    return this.prisma.user.findMany({
+      where: { roles: { has: Role.DOCTOR } },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        rut: true,
+        email: true,
+        phone: true,
+        roles: true,
+        isActive: true,
+        doctor: {
+          select: {
+            id: true,
+            medicalLicense: true,
+            area: { select: { id: true, name: true } },
+          },
+        },
+      },
+    });
+  }
+
+  getPatients() {
+    return this.prisma.user.findMany({
+      where: { roles: { has: Role.PATIENT } },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        rut: true,
+        email: true,
+        phone: true,
+        roles: true,
+        isActive: true,
+        patient: {
+          select: {
+            id: true,
+            dob: true,
+            address: true,
+            bloodType: true,
+          },
+        },
+      },
+    });
+  }
+
+  async disableUser(id: string) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) throw new BadRequestException('Usuario no encontrado');
+
+    return this.prisma.user.update({
+      where: { id },
+      data: { isActive: false },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        rut: true,
+        email: true,
+        phone: true,
+        roles: true,
+        isActive: true,
+      },
+    });
   }
 }
