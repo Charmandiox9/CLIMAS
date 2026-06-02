@@ -36,6 +36,8 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('Users', 'Operaciones con usuarios del sistema')
     .addTag('Auth', 'Autenticación y registro')
+    .addTag('Service', 'Operaciones con servicios del sistema')
+    .addTag('Medical Record', 'Operaciones con registros médicos del sistema')
     .addBearerAuth()
     .build();
 

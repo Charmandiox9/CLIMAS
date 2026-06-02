@@ -160,6 +160,16 @@
       "post": {
         "operationId": "AuthController_signIn",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": ""
@@ -425,14 +435,7 @@
         ],
         "responses": {
           "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
+            "description": ""
           }
         },
         "security": [
@@ -583,6 +586,14 @@
     {
       "name": "Auth",
       "description": "Autenticación y registro"
+    },
+    {
+      "name": "Service",
+      "description": "Operaciones con servicios del sistema"
+    },
+    {
+      "name": "Medical Record",
+      "description": "Operaciones con registros médicos del sistema"
     }
   ],
   "servers": [],
@@ -701,6 +712,25 @@
             ]
           }
         }
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "jhondoe@climas.com"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "example": "securepassword"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
       },
       "RegisterDto": {
         "type": "object",
