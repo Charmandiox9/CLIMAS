@@ -1,0 +1,19 @@
+{
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": "..",
+  "testMatch": ["<rootDir>/test/**/*.spec.ts"],
+  "testPathIgnorePatterns": ["\\.e2e-spec\\.ts$"],
+  "transform": {
+    "^.+\\.(t|j)s$": ["ts-jest", {
+      "tsconfig": {
+        "module": "CommonJS",
+        "moduleResolution": "node",
+        "resolvePackageJsonExports": false
+      }
+    }]
+  },
+  "moduleNameMapper": {
+    "^src/(.*)$": "<rootDir>/src/$1"
+  },
+  "testEnvironment": "node"
+}
