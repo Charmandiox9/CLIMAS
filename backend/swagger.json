@@ -425,14 +425,7 @@
         ],
         "responses": {
           "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
+            "description": ""
           }
         },
         "security": [
@@ -565,6 +558,345 @@
         "summary": "Obtener un registro médico por ID de doctor",
         "tags": [
           "Medical Record"
+        ]
+      }
+    },
+    "/consultation": {
+      "post": {
+        "operationId": "ConsultationController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateConsultationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Crear una nueva consulta",
+        "tags": [
+          "Consultation"
+        ]
+      },
+      "get": {
+        "operationId": "ConsultationController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obtener todas las consultas",
+        "tags": [
+          "Consultation"
+        ]
+      }
+    },
+    "/consultation/user/{userId}": {
+      "get": {
+        "operationId": "ConsultationController_findByUserId",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obtener consultas por ID de usuario (paciente o doctor)",
+        "tags": [
+          "Consultation"
+        ]
+      }
+    },
+    "/consultation/{id}": {
+      "get": {
+        "operationId": "ConsultationController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obtener consulta por ID",
+        "tags": [
+          "Consultation"
+        ]
+      },
+      "patch": {
+        "operationId": "ConsultationController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateConsultationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Actualizar consulta por ID",
+        "tags": [
+          "Consultation"
+        ]
+      },
+      "delete": {
+        "operationId": "ConsultationController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Eliminar consulta por ID",
+        "tags": [
+          "Consultation"
+        ]
+      }
+    },
+    "/area": {
+      "post": {
+        "operationId": "AreaController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAreaDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Crear una nueva área",
+        "tags": [
+          "Area"
+        ]
+      },
+      "get": {
+        "operationId": "AreaController_findAll",
+        "parameters": [
+          {
+            "name": "isActive",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obtener todas las áreas",
+        "tags": [
+          "Area"
+        ]
+      }
+    },
+    "/area/{id}": {
+      "get": {
+        "operationId": "AreaController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obtener área por ID",
+        "tags": [
+          "Area"
+        ]
+      },
+      "patch": {
+        "operationId": "AreaController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAreaDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Actualizar área por ID",
+        "tags": [
+          "Area"
+        ]
+      }
+    },
+    "/area/{id}/disable": {
+      "patch": {
+        "operationId": "AreaController_disable",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Desactivar área por ID",
+        "tags": [
+          "Area"
         ]
       }
     }
@@ -869,6 +1201,158 @@
             "type": "string",
             "description": "ID de la consulta",
             "example": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+          }
+        }
+      },
+      "CreateConsultationDto": {
+        "type": "object",
+        "properties": {
+          "dateTime": {
+            "type": "object",
+            "description": "Fecha y hora de la consulta",
+            "example": "2026-06-02T10:00:00.000Z"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Motivo de la consulta",
+            "example": "Dolor de espalda"
+          },
+          "status": {
+            "enum": [
+              "SCHEDULED",
+              "COMPLETED",
+              "CANCELED",
+              "NO_SHOW"
+            ],
+            "type": "string",
+            "description": "Estado de la consulta",
+            "default": "SCHEDULED"
+          },
+          "doctorId": {
+            "type": "string",
+            "description": "ID del doctor",
+            "example": "cuid-doctor-123"
+          },
+          "patientId": {
+            "type": "string",
+            "description": "ID del paciente",
+            "example": "cuid-patient-123"
+          },
+          "serviceIds": {
+            "type": "array",
+            "items": {
+              "required": false,
+              "description": "Lista de IDs de servicios",
+              "example": [
+                "cuid-service-1"
+              ],
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "required": [
+          "dateTime",
+          "doctorId",
+          "patientId",
+          "serviceIds"
+        ]
+      },
+      "UpdateConsultationDto": {
+        "type": "object",
+        "properties": {
+          "dateTime": {
+            "type": "object",
+            "description": "Fecha y hora de la consulta",
+            "example": "2026-06-02T10:00:00.000Z"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Motivo de la consulta",
+            "example": "Dolor de espalda"
+          },
+          "status": {
+            "enum": [
+              "SCHEDULED",
+              "COMPLETED",
+              "CANCELED",
+              "NO_SHOW"
+            ],
+            "type": "string",
+            "description": "Estado de la consulta",
+            "default": "SCHEDULED"
+          },
+          "doctorId": {
+            "type": "string",
+            "description": "ID del doctor",
+            "example": "cuid-doctor-123"
+          },
+          "patientId": {
+            "type": "string",
+            "description": "ID del paciente",
+            "example": "cuid-patient-123"
+          },
+          "serviceIds": {
+            "type": "array",
+            "items": {
+              "required": false,
+              "description": "Lista de IDs de servicios",
+              "example": [
+                "cuid-service-1"
+              ],
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "required": [
+          "serviceIds"
+        ]
+      },
+      "CreateAreaDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nombre del área",
+            "example": "Cardiología"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descripción del área",
+            "example": "Especialidad centrada en el corazón"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Estado activo del área",
+            "example": true
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "UpdateAreaDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nombre del área",
+            "example": "Cardiología"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descripción del área",
+            "example": "Especialidad centrada en el corazón"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Estado activo del área",
+            "example": true
           }
         }
       }
