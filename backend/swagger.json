@@ -742,7 +742,66 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Consulta creada exitosamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "id": "cuid67890",
+                    "dateTime": "2026-06-10T15:30:00.000Z",
+                    "reason": "Chequeo general",
+                    "status": "SCHEDULED",
+                    "doctorId": "cuid-doc-123",
+                    "patientId": "cuid-pat-456",
+                    "createdAt": "2026-06-03T10:00:00.000Z",
+                    "updatedAt": "2026-06-03T10:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos (Bad Request).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 400,
+                    "message": [
+                      "dateTime must be a Date instance"
+                    ],
+                    "error": "Bad Request"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Prohibido. Se requiere rol ADMIN o DOCTOR.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 403,
+                    "message": "Forbidden resource",
+                    "error": "Forbidden"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -760,7 +819,52 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Lista de consultas obtenida exitosamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": [
+                    {
+                      "id": "cuid67890",
+                      "dateTime": "2026-06-10T15:30:00.000Z",
+                      "reason": "Chequeo general",
+                      "status": "SCHEDULED",
+                      "doctorId": "cuid-doc-123",
+                      "patientId": "cuid-pat-456",
+                      "createdAt": "2026-06-03T10:00:00.000Z",
+                      "updatedAt": "2026-06-03T10:00:00.000Z"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Prohibido. Se requiere rol ADMIN.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 403,
+                    "message": "Forbidden resource",
+                    "error": "Forbidden"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -789,7 +893,38 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Consultas del usuario obtenidas exitosamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": [
+                    {
+                      "id": "cuid67890",
+                      "dateTime": "2026-06-10T15:30:00.000Z",
+                      "reason": "Chequeo general",
+                      "status": "SCHEDULED",
+                      "doctorId": "cuid-doc-123",
+                      "patientId": "cuid-pat-456",
+                      "createdAt": "2026-06-03T10:00:00.000Z",
+                      "updatedAt": "2026-06-03T10:00:00.000Z"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -818,7 +953,50 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Consulta obtenida exitosamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "id": "cuid67890",
+                    "dateTime": "2026-06-10T15:30:00.000Z",
+                    "reason": "Chequeo general",
+                    "status": "SCHEDULED",
+                    "doctorId": "cuid-doc-123",
+                    "patientId": "cuid-pat-456",
+                    "createdAt": "2026-06-03T10:00:00.000Z",
+                    "updatedAt": "2026-06-03T10:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Consulta no encontrada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 404,
+                    "message": "Consultation not found",
+                    "error": "Not Found"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -855,7 +1033,80 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "Consulta actualizada exitosamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "id": "cuid67890",
+                    "dateTime": "2026-06-10T15:30:00.000Z",
+                    "reason": "Revisión de exámenes",
+                    "status": "COMPLETED",
+                    "doctorId": "cuid-doc-123",
+                    "patientId": "cuid-pat-456",
+                    "createdAt": "2026-06-03T10:00:00.000Z",
+                    "updatedAt": "2026-06-10T16:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos (Bad Request).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 400,
+                    "message": [
+                      "status must be a valid enum value"
+                    ],
+                    "error": "Bad Request"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Prohibido. Se requiere rol ADMIN o DOCTOR.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 403,
+                    "message": "Forbidden resource",
+                    "error": "Forbidden"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Consulta no encontrada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 404,
+                    "message": "Consultation not found",
+                    "error": "Not Found"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -882,7 +1133,64 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Consulta eliminada exitosamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "id": "cuid67890",
+                    "dateTime": "2026-06-10T15:30:00.000Z",
+                    "reason": "Chequeo general",
+                    "status": "SCHEDULED",
+                    "doctorId": "cuid-doc-123",
+                    "patientId": "cuid-pat-456",
+                    "createdAt": "2026-06-03T10:00:00.000Z",
+                    "updatedAt": "2026-06-03T10:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Prohibido. Se requiere rol ADMIN.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 403,
+                    "message": "Forbidden resource",
+                    "error": "Forbidden"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Consulta no encontrada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 404,
+                    "message": "Consultation not found",
+                    "error": "Not Found"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -912,7 +1220,64 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Área creada exitosamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "id": "cuid12345",
+                    "name": "Cardiología",
+                    "description": "Área especializada en el corazón",
+                    "isActive": true,
+                    "createdAt": "2026-06-03T10:00:00.000Z",
+                    "updatedAt": "2026-06-03T10:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos (Bad Request).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 400,
+                    "message": [
+                      "name must be a string"
+                    ],
+                    "error": "Bad Request"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Prohibido. Se requiere rol ADMIN.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 403,
+                    "message": "Forbidden resource",
+                    "error": "Forbidden"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -939,13 +1304,32 @@
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "Lista de áreas obtenida exitosamente.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object"
+                  "example": [
+                    {
+                      "id": "cuid12345",
+                      "name": "Cardiología",
+                      "description": "Área especializada en el corazón",
+                      "isActive": true,
+                      "createdAt": "2026-06-03T10:00:00.000Z",
+                      "updatedAt": "2026-06-03T10:00:00.000Z"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 401,
+                    "message": "Unauthorized"
                   }
                 }
               }
@@ -978,11 +1362,45 @@
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "Área obtenida exitosamente.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "example": {
+                    "id": "cuid12345",
+                    "name": "Cardiología",
+                    "description": "Área especializada en el corazón",
+                    "isActive": true,
+                    "createdAt": "2026-06-03T10:00:00.000Z",
+                    "updatedAt": "2026-06-03T10:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Área no encontrada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 404,
+                    "message": "Area not found",
+                    "error": "Not Found"
+                  }
                 }
               }
             }
@@ -1022,7 +1440,78 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "Área actualizada exitosamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "id": "cuid12345",
+                    "name": "Cardiología Avanzada",
+                    "description": "Área especializada en el corazón",
+                    "isActive": true,
+                    "createdAt": "2026-06-03T10:00:00.000Z",
+                    "updatedAt": "2026-06-03T10:30:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos (Bad Request).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 400,
+                    "message": [
+                      "name must be a string"
+                    ],
+                    "error": "Bad Request"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Prohibido. Se requiere rol ADMIN.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 403,
+                    "message": "Forbidden resource",
+                    "error": "Forbidden"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Área no encontrada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 404,
+                    "message": "Area not found",
+                    "error": "Not Found"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1051,7 +1540,62 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Área desactivada exitosamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "id": "cuid12345",
+                    "name": "Cardiología",
+                    "description": "Área especializada en el corazón",
+                    "isActive": false,
+                    "createdAt": "2026-06-03T10:00:00.000Z",
+                    "updatedAt": "2026-06-03T11:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Prohibido. Se requiere rol ADMIN.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 403,
+                    "message": "Forbidden resource",
+                    "error": "Forbidden"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Área no encontrada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 404,
+                    "message": "Area not found",
+                    "error": "Not Found"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
