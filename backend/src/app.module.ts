@@ -9,6 +9,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { ServiceModule } from './service/service.module';
 import { MedicalRecordModule } from './medical-record/medical-record.module';
+import { ConsultationModule } from './consultation/consultation.module';
+import { AreaModule } from './area/area.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { MedicalRecordModule } from './medical-record/medical-record.module';
     AuthModule,
     ServiceModule,
     MedicalRecordModule,
+    ConsultationModule,
+    AreaModule,
   ],
   controllers: [AppController],
   providers: [
