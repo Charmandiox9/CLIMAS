@@ -888,6 +888,20 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Credenciales inválidas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "Credenciales inválidas",
+                    "error": "Unauthorized",
+                    "statusCode": 401
+                  }
+                }
+              }
+            }
           }
         },
         "summary": "Iniciar sesión y obtener un JWT",
@@ -956,7 +970,24 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Servicio creado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "id": "12345678-1234-1234-1234-123456789012",
+                    "name": "Service Name",
+                    "description": "Service Description",
+                    "price": 100,
+                    "duration": 60,
+                    "areaId": "12345678-1234-1234-1234-123456789012",
+                    "isActive": true,
+                    "createdAt": "2022-01-01T00:00:00.000Z",
+                    "updatedAt": "2022-01-01T00:00:00.000Z"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -983,13 +1014,29 @@
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "Servicios obtenidos exitosamente",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object"
+                  "example": {
+                    "id": "12345678-1234-1234-1234-123456789012",
+                    "name": "Consultoría Nutricional",
+                    "description": "Evaluación y orientación nutricional personalizada.",
+                    "price": 100,
+                    "duration": 60,
+                    "areaId": "12345678-1234-1234-1234-123456789012",
+                    "isActive": true,
+                    "createdAt": "2022-01-01T00:00:00.000Z",
+                    "updatedAt": "2022-01-01T00:00:00.000Z",
+                    "area": {
+                      "id": "12345678-1234-1234-1234-123456789012",
+                      "name": "Nutrición",
+                      "description": "Área encargada de la nutrición",
+                      "isActive": true,
+                      "createdAt": "2022-01-01T00:00:00.000Z",
+                      "updatedAt": "2022-01-01T00:00:00.000Z"
+                    },
+                    "consultations": []
                   }
                 }
               }
@@ -1017,11 +1064,30 @@
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "Servicio obtenido exitosamente",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "example": {
+                    "id": "12345678-1234-1234-1234-123456789012",
+                    "name": "Consultoría Nutricional",
+                    "description": "Evaluación y orientación nutricional personalizada.",
+                    "price": 100,
+                    "duration": 60,
+                    "areaId": "12345678-1234-1234-1234-123456789012",
+                    "isActive": true,
+                    "createdAt": "2022-01-01T00:00:00.000Z",
+                    "updatedAt": "2022-01-01T00:00:00.000Z",
+                    "area": {
+                      "id": "12345678-1234-1234-1234-123456789012",
+                      "name": "Nutrición",
+                      "description": "Área encargada de la nutrición",
+                      "isActive": true,
+                      "createdAt": "2022-01-01T00:00:00.000Z",
+                      "updatedAt": "2022-01-01T00:00:00.000Z"
+                    },
+                    "consultations": []
+                  }
                 }
               }
             }
@@ -1056,11 +1122,30 @@
         },
         "responses": {
           "200": {
-            "description": "",
+            "description": "Servicio actualizado exitosamente",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "example": {
+                    "id": "12345678-1234-1234-1234-123456789012",
+                    "name": "Consultoría Nutricional",
+                    "description": "Evaluación y orientación nutricional personalizada.",
+                    "price": 100,
+                    "duration": 60,
+                    "areaId": "12345678-1234-1234-1234-123456789012",
+                    "isActive": true,
+                    "createdAt": "2022-01-01T00:00:00.000Z",
+                    "updatedAt": "2022-01-01T00:00:00.000Z",
+                    "area": {
+                      "id": "12345678-1234-1234-1234-123456789012",
+                      "name": "Nutrición",
+                      "description": "Área encargada de la nutrición",
+                      "isActive": true,
+                      "createdAt": "2022-01-01T00:00:00.000Z",
+                      "updatedAt": "2022-01-01T00:00:00.000Z"
+                    },
+                    "consultations": []
+                  }
                 }
               }
             }
@@ -1092,7 +1177,24 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Servicio desactivado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "id": "12345678-1234-1234-1234-123456789012",
+                    "name": "Consultoría Nutricional",
+                    "description": "Evaluación y orientación nutricional personalizada.",
+                    "price": 100,
+                    "duration": 60,
+                    "areaId": "12345678-1234-1234-1234-123456789012",
+                    "isActive": false,
+                    "createdAt": "2022-01-01T00:00:00.000Z",
+                    "updatedAt": "2022-01-01T00:00:00.000Z"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [

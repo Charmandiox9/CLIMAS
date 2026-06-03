@@ -7,7 +7,7 @@ import { LoginDto } from './dto/login.dto';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
@@ -26,6 +26,17 @@ export class AuthController {
           email: 'jhondoe@climas.com',
           roles: ['PATIENT'],
         },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Credenciales inválidas',
+    schema: {
+      example: {
+        message: 'Credenciales inválidas',
+        error: 'Unauthorized',
+        statusCode: 401,
       },
     },
   })

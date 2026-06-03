@@ -40,12 +40,20 @@ export class UserService {
     );
 
     const { roles, ...rest } = createUserDto;
+    const isPatient = roles ? roles.includes(Role.PATIENT) : true;
 
     return this.prisma.user.create({
       data: {
         ...rest,
         password: hashedPassword,
         roles: roles ? { set: roles as Role[] } : undefined,
+        ...(isPatient && {
+          patient: {
+            create: {
+              dob: new Date(),
+            },
+          },
+        }),
       },
     });
   }
