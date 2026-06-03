@@ -39,7 +39,66 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Usuario creado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "id": "123e4567-e89b-12d3-a456-426614174000",
+                    "firstName": "Juan",
+                    "lastName": "Pérez",
+                    "rut": "12345678-9",
+                    "email": "juan@climas.com",
+                    "phone": "+56912345678",
+                    "roles": [
+                      "ADMIN"
+                    ],
+                    "isActive": true
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "RUT o email ya existe",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 400,
+                    "message": "El RUT ya existe",
+                    "error": "Bad Request"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token inválido o no proporcionado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Se requiere rol ADMIN",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 403,
+                    "message": "Forbidden resource",
+                    "error": "Forbidden"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -57,11 +116,51 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "",
+            "description": "Lista de usuarios obtenida exitosamente",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "example": [
+                    {
+                      "id": "123e4567-e89b-12d3-a456-426614174000",
+                      "firstName": "Juan",
+                      "lastName": "Pérez",
+                      "rut": "12345678-9",
+                      "email": "juan@climas.com",
+                      "phone": "+56912345678",
+                      "roles": [
+                        "ADMIN"
+                      ],
+                      "isActive": true
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token inválido o no proporcionado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Se requiere rol ADMIN",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 403,
+                    "message": "Forbidden resource",
+                    "error": "Forbidden"
+                  }
                 }
               }
             }
@@ -94,7 +193,74 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Doctor creado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "id": "123e4567-e89b-12d3-a456-426614174000",
+                    "firstName": "María",
+                    "lastName": "González",
+                    "rut": "98765432-1",
+                    "email": "maria@climas.com",
+                    "phone": "+56987654321",
+                    "roles": [
+                      "DOCTOR"
+                    ],
+                    "isActive": true,
+                    "doctor": {
+                      "id": "doc-uuid",
+                      "medicalLicense": "LIC-001",
+                      "area": {
+                        "id": "area-uuid",
+                        "name": "Cardiología"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "RUT o email ya existe",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 400,
+                    "message": "El RUT ya existe",
+                    "error": "Bad Request"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token inválido o no proporcionado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Se requiere rol ADMIN",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 403,
+                    "message": "Forbidden resource",
+                    "error": "Forbidden"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -124,7 +290,72 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Paciente creado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "id": "123e4567-e89b-12d3-a456-426614174000",
+                    "firstName": "Carlos",
+                    "lastName": "López",
+                    "rut": "11223344-5",
+                    "email": "carlos@climas.com",
+                    "phone": "+56911223344",
+                    "roles": [
+                      "PATIENT"
+                    ],
+                    "isActive": true,
+                    "patient": {
+                      "id": "pat-uuid",
+                      "dob": "1990-05-15T00:00:00.000Z",
+                      "address": "Av. Principal 123",
+                      "bloodType": "O+"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "RUT o email ya existe",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 400,
+                    "message": "El RUT ya existe",
+                    "error": "Bad Request"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token inválido o no proporcionado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Se requiere rol ADMIN",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 403,
+                    "message": "Forbidden resource",
+                    "error": "Forbidden"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -144,11 +375,59 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "",
+            "description": "Lista de doctores obtenida exitosamente",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "example": [
+                    {
+                      "id": "123e4567-e89b-12d3-a456-426614174000",
+                      "firstName": "María",
+                      "lastName": "González",
+                      "rut": "98765432-1",
+                      "email": "maria@climas.com",
+                      "phone": "+56987654321",
+                      "roles": [
+                        "DOCTOR"
+                      ],
+                      "isActive": true,
+                      "doctor": {
+                        "id": "doc-uuid",
+                        "medicalLicense": "LIC-001",
+                        "area": {
+                          "id": "area-uuid",
+                          "name": "Cardiología"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token inválido o no proporcionado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Se requiere rol ADMIN",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 403,
+                    "message": "Forbidden resource",
+                    "error": "Forbidden"
+                  }
                 }
               }
             }
@@ -171,11 +450,57 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "",
+            "description": "Lista de pacientes obtenida exitosamente",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "example": [
+                    {
+                      "id": "123e4567-e89b-12d3-a456-426614174000",
+                      "firstName": "Carlos",
+                      "lastName": "López",
+                      "rut": "11223344-5",
+                      "email": "carlos@climas.com",
+                      "phone": "+56911223344",
+                      "roles": [
+                        "PATIENT"
+                      ],
+                      "isActive": true,
+                      "patient": {
+                        "id": "pat-uuid",
+                        "dob": "1990-05-15T00:00:00.000Z",
+                        "address": "Av. Principal 123",
+                        "bloodType": "O+"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token inválido o no proporcionado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Se requiere rol ADMIN",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 403,
+                    "message": "Forbidden resource",
+                    "error": "Forbidden"
+                  }
                 }
               }
             }
@@ -207,7 +532,66 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Usuario obtenido exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "id": "123e4567-e89b-12d3-a456-426614174000",
+                    "firstName": "Juan",
+                    "lastName": "Pérez",
+                    "rut": "12345678-9",
+                    "email": "juan@climas.com",
+                    "phone": "+56912345678",
+                    "roles": [
+                      "ADMIN"
+                    ],
+                    "isActive": true
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token inválido o no proporcionado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Se requiere rol ADMIN",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 403,
+                    "message": "Forbidden resource",
+                    "error": "Forbidden"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuario no encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 404,
+                    "message": "Usuario no encontrado",
+                    "error": "Not Found"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -244,7 +628,66 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "Usuario actualizado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "id": "123e4567-e89b-12d3-a456-426614174000",
+                    "firstName": "Juan",
+                    "lastName": "Pérez",
+                    "rut": "12345678-9",
+                    "email": "juan@climas.com",
+                    "phone": "+56912345678",
+                    "roles": [
+                      "ADMIN"
+                    ],
+                    "isActive": true
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Usuario no encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 400,
+                    "message": "Usuario no encontrado",
+                    "error": "Bad Request"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token inválido o no proporcionado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Se requiere rol ADMIN",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 403,
+                    "message": "Forbidden resource",
+                    "error": "Forbidden"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -271,11 +714,40 @@
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "Usuario eliminado exitosamente",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "example": {
+                    "message": "Usuario eliminado exitosamente"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token inválido o no proporcionado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Se requiere rol ADMIN",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 403,
+                    "message": "Forbidden resource",
+                    "error": "Forbidden"
+                  }
                 }
               }
             }
@@ -307,7 +779,66 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Usuario desactivado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "id": "123e4567-e89b-12d3-a456-426614174000",
+                    "firstName": "Juan",
+                    "lastName": "Pérez",
+                    "rut": "12345678-9",
+                    "email": "juan@climas.com",
+                    "phone": "+56912345678",
+                    "roles": [
+                      "ADMIN"
+                    ],
+                    "isActive": false
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Usuario no encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 400,
+                    "message": "Usuario no encontrado",
+                    "error": "Bad Request"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token inválido o no proporcionado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 401,
+                    "message": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Se requiere rol ADMIN",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 403,
+                    "message": "Forbidden resource",
+                    "error": "Forbidden"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
