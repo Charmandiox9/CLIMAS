@@ -337,7 +337,26 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "Login exitoso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "Login exitoso",
+                    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                    "user": {
+                      "id": "12345678-1234-1234-1234-123456789012",
+                      "firstName": "John",
+                      "lastName": "Doe",
+                      "email": "jhondoe@climas.com",
+                      "roles": [
+                        "PATIENT"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "summary": "Iniciar sesión y obtener un JWT",
@@ -362,7 +381,26 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Registro exitoso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "Registro exitoso",
+                    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                    "user": {
+                      "id": "12345678-1234-1234-1234-123456789012",
+                      "firstName": "John",
+                      "lastName": "Doe",
+                      "email": "jhondoe@climas.com",
+                      "roles": [
+                        "PATIENT"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "summary": "Registrar un nuevo paciente",
