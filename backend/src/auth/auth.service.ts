@@ -64,6 +64,11 @@ export class AuthService {
         ...registerDto,
         password: hashedPassword,
         roles: ['PATIENT'],
+        patient: {
+          create: {
+            dob: new Date(),
+          },
+        },
       },
     });
 

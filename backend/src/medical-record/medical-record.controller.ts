@@ -13,7 +13,7 @@ import {
 import { MedicalRecordService } from './medical-record.service';
 import { CreateMedicalRecordDto } from './dto/create-medical-record.dto';
 import { UpdateMedicalRecordDto } from './dto/update-medical-record.dto';
-import { ApiBearerAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
@@ -26,6 +26,35 @@ export class MedicalRecordController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Crear un nuevo registro médico' })
+  @ApiResponse({
+    status: 201,
+    description: 'Registro médico creado exitosamente',
+    schema: {
+      example: {
+        id: '12345678-1234-1234-1234-123456789012',
+        clinicalNotes: 'El paciente presenta dolor de cabeza y fiebre.',
+        prescription: 'Paracetamol 500mg cada 8 horas.',
+        diagnosis: 'Resfriado común',
+        consultationId: '12345678-1234-1234-1234-123456789012',
+        createdAt: '2022-01-01T00:00:00.000Z',
+        updatedAt: '2022-01-01T00:00:00.000Z',
+        consultation: {
+          doctor: {
+            user: {
+              firstName: 'John',
+              lastName: 'Doe',
+            },
+          },
+          patient: {
+            user: {
+              firstName: 'Jane',
+              lastName: 'Smith',
+            },
+          },
+        },
+      },
+    },
+  })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN', 'DOCTOR')
@@ -36,6 +65,37 @@ export class MedicalRecordController {
   @Get()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Obtener todos los registros médicos' })
+  @ApiResponse({
+    status: 200,
+    description: 'Registros médicos obtenidos exitosamente',
+    schema: {
+      example: [
+        {
+          id: '12345678-1234-1234-1234-123456789012',
+          clinicalNotes: 'El paciente presenta dolor de cabeza y fiebre.',
+          prescription: 'Paracetamol 500mg cada 8 horas.',
+          diagnosis: 'Resfriado común',
+          consultationId: '12345678-1234-1234-1234-123456789012',
+          createdAt: '2022-01-01T00:00:00.000Z',
+          updatedAt: '2022-01-01T00:00:00.000Z',
+          consultation: {
+            doctor: {
+              user: {
+                firstName: 'John',
+                lastName: 'Doe',
+              },
+            },
+            patient: {
+              user: {
+                firstName: 'Jane',
+                lastName: 'Smith',
+              },
+            },
+          },
+        },
+      ],
+    },
+  })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
@@ -46,6 +106,35 @@ export class MedicalRecordController {
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Obtener un registro médico por ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Registro médico obtenido exitosamente',
+    schema: {
+      example: {
+        id: '12345678-1234-1234-1234-123456789012',
+        clinicalNotes: 'El paciente presenta dolor de cabeza y fiebre.',
+        prescription: 'Paracetamol 500mg cada 8 horas.',
+        diagnosis: 'Resfriado común',
+        consultationId: '12345678-1234-1234-1234-123456789012',
+        createdAt: '2022-01-01T00:00:00.000Z',
+        updatedAt: '2022-01-01T00:00:00.000Z',
+        consultation: {
+          doctor: {
+            user: {
+              firstName: 'John',
+              lastName: 'Doe',
+            },
+          },
+          patient: {
+            user: {
+              firstName: 'Jane',
+              lastName: 'Smith',
+            },
+          },
+        },
+      },
+    },
+  })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN', 'DOCTOR')
@@ -56,6 +145,37 @@ export class MedicalRecordController {
   @Get('patient/:patientId')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Obtener un registro médico por ID de paciente' })
+  @ApiResponse({
+    status: 200,
+    description: 'Registros médicos del paciente obtenidos exitosamente',
+    schema: {
+      example: [
+        {
+          id: '12345678-1234-1234-1234-123456789012',
+          clinicalNotes: 'El paciente presenta dolor de cabeza y fiebre.',
+          prescription: 'Paracetamol 500mg cada 8 horas.',
+          diagnosis: 'Resfriado común',
+          consultationId: '12345678-1234-1234-1234-123456789012',
+          createdAt: '2022-01-01T00:00:00.000Z',
+          updatedAt: '2022-01-01T00:00:00.000Z',
+          consultation: {
+            doctor: {
+              user: {
+                firstName: 'John',
+                lastName: 'Doe',
+              },
+            },
+            patient: {
+              user: {
+                firstName: 'Jane',
+                lastName: 'Smith',
+              },
+            },
+          },
+        },
+      ],
+    },
+  })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN', 'DOCTOR', 'PATIENT')
@@ -66,6 +186,37 @@ export class MedicalRecordController {
   @Get('doctor/:doctorId')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Obtener un registro médico por ID de doctor' })
+  @ApiResponse({
+    status: 200,
+    description: 'Registros médicos del doctor obtenidos exitosamente',
+    schema: {
+      example: [
+        {
+          id: '12345678-1234-1234-1234-123456789012',
+          clinicalNotes: 'El paciente presenta dolor de cabeza y fiebre.',
+          prescription: 'Paracetamol 500mg cada 8 horas.',
+          diagnosis: 'Resfriado común',
+          consultationId: '12345678-1234-1234-1234-123456789012',
+          createdAt: '2022-01-01T00:00:00.000Z',
+          updatedAt: '2022-01-01T00:00:00.000Z',
+          consultation: {
+            doctor: {
+              user: {
+                firstName: 'John',
+                lastName: 'Doe',
+              },
+            },
+            patient: {
+              user: {
+                firstName: 'Jane',
+                lastName: 'Smith',
+              },
+            },
+          },
+        },
+      ],
+    },
+  })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN', 'DOCTOR', 'PATIENT')
@@ -76,6 +227,35 @@ export class MedicalRecordController {
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Actualizar un registro médico' })
+  @ApiResponse({
+    status: 200,
+    description: 'Registro médico actualizado exitosamente',
+    schema: {
+      example: {
+        id: '12345678-1234-1234-1234-123456789012',
+        clinicalNotes: 'Notas clínicas actualizadas.',
+        prescription: 'Nueva receta médica.',
+        diagnosis: 'Diagnóstico actualizado',
+        consultationId: '12345678-1234-1234-1234-123456789012',
+        createdAt: '2022-01-01T00:00:00.000Z',
+        updatedAt: '2022-01-02T00:00:00.000Z',
+        consultation: {
+          doctor: {
+            user: {
+              firstName: 'John',
+              lastName: 'Doe',
+            },
+          },
+          patient: {
+            user: {
+              firstName: 'Jane',
+              lastName: 'Smith',
+            },
+          },
+        },
+      },
+    },
+  })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN', 'DOCTOR')
@@ -89,6 +269,21 @@ export class MedicalRecordController {
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Eliminar un registro médico' })
+  @ApiResponse({
+    status: 200,
+    description: 'Registro médico eliminado exitosamente',
+    schema: {
+      example: {
+        id: '12345678-1234-1234-1234-123456789012',
+        clinicalNotes: 'El paciente presenta dolor de cabeza y fiebre.',
+        prescription: 'Paracetamol 500mg cada 8 horas.',
+        diagnosis: 'Resfriado común',
+        consultationId: '12345678-1234-1234-1234-123456789012',
+        createdAt: '2022-01-01T00:00:00.000Z',
+        updatedAt: '2022-01-01T00:00:00.000Z',
+      },
+    },
+  })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')

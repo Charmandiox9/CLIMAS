@@ -12,9 +12,11 @@ export class ConsultationService {
     const data = await this.prisma.consultation.create({
       data: {
         ...consultationData,
-        services: serviceIds ? {
-          connect: serviceIds.map(id => ({ id })),
-        } : undefined,
+        services: serviceIds
+          ? {
+              connect: serviceIds.map((id) => ({ id })),
+            }
+          : undefined,
       },
       select: {
         id: true,
@@ -83,6 +85,13 @@ export class ConsultationService {
           },
         },
         services: true,
+        medicalRecord: {
+          select: {
+            clinicalNotes: true,
+            prescription: true,
+            diagnosis: true,
+          },
+        },
       },
     });
 
@@ -128,7 +137,13 @@ export class ConsultationService {
           },
         },
         services: true,
-        medicalRecord: true,
+        medicalRecord: {
+          select: {
+            clinicalNotes: true,
+            prescription: true,
+            diagnosis: true,
+          },
+        },
       },
     });
 
@@ -145,6 +160,8 @@ export class ConsultationService {
         OR: [
           { doctor: { userId: userId } },
           { patient: { userId: userId } },
+          { doctorId: userId },
+          { patientId: userId },
         ],
       },
       select: {
@@ -177,6 +194,13 @@ export class ConsultationService {
           },
         },
         services: true,
+        medicalRecord: {
+          select: {
+            clinicalNotes: true,
+            prescription: true,
+            diagnosis: true,
+          },
+        },
       },
     });
 
@@ -189,16 +213,18 @@ export class ConsultationService {
 
   async update(id: string, updateConsultationDto: UpdateConsultationDto) {
     const { serviceIds, ...consultationData } = updateConsultationDto;
-    
+
     await this.findOne(id);
 
     const data = await this.prisma.consultation.update({
       where: { id },
       data: {
         ...consultationData,
-        services: serviceIds ? {
-          set: serviceIds.map(sid => ({ id: sid })),
-        } : undefined,
+        services: serviceIds
+          ? {
+              set: serviceIds.map((sid) => ({ id: sid })),
+            }
+          : undefined,
       },
       select: {
         id: true,
@@ -209,7 +235,7 @@ export class ConsultationService {
         updatedAt: true,
       },
     });
-    
+
     return data;
   }
 
@@ -220,4 +246,3 @@ export class ConsultationService {
     });
   }
 }
-
