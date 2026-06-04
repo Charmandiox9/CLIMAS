@@ -7,6 +7,6 @@ export class AppService {
   }
 
   getRoutes(): string {
-    return 'Modules Available: <br> /auth <br> /user <br> /service <br> /medical-record';
+    return 'Modules Available: <br> /auth <br> /user <br> /service <br> /medical-record <br> /consultation <br> /area';
   }
 }

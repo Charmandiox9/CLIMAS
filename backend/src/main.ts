@@ -34,10 +34,12 @@ async function bootstrap() {
     .setTitle('API CLIMAS')
     .setDescription('Documentación API CLIMAS')
     .setVersion('1.0')
-    .addTag('Users', 'Operaciones con usuarios del sistema')
     .addTag('Auth', 'Autenticación y registro')
+    .addTag('Users', 'Operaciones con usuarios del sistema')
     .addTag('Service', 'Operaciones con servicios del sistema')
     .addTag('Medical Record', 'Operaciones con registros médicos del sistema')
+    .addTag('Consultation', 'Operaciones con consultas médicas del sistema')
+    .addTag('Area', 'Operaciones con áreas médicas del sistema')
     .addBearerAuth()
     .build();
 

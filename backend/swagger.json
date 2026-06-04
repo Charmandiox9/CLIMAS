@@ -1224,7 +1224,36 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Registro médico creado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "id": "12345678-1234-1234-1234-123456789012",
+                    "clinicalNotes": "El paciente presenta dolor de cabeza y fiebre.",
+                    "prescription": "Paracetamol 500mg cada 8 horas.",
+                    "diagnosis": "Resfriado común",
+                    "consultationId": "12345678-1234-1234-1234-123456789012",
+                    "createdAt": "2022-01-01T00:00:00.000Z",
+                    "updatedAt": "2022-01-01T00:00:00.000Z",
+                    "consultation": {
+                      "doctor": {
+                        "user": {
+                          "firstName": "John",
+                          "lastName": "Doe"
+                        }
+                      },
+                      "patient": {
+                        "user": {
+                          "firstName": "Jane",
+                          "lastName": "Smith"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1242,7 +1271,38 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Registros médicos obtenidos exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": [
+                    {
+                      "id": "12345678-1234-1234-1234-123456789012",
+                      "clinicalNotes": "El paciente presenta dolor de cabeza y fiebre.",
+                      "prescription": "Paracetamol 500mg cada 8 horas.",
+                      "diagnosis": "Resfriado común",
+                      "consultationId": "12345678-1234-1234-1234-123456789012",
+                      "createdAt": "2022-01-01T00:00:00.000Z",
+                      "updatedAt": "2022-01-01T00:00:00.000Z",
+                      "consultation": {
+                        "doctor": {
+                          "user": {
+                            "firstName": "John",
+                            "lastName": "Doe"
+                          }
+                        },
+                        "patient": {
+                          "user": {
+                            "firstName": "Jane",
+                            "lastName": "Smith"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1271,7 +1331,36 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Registro médico obtenido exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "id": "12345678-1234-1234-1234-123456789012",
+                    "clinicalNotes": "El paciente presenta dolor de cabeza y fiebre.",
+                    "prescription": "Paracetamol 500mg cada 8 horas.",
+                    "diagnosis": "Resfriado común",
+                    "consultationId": "12345678-1234-1234-1234-123456789012",
+                    "createdAt": "2022-01-01T00:00:00.000Z",
+                    "updatedAt": "2022-01-01T00:00:00.000Z",
+                    "consultation": {
+                      "doctor": {
+                        "user": {
+                          "firstName": "John",
+                          "lastName": "Doe"
+                        }
+                      },
+                      "patient": {
+                        "user": {
+                          "firstName": "Jane",
+                          "lastName": "Smith"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1308,7 +1397,36 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "Registro médico actualizado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "id": "12345678-1234-1234-1234-123456789012",
+                    "clinicalNotes": "Notas clínicas actualizadas.",
+                    "prescription": "Nueva receta médica.",
+                    "diagnosis": "Diagnóstico actualizado",
+                    "consultationId": "12345678-1234-1234-1234-123456789012",
+                    "createdAt": "2022-01-01T00:00:00.000Z",
+                    "updatedAt": "2022-01-02T00:00:00.000Z",
+                    "consultation": {
+                      "doctor": {
+                        "user": {
+                          "firstName": "John",
+                          "lastName": "Doe"
+                        }
+                      },
+                      "patient": {
+                        "user": {
+                          "firstName": "Jane",
+                          "lastName": "Smith"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1335,7 +1453,22 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Registro médico eliminado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "id": "12345678-1234-1234-1234-123456789012",
+                    "clinicalNotes": "El paciente presenta dolor de cabeza y fiebre.",
+                    "prescription": "Paracetamol 500mg cada 8 horas.",
+                    "diagnosis": "Resfriado común",
+                    "consultationId": "12345678-1234-1234-1234-123456789012",
+                    "createdAt": "2022-01-01T00:00:00.000Z",
+                    "updatedAt": "2022-01-01T00:00:00.000Z"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1364,7 +1497,38 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Registros médicos del paciente obtenidos exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": [
+                    {
+                      "id": "12345678-1234-1234-1234-123456789012",
+                      "clinicalNotes": "El paciente presenta dolor de cabeza y fiebre.",
+                      "prescription": "Paracetamol 500mg cada 8 horas.",
+                      "diagnosis": "Resfriado común",
+                      "consultationId": "12345678-1234-1234-1234-123456789012",
+                      "createdAt": "2022-01-01T00:00:00.000Z",
+                      "updatedAt": "2022-01-01T00:00:00.000Z",
+                      "consultation": {
+                        "doctor": {
+                          "user": {
+                            "firstName": "John",
+                            "lastName": "Doe"
+                          }
+                        },
+                        "patient": {
+                          "user": {
+                            "firstName": "Jane",
+                            "lastName": "Smith"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1393,7 +1557,38 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Registros médicos del doctor obtenidos exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": [
+                    {
+                      "id": "12345678-1234-1234-1234-123456789012",
+                      "clinicalNotes": "El paciente presenta dolor de cabeza y fiebre.",
+                      "prescription": "Paracetamol 500mg cada 8 horas.",
+                      "diagnosis": "Resfriado común",
+                      "consultationId": "12345678-1234-1234-1234-123456789012",
+                      "createdAt": "2022-01-01T00:00:00.000Z",
+                      "updatedAt": "2022-01-01T00:00:00.000Z",
+                      "consultation": {
+                        "doctor": {
+                          "user": {
+                            "firstName": "John",
+                            "lastName": "Doe"
+                          }
+                        },
+                        "patient": {
+                          "user": {
+                            "firstName": "Jane",
+                            "lastName": "Smith"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
           }
         },
         "security": [
@@ -2310,12 +2505,12 @@
   },
   "tags": [
     {
-      "name": "Users",
-      "description": "Operaciones con usuarios del sistema"
-    },
-    {
       "name": "Auth",
       "description": "Autenticación y registro"
+    },
+    {
+      "name": "Users",
+      "description": "Operaciones con usuarios del sistema"
     },
     {
       "name": "Service",
@@ -2324,6 +2519,14 @@
     {
       "name": "Medical Record",
       "description": "Operaciones con registros médicos del sistema"
+    },
+    {
+      "name": "Consultation",
+      "description": "Operaciones con consultas médicas del sistema"
+    },
+    {
+      "name": "Area",
+      "description": "Operaciones con áreas médicas del sistema"
     }
   ],
   "servers": [],
