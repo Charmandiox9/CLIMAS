@@ -76,7 +76,7 @@ Dado que está construido con Vanilla JS, HTML y CSS:
 ## 📚 Documentación de la API
 
 La API cuenta con documentación interactiva mediante **Swagger**.
-- Con el backend en ejecución, navega a: `http://localhost:3000/api` (o la ruta configurada para Swagger).
+- Con el backend en ejecución, navega a: `http://localhost:3000/api/docs`.
 - También puedes consultar el archivo estático exportado `CLIMAS-documentation.html` ubicado en la raíz de este proyecto.
 
 ---
