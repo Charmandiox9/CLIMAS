@@ -65,6 +65,9 @@ Asegúrate de tener instalado lo siguiente en tu entorno local:
    ```
    El backend se ejecutará normalmente en `http://localhost:3000`.
 
+6. Pruebas en Sistema Desplegado:
+- Puede ejecutar pruebas en un sistema ya desplegado con la siguiente url: `https://climas-production-6a8d.up.railway.app`.
+
 ### Frontend
 
 Dado que está construido con Vanilla JS, HTML y CSS:
