@@ -99,7 +99,21 @@ export class UserService {
     });
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} user`;
+  async remove(id: string) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) throw new BadRequestException('Usuario no encontrado');
+
+    return this.prisma.user.delete({
+      where: { id },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        rut: true,
+        email: true,
+        roles: true,
+        isActive: true,
+      },
+    });
   }
 }
