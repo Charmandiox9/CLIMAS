@@ -41,24 +41,26 @@ class _ProfileSelectionScreenState extends State<ProfileSelectionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.indigo.shade50,
+      backgroundColor: isDark ? Colors.grey.shade900 : Colors.indigo.shade50,
       body: SafeArea(
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
+              Text(
                 '¿Con qué perfil deseas ingresar?',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.indigo),
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: isDark ? Colors.indigoAccent : Colors.indigo),
               ),
               const SizedBox(height: 40),
               if (_roles.contains('ADMIN'))
-                _buildProfileCard('Administrador', Icons.admin_panel_settings, 'ADMIN'),
+                _buildProfileCard(context, 'Administrador', Icons.admin_panel_settings, 'ADMIN'),
               if (_roles.contains('DOCTOR'))
-                _buildProfileCard('Doctor', Icons.medical_services, 'DOCTOR'),
+                _buildProfileCard(context, 'Doctor', Icons.medical_services, 'DOCTOR'),
               if (_roles.contains('WORKER'))
-                _buildProfileCard('Personal General', Icons.badge, 'WORKER'),
+                _buildProfileCard(context, 'Personal General', Icons.badge, 'WORKER'),
             ],
           ),
         ),
@@ -66,26 +68,32 @@ class _ProfileSelectionScreenState extends State<ProfileSelectionScreen> {
     );
   }
 
-  Widget _buildProfileCard(String title, IconData icon, String role) {
+  Widget _buildProfileCard(BuildContext context, String title, IconData icon, String role) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return GestureDetector(
       onTap: () => _selectProfile(role),
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDark ? Colors.grey.shade800 : Colors.white,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 5)),
+            BoxShadow(
+              color: isDark ? Colors.black26 : Colors.black.withOpacity(0.05), 
+              blurRadius: 10, 
+              offset: const Offset(0, 5)
+            ),
           ],
         ),
         child: Row(
           children: [
-            Icon(icon, size: 40, color: Colors.indigo),
+            Icon(icon, size: 40, color: isDark ? Colors.indigoAccent : Colors.indigo),
             const SizedBox(width: 20),
-            Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black)),
             const Spacer(),
-            const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 16),
+            Icon(Icons.arrow_forward_ios, color: isDark ? Colors.grey.shade400 : Colors.grey, size: 16),
           ],
         ),
       ),

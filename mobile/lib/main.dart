@@ -3,6 +3,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
+import 'firebase_options.dart';
 import 'screens/login_screen.dart';
 import 'screens/attendance_screen.dart';
 import 'screens/history_screen.dart';
@@ -10,10 +14,31 @@ import 'screens/profile_selection_screen.dart';
 import 'screens/admin_dashboard.dart';
 import 'screens/doctor_dashboard.dart';
 
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  debugPrint("Manejando mensaje en segundo plano: ${message.messageId}");
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Cargar variables de entorno (URL de la API y BSSID del Wi-Fi)
   await dotenv.load(fileName: ".env");
+
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    await messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+  } catch (e) {
+    debugPrint("Firebase init error: $e");
+  }
   
   // Revisar si el usuario ya inicio sesion
   final prefs = await SharedPreferences.getInstance();
