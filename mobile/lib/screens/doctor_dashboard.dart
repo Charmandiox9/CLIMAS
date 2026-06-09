@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:intl/intl.dart';
+import '../services/api_service.dart';
 import 'attendance_screen.dart';
 
 class DoctorDashboard extends StatefulWidget {
@@ -10,17 +14,152 @@ class DoctorDashboard extends StatefulWidget {
 
 class _DoctorDashboardState extends State<DoctorDashboard> {
   int _currentIndex = 0;
+  bool _hasMultipleRoles = false;
+  final ApiService _apiService = ApiService();
+  List<dynamic> _consultations = [];
+  bool _isLoading = true;
 
-  final List<Widget> _views = [
-    const Center(child: Text('Mis Pacientes de Hoy\n(En construcción)', textAlign: TextAlign.center, style: TextStyle(fontSize: 20))),
-    const Center(child: Text('Mi Agenda\n(En construcción)', textAlign: TextAlign.center, style: TextStyle(fontSize: 20))),
-    const AttendanceScreen(), 
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _checkRoles();
+    _fetchConsultations();
+  }
+
+  Future<void> _checkRoles() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    if (token != null) {
+      Map<String, dynamic> decoded = JwtDecoder.decode(token);
+      List<dynamic> roles = decoded['roles'] ?? [];
+      if (roles.length > 1) {
+        if (mounted) setState(() => _hasMultipleRoles = true);
+      }
+    }
+  }
+
+  Future<void> _fetchConsultations() async {
+    setState(() => _isLoading = true);
+    try {
+      final data = await _apiService.getMyConsultations();
+      if (mounted) {
+        setState(() {
+          _consultations = data;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
+    }
+  }
+
+  List<dynamic> get _todayConsultations {
+    final now = DateTime.now();
+    return _consultations.where((c) {
+      final date = DateTime.parse(c['dateTime']).toLocal();
+      return date.year == now.year && date.month == now.month && date.day == now.day;
+    }).toList();
+  }
+
+  List<dynamic> get _allConsultations {
+    final sorted = List<dynamic>.from(_consultations);
+    sorted.sort((a, b) => DateTime.parse(a['dateTime']).compareTo(DateTime.parse(b['dateTime'])));
+    return sorted;
+  }
+
+  Widget _buildTodayView() {
+    if (_isLoading) return const Center(child: CircularProgressIndicator());
+    final todayList = _todayConsultations;
+    if (todayList.isEmpty) {
+      return const Center(child: Text('No tienes pacientes agendados para hoy.', style: TextStyle(fontSize: 16, color: Colors.grey)));
+    }
+    return RefreshIndicator(
+      onRefresh: _fetchConsultations,
+      child: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: todayList.length,
+        itemBuilder: (context, index) {
+          final item = todayList[index];
+          final date = DateTime.parse(item['dateTime']).toLocal();
+          final patientName = item['patient']?['user'] != null 
+              ? '${item['patient']['user']['firstName']} ${item['patient']['user']['lastName']}' 
+              : 'Paciente Desconocido';
+          return Card(
+            elevation: 2,
+            margin: const EdgeInsets.only(bottom: 12),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            child: ListTile(
+              leading: const CircleAvatar(backgroundColor: Colors.indigo, child: Icon(Icons.person, color: Colors.white)),
+              title: Text(patientName, style: const TextStyle(fontWeight: FontWeight.bold)),
+              subtitle: Text('Motivo: ${item['reason'] ?? 'Sin especificar'}\nEstado: ${item['status']}'),
+              isThreeLine: true,
+              trailing: Text(DateFormat('HH:mm').format(date), style: const TextStyle(color: Colors.indigo, fontWeight: FontWeight.bold, fontSize: 16)),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildAgendaView() {
+    if (_isLoading) return const Center(child: CircularProgressIndicator());
+    final allList = _allConsultations;
+    if (allList.isEmpty) {
+      return const Center(child: Text('No hay citas en tu agenda.', style: TextStyle(fontSize: 16, color: Colors.grey)));
+    }
+    return RefreshIndicator(
+      onRefresh: _fetchConsultations,
+      child: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: allList.length,
+        itemBuilder: (context, index) {
+          final item = allList[index];
+          final date = DateTime.parse(item['dateTime']).toLocal();
+          final patientName = item['patient']?['user'] != null 
+              ? '${item['patient']['user']['firstName']} ${item['patient']['user']['lastName']}' 
+              : 'Paciente Desconocido';
+          return Card(
+            elevation: 1,
+            margin: const EdgeInsets.only(bottom: 10),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            child: ListTile(
+              title: Text(patientName, style: const TextStyle(fontWeight: FontWeight.bold)),
+              subtitle: Text('${DateFormat('dd/MM/yyyy HH:mm').format(date)}\nEstado: ${item['status']}'),
+              isThreeLine: true,
+            ),
+          );
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _views[_currentIndex],
+      appBar: _currentIndex == 2 ? null : AppBar(
+        title: const Text('Portal Médico'),
+        backgroundColor: Colors.indigo,
+        foregroundColor: Colors.white,
+        actions: [
+          if (_hasMultipleRoles)
+            IconButton(
+              icon: const Icon(Icons.swap_horiz),
+              tooltip: 'Cambiar Perfil',
+              onPressed: () => Navigator.pushReplacementNamed(context, '/profile_selection'),
+            ),
+        ],
+      ),
+      body: IndexedStack(
+        index: _currentIndex,
+        children: [
+          _buildTodayView(),
+          _buildAgendaView(),
+          const AttendanceScreen(),
+        ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),

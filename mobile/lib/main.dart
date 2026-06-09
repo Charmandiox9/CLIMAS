@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'CLIMAS Asistencia',
+      title: 'CLIMAS',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
         textTheme: GoogleFonts.interTextTheme(Theme.of(context).textTheme),
