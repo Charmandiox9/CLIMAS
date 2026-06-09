@@ -32,9 +32,13 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       final history = await _apiService.getHistory();
       if (history.isNotEmpty) {
         final firstRecord = history[0];
-        final recordDate = DateTime.parse(firstRecord['date']).toLocal();
+        // The date comes as "YYYY-MM-DDT00:00:00.000Z"
+        final dateString = firstRecord['date'].toString().split('T')[0];
+        
         final now = DateTime.now();
-        if (recordDate.year == now.year && recordDate.month == now.month && recordDate.day == now.day) {
+        final todayString = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+        
+        if (dateString == todayString) {
           _todayRecord = firstRecord;
         } else {
           _todayRecord = null;
