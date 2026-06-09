@@ -20,6 +20,10 @@ import {
   ApiOperation,
   ApiResponse,
   ApiTags,
+  ApiCreatedResponse,
+  ApiBadRequestResponse,
+  ApiInternalServerErrorResponse,
+  ApiOkResponse
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
@@ -32,9 +36,18 @@ export class UserController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Crear un nuevo usuario' })
-  @ApiResponse({
-    status: 201,
+  @ApiOperation({ 
+    summary: 'Crear un nuevo usuario (ADMIN/General)',
+    description: `Crea un usuario genérico en el sistema.
+
+**Nota:** Este endpoint **NO** crea automáticamente el perfil de \`Doctor\` ni \`Patient\`. Si deseas registrar un Doctor o un Paciente completo, usa los endpoints específicos:
+- \`POST /user/doctor\`
+- \`POST /user/patient\`
+
+**Roles permitidos**: ADMIN.
+    `
+  })
+  @ApiCreatedResponse({
     description: 'Usuario creado exitosamente',
     schema: {
       example: {
@@ -49,9 +62,8 @@ export class UserController {
       },
     },
   })
-  @ApiResponse({
-    status: 400,
-    description: 'RUT o email ya existe',
+  @ApiBadRequestResponse({
+    description: 'Datos inválidos o el RUT/Email ya existe en la base de datos.',
     schema: {
       example: {
         statusCode: 400,
@@ -90,13 +102,21 @@ export class UserController {
 
   @Post('doctor')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Crear un nuevo doctor' })
-  @ApiResponse({
-    status: 201,
-    description: 'Doctor creado exitosamente',
+  @ApiOperation({ 
+    summary: 'Crear un nuevo doctor',
+    description: `Crea de forma atómica un **Usuario** y su perfil de **Doctor** asociado.
+
+### Detalles importantes:
+- Debes enviar el \`areaId\` real de un área existente.
+- Retorna la información completa, incluyendo el \`id\` del registro \`Doctor\` (este es el que se usa luego para crear \`Consultations\`).
+
+**Roles permitidos**: ADMIN.`
+  })
+  @ApiCreatedResponse({
+    description: 'Usuario y perfil de Doctor creados exitosamente.',
     schema: {
       example: {
-        id: '123e4567-e89b-12d3-a456-426614174000',
+        id: 'user-uuid',
         firstName: 'María',
         lastName: 'González',
         rut: '98765432-1',
@@ -115,9 +135,8 @@ export class UserController {
       },
     },
   })
-  @ApiResponse({
-    status: 400,
-    description: 'RUT o email ya existe',
+  @ApiBadRequestResponse({
+    description: 'Datos inválidos o el RUT/Email ya existe.',
     schema: {
       example: {
         statusCode: 400,
@@ -125,6 +144,9 @@ export class UserController {
         error: 'Bad Request',
       },
     },
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Error interno. Posiblemente el \`areaId\` no exista en la tabla Area.',
   })
   @ApiResponse({
     status: 401,
@@ -156,13 +178,20 @@ export class UserController {
 
   @Post('patient')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Crear un nuevo paciente' })
-  @ApiResponse({
-    status: 201,
-    description: 'Paciente creado exitosamente',
+  @ApiOperation({ 
+    summary: 'Crear un nuevo paciente',
+    description: `Crea de forma atómica un **Usuario** y su perfil de **Patient** asociado.
+
+### Retorno:
+Se devolverá el \`id\` principal del Usuario, pero también el sub-objeto \`patient\`. El \`id\` dentro de \`patient\` es el que debes usar para registrar **Consultas Médicas**.
+
+**Roles permitidos**: ADMIN.`
+  })
+  @ApiCreatedResponse({
+    description: 'Usuario y perfil de Paciente creados exitosamente.',
     schema: {
       example: {
-        id: '123e4567-e89b-12d3-a456-426614174000',
+        id: 'user-uuid',
         firstName: 'Carlos',
         lastName: 'López',
         rut: '11223344-5',
@@ -179,9 +208,8 @@ export class UserController {
       },
     },
   })
-  @ApiResponse({
-    status: 400,
-    description: 'RUT o email ya existe',
+  @ApiBadRequestResponse({
+    description: 'Datos inválidos o RUT/Email ya existe.',
     schema: {
       example: {
         statusCode: 400,
@@ -269,14 +297,19 @@ export class UserController {
 
   @Get('doctors')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Obtener todos los doctores' })
-  @ApiResponse({
-    status: 200,
-    description: 'Lista de doctores obtenida exitosamente',
+  @ApiOperation({ 
+    summary: 'Obtener todos los doctores',
+    description: `Retorna la lista de todos los usuarios que tienen el rol de **DOCTOR**.
+
+Útil para poblar selects en el frontend cuando se va a agendar una consulta. 
+**Recuerda**: Usa el \`doctor.id\` devuelto en esta lista para las consultas, no el \`id\` del nivel superior (que es el del User).`
+  })
+  @ApiOkResponse({
+    description: 'Lista de doctores obtenida exitosamente.',
     schema: {
       example: [
         {
-          id: '123e4567-e89b-12d3-a456-426614174000',
+          id: 'user-uuid',
           firstName: 'María',
           lastName: 'González',
           rut: '98765432-1',
@@ -326,14 +359,19 @@ export class UserController {
 
   @Get('patients')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Obtener todos los pacientes' })
-  @ApiResponse({
-    status: 200,
-    description: 'Lista de pacientes obtenida exitosamente',
+  @ApiOperation({ 
+    summary: 'Obtener todos los pacientes',
+    description: `Retorna la lista de todos los usuarios con rol de **PATIENT**.
+
+Útil para agendar consultas o buscar pacientes.
+**Recuerda**: Extrae el \`patient.id\` del objeto devuelto para vincular consultas, no el \`id\` superior.`
+  })
+  @ApiOkResponse({
+    description: 'Lista de pacientes obtenida exitosamente.',
     schema: {
       example: [
         {
-          id: '123e4567-e89b-12d3-a456-426614174000',
+          id: 'user-uuid',
           firstName: 'Carlos',
           lastName: 'López',
           rut: '11223344-5',

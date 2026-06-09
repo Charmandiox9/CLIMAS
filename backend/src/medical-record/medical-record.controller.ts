@@ -13,7 +13,7 @@ import {
 import { MedicalRecordService } from './medical-record.service';
 import { CreateMedicalRecordDto } from './dto/create-medical-record.dto';
 import { UpdateMedicalRecordDto } from './dto/update-medical-record.dto';
-import { ApiBearerAuth, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags, ApiOperation, ApiResponse, ApiCreatedResponse, ApiOkResponse, ApiBadRequestResponse, ApiInternalServerErrorResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
@@ -25,10 +25,18 @@ export class MedicalRecordController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Crear un nuevo registro médico' })
-  @ApiResponse({
-    status: 201,
-    description: 'Registro médico creado exitosamente',
+  @ApiOperation({ 
+    summary: 'Crear un nuevo registro médico',
+    description: `Crea el registro clínico asociado a una consulta médica ya existente.
+
+### 🛑 Importante: Relación 1 a 1
+En la base de datos, \`MedicalRecord\` tiene una relación uno a uno con \`Consultation\`. 
+**No puedes** crear más de un registro médico para la misma \`consultationId\`. Si lo intentas, recibirás un error interno por violación de clave única (Unique constraint).
+
+**Roles permitidos**: ADMIN, DOCTOR.`
+  })
+  @ApiCreatedResponse({
+    description: 'Registro médico creado exitosamente.',
     schema: {
       example: {
         id: '12345678-1234-1234-1234-123456789012',
@@ -40,20 +48,17 @@ export class MedicalRecordController {
         updatedAt: '2022-01-01T00:00:00.000Z',
         consultation: {
           doctor: {
-            user: {
-              firstName: 'John',
-              lastName: 'Doe',
-            },
+            user: { firstName: 'John', lastName: 'Doe' },
           },
           patient: {
-            user: {
-              firstName: 'Jane',
-              lastName: 'Smith',
-            },
+            user: { firstName: 'Jane', lastName: 'Smith' },
           },
         },
       },
     },
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Error interno. Usualmente ocurre cuando intentas enviar un \`consultationId\` que ya tiene un registro médico asociado o que no existe.',
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -144,7 +149,14 @@ export class MedicalRecordController {
 
   @Get('patient/:patientId')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Obtener un registro médico por ID de paciente' })
+  @ApiOperation({ 
+    summary: 'Obtener historial clínico por Paciente (patientId)',
+    description: `Devuelve todos los registros médicos asociados a un **paciente específico**.
+
+**Recuerda**: El \`patientId\` que debes enviar aquí es el ID del perfil de paciente (\`patient.id\`), **NO** el \`userId\` del paciente.
+
+**Roles permitidos**: ADMIN, DOCTOR, PATIENT.`
+  })
   @ApiResponse({
     status: 200,
     description: 'Registros médicos del paciente obtenidos exitosamente',
@@ -185,7 +197,14 @@ export class MedicalRecordController {
 
   @Get('doctor/:doctorId')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Obtener un registro médico por ID de doctor' })
+  @ApiOperation({ 
+    summary: 'Obtener registros médicos creados por un Doctor (doctorId)',
+    description: `Devuelve todos los registros médicos que fueron redactados por un **doctor específico**.
+
+**Recuerda**: El \`doctorId\` que debes enviar aquí es el ID del perfil de doctor (\`doctor.id\`), **NO** el \`userId\` del doctor.
+
+**Roles permitidos**: ADMIN, DOCTOR, PATIENT.`
+  })
   @ApiResponse({
     status: 200,
     description: 'Registros médicos del doctor obtenidos exitosamente',
