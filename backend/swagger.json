@@ -2528,6 +2528,46 @@
           "Area"
         ]
       }
+    },
+    "/attendance/mark": {
+      "post": {
+        "operationId": "AttendanceController_markAttendance",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Registrar la siguiente marca de asistencia del día",
+        "tags": [
+          "Attendance"
+        ]
+      }
+    },
+    "/attendance/history": {
+      "get": {
+        "operationId": "AttendanceController_getHistory",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obtener el historial de asistencia",
+        "tags": [
+          "Attendance"
+        ]
+      }
     }
   },
   "info": {
