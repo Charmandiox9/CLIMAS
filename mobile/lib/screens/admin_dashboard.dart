@@ -4,6 +4,8 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:intl/intl.dart';
 import '../services/api_service.dart';
 import 'attendance_screen.dart';
+import 'staff_detail_screen.dart';
+import 'consultation_detail_screen.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -20,6 +22,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
   List<dynamic> _attendances = [];
   List<dynamic> _consultations = [];
   bool _isLoading = true;
+  String _searchQuery = '';
 
   @override
   void initState() {
@@ -60,17 +63,30 @@ class _AdminDashboardState extends State<AdminDashboard> {
     }
   }
 
+  Widget _buildSearchBar(String hint) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: TextField(
+        onChanged: (val) => setState(() => _searchQuery = val),
+        decoration: InputDecoration(
+          hintText: hint,
+          prefixIcon: const Icon(Icons.search),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          filled: true,
+        ),
+      ),
+    );
+  }
+
   Widget _buildMetricsView() {
     if (_isLoading) return const Center(child: CircularProgressIndicator());
     final now = DateTime.now();
     
-    // Calcular citas de hoy
     final todayConsultations = _consultations.where((c) {
       final date = DateTime.parse(c['dateTime']).toLocal();
       return date.year == now.year && date.month == now.month && date.day == now.day;
     }).toList();
 
-    // Calcular staff trabajando hoy (tienen marca de entrada)
     final todayAttendances = _attendances.where((a) {
       final date = DateTime.parse(a['date']).toLocal();
       return date.year == now.year && date.month == now.month && date.day == now.day && a['entryTime'] != null;
@@ -124,71 +140,110 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
   Widget _buildStaffView() {
     if (_isLoading) return const Center(child: CircularProgressIndicator());
-    if (_attendances.isEmpty) {
-      return const Center(child: Text('No hay registros de asistencia.', style: TextStyle(fontSize: 16, color: Colors.grey)));
-    }
-    return RefreshIndicator(
-      onRefresh: _fetchAdminData,
-      child: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: _attendances.length,
-        itemBuilder: (context, index) {
-          final item = _attendances[index];
-          final date = DateTime.parse(item['date']).toLocal();
-          final user = item['user'];
-          final name = user != null ? '${user['firstName']} ${user['lastName']}' : 'Usuario Desconocido';
-          final roles = user != null && user['roles'] != null ? user['roles'].join(', ') : 'Sin rol';
-          
-          return Card(
-            margin: const EdgeInsets.only(bottom: 12),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            child: ListTile(
-              leading: const CircleAvatar(backgroundColor: Colors.indigo, child: Icon(Icons.badge, color: Colors.white)),
-              title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: Text('$roles\nFecha: ${DateFormat('dd/MM/yyyy').format(date)}'),
-              trailing: item['entryTime'] != null 
-                  ? Text('Entró: ${DateFormat('HH:mm').format(DateTime.parse(item['entryTime']).toLocal())}', style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold))
-                  : const Text('Sin entrada', style: TextStyle(color: Colors.red)),
-              isThreeLine: true,
-            ),
-          );
-        },
-      ),
+    final filtered = _attendances.where((item) {
+      if (_searchQuery.isEmpty) return true;
+      final user = item['user'];
+      final name = user != null ? '${user['firstName']} ${user['lastName']}'.toLowerCase() : '';
+      return name.contains(_searchQuery.toLowerCase());
+    }).toList();
+
+    return Column(
+      children: [
+        _buildSearchBar('Buscar empleado...'),
+        Expanded(
+          child: filtered.isEmpty
+              ? const Center(child: Text('No hay registros coincidentes.', style: TextStyle(fontSize: 16, color: Colors.grey)))
+              : RefreshIndicator(
+                  onRefresh: _fetchAdminData,
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: filtered.length,
+                    itemBuilder: (context, index) {
+                      final item = filtered[index];
+                      final date = DateTime.parse(item['date']).toLocal();
+                      final user = item['user'];
+                      final name = user != null ? '${user['firstName']} ${user['lastName']}' : 'Usuario Desconocido';
+                      final roles = user != null && user['roles'] != null ? user['roles'].join(', ') : 'Sin rol';
+                      
+                      return Card(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(12),
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => StaffDetailScreen(staff: item)));
+                          },
+                          child: ListTile(
+                            leading: const CircleAvatar(backgroundColor: Colors.indigo, child: Icon(Icons.badge, color: Colors.white)),
+                            title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                            subtitle: Text('$roles\nFecha: ${DateFormat('dd/MM/yyyy').format(date)}'),
+                            trailing: item['entryTime'] != null 
+                                ? Text('Entró: ${DateFormat('HH:mm').format(DateTime.parse(item['entryTime']).toLocal())}', style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold))
+                                : const Text('Sin entrada', style: TextStyle(color: Colors.red)),
+                            isThreeLine: true,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+        ),
+      ],
     );
   }
 
   Widget _buildGlobalConsultationsView() {
     if (_isLoading) return const Center(child: CircularProgressIndicator());
-    if (_consultations.isEmpty) {
-      return const Center(child: Text('No hay citas registradas.', style: TextStyle(fontSize: 16, color: Colors.grey)));
-    }
-    return RefreshIndicator(
-      onRefresh: _fetchAdminData,
-      child: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: _consultations.length,
-        itemBuilder: (context, index) {
-          final item = _consultations[index];
-          final date = DateTime.parse(item['dateTime']).toLocal();
-          final patientName = item['patient']?['user'] != null 
-              ? '${item['patient']['user']['firstName']} ${item['patient']['user']['lastName']}' 
-              : 'Desconocido';
-          final doctorName = item['doctor']?['user'] != null 
-              ? '${item['doctor']['user']['firstName']} ${item['doctor']['user']['lastName']}' 
-              : 'Desconocido';
+    final filtered = _consultations.where((item) {
+      if (_searchQuery.isEmpty) return true;
+      final patient = item['patient']?['user'];
+      final name = patient != null ? '${patient['firstName']} ${patient['lastName']}'.toLowerCase() : '';
+      return name.contains(_searchQuery.toLowerCase());
+    }).toList();
 
-          return Card(
-            elevation: 1,
-            margin: const EdgeInsets.only(bottom: 10),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            child: ListTile(
-              title: Text('Paciente: $patientName', style: const TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: Text('Dr. $doctorName\n${DateFormat('dd/MM/yyyy HH:mm').format(date)} - ${item['status']}'),
-              isThreeLine: true,
-            ),
-          );
-        },
-      ),
+    return Column(
+      children: [
+        _buildSearchBar('Buscar paciente...'),
+        Expanded(
+          child: filtered.isEmpty
+              ? const Center(child: Text('No hay citas coincidentes.', style: TextStyle(fontSize: 16, color: Colors.grey)))
+              : RefreshIndicator(
+                  onRefresh: _fetchAdminData,
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: filtered.length,
+                    itemBuilder: (context, index) {
+                      final item = filtered[index];
+                      final date = DateTime.parse(item['dateTime']).toLocal();
+                      final patientName = item['patient']?['user'] != null 
+                          ? '${item['patient']['user']['firstName']} ${item['patient']['user']['lastName']}' 
+                          : 'Desconocido';
+                      final doctorName = item['doctor']?['user'] != null 
+                          ? '${item['doctor']['user']['firstName']} ${item['doctor']['user']['lastName']}' 
+                          : 'Desconocido';
+
+                      return Card(
+                        elevation: 1,
+                        margin: const EdgeInsets.only(bottom: 10),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(10),
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => ConsultationDetailScreen(consultation: item)));
+                          },
+                          child: ListTile(
+                            title: Text('Paciente: $patientName', style: const TextStyle(fontWeight: FontWeight.bold)),
+                            subtitle: Text('Dr. $doctorName\n${DateFormat('dd/MM/yyyy HH:mm').format(date)} - ${item['status']}'),
+                            isThreeLine: true,
+                            trailing: const Icon(Icons.chevron_right),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+        ),
+      ],
     );
   }
 
@@ -220,7 +275,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _currentIndex,
-        onTap: (index) => setState(() => _currentIndex = index),
+        onTap: (index) => setState(() {
+          _currentIndex = index;
+          _searchQuery = ''; // Reset search on tab change
+        }),
         selectedItemColor: Colors.indigo,
         unselectedItemColor: Colors.grey,
         items: const [
