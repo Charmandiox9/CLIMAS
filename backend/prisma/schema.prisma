@@ -40,6 +40,7 @@ model User {
   phone     String?
   roles     Role[] @default([PATIENT])
   isActive    Boolean  @default(true)
+  fcmToken    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

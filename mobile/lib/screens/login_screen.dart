@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import '../services/api_service.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -28,6 +29,17 @@ class _LoginScreenState extends State<LoginScreen> {
         final token = prefs.getString('token');
         if (token != null) {
           Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+          
+          // Obtain and update FCM Token
+          try {
+            final fcmToken = await FirebaseMessaging.instance.getToken();
+            if (fcmToken != null) {
+              await _apiService.updateFcmToken(fcmToken);
+            }
+          } catch(e) {
+            print("Could not get or send FCM token: $e");
+          }
+
           List<dynamic> roles = decodedToken['roles'] ?? [];
           if (roles.length > 1) {
             Navigator.pushReplacementNamed(context, '/profile_selection');

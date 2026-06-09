@@ -9,6 +9,7 @@ import {
   HttpCode,
   HttpStatus,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -627,5 +628,12 @@ Se devolverá el \`id\` principal del Usuario, pero también el sub-objeto \`pat
   @Roles('ADMIN')
   remove(@Param('id') id: string) {
     return this.userService.remove(id);
+  }
+
+  @Patch('me/fcm-token')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Actualizar el token FCM del usuario autenticado' })
+  async updateFcmToken(@Req() req, @Body('token') token: string) {
+    return this.userService.updateFcmToken(req.user.userId, token);
   }
 }

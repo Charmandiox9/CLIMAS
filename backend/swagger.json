@@ -855,6 +855,21 @@
         ]
       }
     },
+    "/user/me/fcm-token": {
+      "patch": {
+        "operationId": "UserController_updateFcmToken",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Actualizar el token FCM del usuario autenticado",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
     "/auth/login": {
       "post": {
         "operationId": "AuthController_signIn",

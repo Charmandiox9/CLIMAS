@@ -12,6 +12,7 @@ import { MedicalRecordModule } from './medical-record/medical-record.module';
 import { ConsultationModule } from './consultation/consultation.module';
 import { AreaModule } from './area/area.module';
 import { AttendanceModule } from './attendance/attendance.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { AttendanceModule } from './attendance/attendance.module';
     ConsultationModule,
     AreaModule,
     AttendanceModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [

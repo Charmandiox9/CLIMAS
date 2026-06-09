@@ -266,4 +266,12 @@ export class UserService {
       },
     });
   }
+
+  async updateFcmToken(id: string, fcmToken: string) {
+    return this.prisma.user.update({
+      where: { id },
+      data: { fcmToken },
+      select: { id: true, fcmToken: true },
+    });
+  }
 }

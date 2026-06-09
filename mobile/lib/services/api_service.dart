@@ -117,4 +117,26 @@ class ApiService {
     }
     return [];
   }
+
+  Future<void> updateFcmToken(String token) async {
+    try {
+      await _patch('/user/me/fcm-token', {'token': token});
+    } catch (e) {
+      print('Error updating FCM token: $e');
+    }
+  }
+
+  Future<http.Response> _patch(String endpoint, Map<String, dynamic> body) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    
+    return http.patch(
+      Uri.parse('$baseUrl$endpoint'),
+      headers: {
+        'Content-Type': 'application/json',
+        if (token != null) 'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(body),
+    );
+  }
 }
