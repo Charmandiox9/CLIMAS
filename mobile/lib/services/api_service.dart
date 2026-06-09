@@ -87,4 +87,34 @@ class ApiService {
     }
     return [];
   }
+
+  Future<List<dynamic>> getAllConsultations() async {
+    final token = await _getToken();
+    final response = await http.get(
+      Uri.parse('$baseUrl/consultation'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    }
+    return [];
+  }
+
+  Future<List<dynamic>> getAllAttendances() async {
+    final token = await _getToken();
+    final response = await http.get(
+      Uri.parse('$baseUrl/attendance/all'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    }
+    return [];
+  }
 }

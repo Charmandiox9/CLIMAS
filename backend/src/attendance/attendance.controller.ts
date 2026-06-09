@@ -1,6 +1,8 @@
 import { Controller, Post, Get, Req, UseGuards } from '@nestjs/common';
 import { AttendanceService } from './attendance.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('Attendance')
@@ -22,5 +24,13 @@ export class AttendanceController {
   async getHistory(@Req() req: any) {
     const userId = req.user?.id || req.user?.sub;
     return this.attendanceService.getHistory(userId);
+  }
+
+  @Get('all')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN')
+  @ApiOperation({ summary: 'Obtener historial de asistencia de todo el personal (Solo Admin)' })
+  async getAllAttendances() {
+    return this.attendanceService.getAllAttendances();
   }
 }

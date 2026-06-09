@@ -13,6 +13,18 @@ export class AttendanceService {
     });
   }
 
+  async getAllAttendances() {
+    return this.prisma.attendance.findMany({
+      include: {
+        user: {
+          select: { firstName: true, lastName: true, roles: true, email: true },
+        },
+      },
+      orderBy: { date: 'desc' },
+      take: 100,
+    });
+  }
+
   async markAttendance(userId: string) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);

@@ -2568,6 +2568,36 @@
           "Attendance"
         ]
       }
+    },
+    "/attendance/all": {
+      "get": {
+        "operationId": "AttendanceController_getAllAttendances",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obtener historial de asistencia de todo el personal (Solo Admin)",
+        "tags": [
+          "Attendance"
+        ]
+      }
     }
   },
   "info": {
