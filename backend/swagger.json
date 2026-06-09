@@ -2693,7 +2693,8 @@
               "enum": [
                 "PATIENT",
                 "ADMIN",
-                "DOCTOR"
+                "DOCTOR",
+                "WORKER"
               ]
             },
             "example": [
@@ -2866,7 +2867,8 @@
               "enum": [
                 "PATIENT",
                 "ADMIN",
-                "DOCTOR"
+                "DOCTOR",
+                "WORKER"
               ]
             },
             "example": [

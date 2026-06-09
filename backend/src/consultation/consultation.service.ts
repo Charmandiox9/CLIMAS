@@ -270,10 +270,13 @@ export class ConsultationService {
 
     if (updateConsultationDto.status) {
       try {
-        let statusEs = updateConsultationDto.status;
-        if (statusEs === 'IN_PROGRESS') statusEs = 'En progreso';
-        if (statusEs === 'COMPLETED') statusEs = 'Completada';
-        if (statusEs === 'CANCELED') statusEs = 'Cancelada';
+        const statusMap: Record<string, string> = {
+          'SCHEDULED': 'Agendada',
+          'IN_PROGRESS': 'En progreso',
+          'COMPLETED': 'Completada',
+          'CANCELED': 'Cancelada',
+        };
+        const statusEs = statusMap[updateConsultationDto.status as string] || updateConsultationDto.status;
         
         await this.notificationsService.sendPushToUser(
           data.doctor.userId,
