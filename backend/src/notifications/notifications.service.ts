@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import * as admin from 'firebase-admin';
+import { initializeApp, cert } from 'firebase-admin/app';
+import { getMessaging, Message } from 'firebase-admin/messaging';
 import * as path from 'path';
 import * as fs from 'fs';
 import { PrismaService } from '../prisma/prisma.service';
@@ -17,8 +18,8 @@ export class NotificationsService {
     try {
       const serviceAccountPath = path.resolve(process.cwd(), 'firebase-adminsdk.json');
       if (fs.existsSync(serviceAccountPath)) {
-        admin.initializeApp({
-          credential: admin.credential.cert(require(serviceAccountPath)),
+        initializeApp({
+          credential: cert(require(serviceAccountPath)),
         });
         this.initialized = true;
         this.logger.log('Firebase Admin SDK inicializado correctamente.');
@@ -44,13 +45,13 @@ export class NotificationsService {
     }
 
     try {
-      const message = {
+      const message: Message = {
         notification: { title, body },
         data,
         token: user.fcmToken,
       };
 
-      const response = await admin.messaging().send(message);
+      const response = await getMessaging().send(message);
       this.logger.log(`Push enviado a ${userId}: ${response}`);
     } catch (error) {
       this.logger.error(`Error enviando push a ${userId}:`, error);
