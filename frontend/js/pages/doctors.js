@@ -1,10 +1,12 @@
+import { apiFetch } from '../utils/api.js';
+
 function crearIcono(clases) {
     const i = document.createElement("i");
     i.className = clases;
     return i;
 }
 
-function crearTarjeta(doctor) {
+function crearTarjeta(userDoc) {
     const card = document.createElement("div");
     card.className = "doctor-card";
 
@@ -14,9 +16,9 @@ function crearTarjeta(doctor) {
     const img = document.createElement("img");
     img.className = "doctor-photo";
 
-    img.src = `../assets/${doctor.FotoPerfil}`;
+    img.src = `../assets/img/drs/default.png`; // Fallback image for now
 
-    img.alt = `Dr. ${doctor.nombreCompleto}`;
+    img.alt = `Dr. ${userDoc.firstName} ${userDoc.lastName}`;
 
     img.addEventListener("error", () => {
         img.src = "../assets/img/drs/default.png";
@@ -24,30 +26,27 @@ function crearTarjeta(doctor) {
     });
     photoWrap.appendChild(img);
 
-
-
     const cardBody = document.createElement("div");
     cardBody.className = "card-body";
 
     const nombre = document.createElement("h3");
     nombre.className = "doctor-name";
-    nombre.textContent = doctor.nombreCompleto;
+    nombre.textContent = `Dr. ${userDoc.firstName} ${userDoc.lastName}`;
 
     const especialidad = document.createElement("span");
     especialidad.className = "doctor-specialty";
     especialidad.appendChild(crearIcono("fa-solid fa-stethoscope"));
-    especialidad.append(` ${doctor.Especialidad}`);
+    especialidad.append(` ${userDoc.doctor?.area?.name || 'Especialidad General'}`);
 
     const stars = document.createElement("div");
     stars.className = "doctor-stars";
-    const calificacion = parseFloat(doctor.Calificacion) || 0;
-    const numEstrellas = Math.round(calificacion);
+    const calificacion = 5; // Static for now as DB doesn't have ratings
     for (let i = 0; i < 5; i++) {
-        stars.appendChild(crearIcono(`fa-${i < numEstrellas ? "solid" : "regular"} fa-star`));
+        stars.appendChild(crearIcono(`fa-${i < calificacion ? "solid" : "regular"} fa-star`));
     }
     const ratingNum = document.createElement("span");
     ratingNum.className = "rating-num";
-    ratingNum.textContent = doctor.Calificacion;
+    ratingNum.textContent = "5.0";
     stars.appendChild(ratingNum);
 
     const meta = document.createElement("div");
@@ -55,11 +54,11 @@ function crearTarjeta(doctor) {
 
     const spanUbicacion = document.createElement("span");
     spanUbicacion.appendChild(crearIcono("fa-solid fa-location-dot"));
-    spanUbicacion.append(` ${doctor.Ubicacion}`);
+    spanUbicacion.append(` CLIMAS Antofagasta`);
 
     const spanAnios = document.createElement("span");
     spanAnios.appendChild(crearIcono("fa-solid fa-briefcase-medical"));
-    spanAnios.append(` ${doctor["AñosExperiencia"]} años`);
+    spanAnios.append(` Licencia: ${userDoc.doctor?.medicalLicense || 'N/A'}`);
 
     meta.appendChild(spanUbicacion);
     meta.appendChild(spanAnios);
@@ -75,8 +74,6 @@ function crearTarjeta(doctor) {
     cardBody.appendChild(meta);
     cardBody.appendChild(btnVerMas);
 
-
-
     const details = document.createElement("div");
     details.className = "doctor-details";
 
@@ -84,12 +81,12 @@ function crearTarjeta(doctor) {
     detailRow.className = "detail-row";
     detailRow.appendChild(crearIcono("fa-solid fa-clock"));
     const spanDisponibilidad = document.createElement("span");
-    spanDisponibilidad.textContent = doctor.Disponibilidad;
+    spanDisponibilidad.textContent = "Lunes a Viernes, 09:00 - 17:00";
     detailRow.appendChild(spanDisponibilidad);
 
     const bio = document.createElement("p");
     bio.className = "doctor-bio";
-    bio.textContent = doctor.Biografia ?? "";
+    bio.textContent = "Profesional altamente capacitado con amplia experiencia en su área de especialidad. Dedicado a brindar la mejor atención posible a sus pacientes.";
 
     const btnAgendar = document.createElement("a");
     btnAgendar.className = "btn-agendar";
@@ -114,12 +111,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!container) return;
 
     try {
-        const req = await fetch("../assets/data/equipomedico.json");
-        if (!req.ok) throw new Error(`HTTP ${req.status}`);
-
-        const data = await req.json();
-        const doctors = (data.doctors ?? []).filter((d) => d.nombreCompleto);
-
+        const doctors = await apiFetch('/user/doctors');
+        
         doctors.forEach((doctor) => {
             container.appendChild(crearTarjeta(doctor));
         });

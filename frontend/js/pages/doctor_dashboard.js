@@ -1,13 +1,15 @@
-﻿function formatDate(dateStr) {
-    const [y, m, d] = dateStr.split('-');
+import { apiFetch } from '../utils/api.js';
+
+function formatDate(dateStr) {
+    const d = new Date(dateStr);
     const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-    return `${parseInt(d)} ${months[parseInt(m)-1]} ${y}`;
+    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
 }
 
 function filterAppointments(filtro) {
     const slots = document.querySelectorAll('#appointments-list .appointment-slot');
     const noMsg = document.querySelector('.no-citas-msg');
-    const today = new Date('2026-04-28');
+    const today = new Date();
     const startOfWeek = new Date(today);
     startOfWeek.setDate(today.getDate() - today.getDay() + 1);
     const endOfWeek = new Date(startOfWeek);
@@ -15,7 +17,7 @@ function filterAppointments(filtro) {
 
     let visible = 0;
     slots.forEach(slot => {
-        const d = new Date(slot.dataset.date + 'T00:00:00');
+        const d = new Date(slot.dataset.date);
         let show = false;
         if (filtro === 'semana') {
             show = d >= startOfWeek && d <= endOfWeek;
@@ -31,12 +33,51 @@ function filterAppointments(filtro) {
 }
 
 export async function DashboardPage(doctor) {
-    const appointments = [
-        { date: "2026-04-28", hour: "09:00", patient: "Alan Brito", reason: "Control Post-Operatorio", status: "Confirmado"},
-        { date: "2026-04-28", hour: "10:30", patient: "Elena Nito", reason: "Consulta General", status: "Pendiente"},
-        { date: "2026-04-29", hour: "11:00", patient: "Zacarias Labarca",  reason: "Revisión de Exámenes", status: "En espera"}
-    ];
+    const doctorName = doctor.firstName ? `Dr(a). ${doctor.firstName} ${doctor.lastName}` : `Dr. ${doctor.nombreCompleto}`;
+    let appointments = [];
+    let consultasPorPaciente = {};
+    let historialPacientes = [];
 
+    try {
+        const consultas = await apiFetch(`/consultation/user/${doctor.id}`);
+        
+        appointments = consultas.map(c => {
+            const d = new Date(c.dateTime);
+            return {
+                date: c.dateTime,
+                hour: `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`,
+                patient: `${c.patient?.user?.firstName || 'N/A'} ${c.patient?.user?.lastName || ''}`,
+                patientId: c.patientId,
+                reason: c.reason || 'Consulta General',
+                status: c.status
+            };
+        });
+
+        const pacientesMap = new Map();
+
+        consultas.forEach(c => {
+            if (!c.patient) return;
+            const patId = c.patientId;
+            const patName = `${c.patient.user?.firstName || 'N/A'} ${c.patient.user?.lastName || ''}`;
+            
+            if (!pacientesMap.has(patId)) {
+                pacientesMap.set(patId, { id: patId, nombre: patName, consultas: [] });
+            }
+            
+            if (c.medicalRecord) {
+                pacientesMap.get(patId).consultas.push({
+                    fecha: c.dateTime,
+                    motivo: c.reason,
+                    diagnostico: c.medicalRecord.diagnosis,
+                    tratamiento: c.medicalRecord.prescription || c.medicalRecord.clinicalNotes
+                });
+            }
+        });
+
+        historialPacientes = Array.from(pacientesMap.values());
+    } catch (e) {
+        console.error('Error cargando citas del doctor:', e);
+    }
     const appointmentCards = appointments.map(app => `
         <div class="appointment-slot" data-date="${app.date}">
             <div class="time-marker">${app.hour}</div>
@@ -53,8 +94,7 @@ export async function DashboardPage(doctor) {
     `).join('');
     
     let scheduleRows = "";
-    
-    let horarioDoctor = doctor.schedule;
+    let horarioDoctor = doctor.schedule || { "Lunes a Viernes": "09:00 - 17:00" };
 
     if (horarioDoctor) {
         for (let dia in horarioDoctor) {
@@ -67,32 +107,7 @@ export async function DashboardPage(doctor) {
         </div>
             `;
         }
-    } else {
-        scheduleRows = "<p style='padding: 20px; color: #a0aec0;'>No tiene horario asignado o debe volver a iniciar sesión para actualizar sus datos.</p>";
     }
-
-    const consultasPorPaciente = {
-        102: [
-            { fecha: "2026-03-15", motivo: "Consulta Inicial",        diagnostico: "Esguince de rodilla grado II",  tratamiento: "Reposo 15 días, antiinflamatorios" },
-            { fecha: "2026-04-28", motivo: "Control Post-Operatorio", diagnostico: "Evolución satisfactoria",        tratamiento: "Ejercicios de rehabilitación" },
-        ]
-    };
-
-    let historialPacientes = [];
-    try {
-        const res = await fetch('../assets/data/equipomedico.json');
-        const data = await res.json();
-        historialPacientes = data.users
-            .filter(u => u.role === 'user')
-            .map(u => ({
-                id: u.id,
-                nombre: u.name,
-                consultas: consultasPorPaciente[u.id] || []
-            }));
-    } catch (e) {
-        console.error('Error cargando pacientes:', e);
-    }
-    
 
     const historialOptions = historialPacientes.map(p =>
         `<option value="${p.id}">${p.nombre}</option>`
@@ -139,9 +154,9 @@ export async function DashboardPage(doctor) {
         <div class="dash-layout">
             <aside class="dash-sidebar">
                 <div class="profile-section">
-                    <img src="../assets/${doctor.FotoPerfil || 'img/drs/default.png'}" class="doctor-avatar">
-                    <h3>Dr. ${doctor.nombreCompleto}</h3>
-                    <p>${doctor.Especialidad}</p>
+                    <img src="../assets/img/drs/default.png" class="doctor-avatar">
+                    <h3>${doctorName}</h3>
+                    <p>${doctor.doctor?.area?.name || 'Médico'}</p>
                 </div>
                 <nav class="dash-nav">
                     <a href="#" class="nav-btn activate" data-target="section-citas">
@@ -155,6 +170,14 @@ export async function DashboardPage(doctor) {
                     <a href="#" class="nav-btn" data-target="section-horario">
                         <i class="fa-solid fa-clock"></i> Mi Horario
                     </a>
+                    ${(doctor.roles && doctor.roles.length > 1) ? `
+                    <hr>
+                    <div class="role-switcher" style="padding: 5px 15px;">
+                        <p style="font-size:12px; color:#a0aec0; margin-bottom:10px; font-weight:bold;">CAMBIAR DE PANEL</p>
+                        ${doctor.roles.includes('PATIENT') ? `<a href="user_dashboard.html" class="nav-btn" style="margin-bottom:5px; background:#e2e8f0; color:#2c3e50;"><i class="fa-solid fa-user-injured"></i> Panel Paciente</a>` : ''}
+                        ${doctor.roles.includes('ADMIN') ? `<a href="admin_dashboard.html" class="nav-btn" style="margin-bottom:5px; background:#e2e8f0; color:#2c3e50;"><i class="fa-solid fa-user-tie"></i> Panel Admin</a>` : ''}
+                    </div>
+                    ` : ''}
                     <hr>
                     <a href="#" id="logout-btn" class="logout-link">
                         <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
@@ -231,9 +254,9 @@ export function initDashboardEvents() {
 
     buttons.forEach(btn => {
         btn.addEventListener('click', (e) => {
-            e.preventDefault();
             const target = btn.getAttribute('data-target');
             if (!target) return;
+            e.preventDefault();
 
             buttons.forEach(b => b.classList.remove('activate'));
             sections.forEach(s => s.style.display = 'none');

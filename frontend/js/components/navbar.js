@@ -30,7 +30,7 @@ export function Navbar() {
                 <a href="${b}about.html" class="nav-link ${isActive('about.html')}">Sobre Nosotros</a>
                 <a href="${b}contacto.html" class="nav-link ${isActive('contacto.html')}">Contacto</a>
                 <a href="${b}schedule.html" class="nav-link ${isActive('schedule.html')}">Agendar Cita</a>
-                ${session ? `<a href="${b}${session.role === 'doctor' ? 'doctor_dashboard.html' : 'user_dashboard.html'}" class="nav-link ${isActive('dashboard')}">Mi Panel</a>
+                ${session ? `<a href="${b}${session.roles?.includes('DOCTOR') ? 'doctor_dashboard.html' : (session.roles?.includes('ADMIN') ? 'admin_dashboard.html' : 'user_dashboard.html')}" class="nav-link ${isActive('dashboard')}">Mi Panel</a>
                        <a href="#" id="logout-link" class="nav-link" style="color: #e74c3c;">Salir</a>`
                     : `<a href="${b}login.html" class="btn-cta">Portal Doctores</a>`
                 }

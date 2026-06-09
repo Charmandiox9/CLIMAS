@@ -1,13 +1,15 @@
+import { apiFetch } from '../utils/api.js';
+
 function formatUserDate(dateStr) {
-    const [y, m, d] = dateStr.split('-');
+    const d = new Date(dateStr);
     const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-    return `${parseInt(d)} ${months[parseInt(m)-1]} ${y}`;
+    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
 }
 
 function filterUserAppointments(filtro) {
     const slots = document.querySelectorAll('#user-appointments-list .appointment-slot');
     const noMsg = document.querySelector('.user-no-citas');
-    const today = new Date('2026-04-28');
+    const today = new Date();
     const startOfWeek = new Date(today);
     startOfWeek.setDate(today.getDate() - today.getDay() + 1);
     const endOfWeek = new Date(startOfWeek);
@@ -15,7 +17,7 @@ function filterUserAppointments(filtro) {
 
     let visible = 0;
     slots.forEach(slot => {
-        const d = new Date(slot.dataset.date + 'T00:00:00');
+        const d = new Date(slot.dataset.date);
         let show = false;
         if (filtro === 'semana') {
             show = d >= startOfWeek && d <= endOfWeek;
@@ -30,37 +32,46 @@ function filterUserAppointments(filtro) {
     if (noMsg) noMsg.style.display = visible === 0 ? 'block' : 'none';
 }
 
-export function UserDashboardPage(user) {
-    const userName = user.name || user.nombreCompleto || 'Usuario';
+export async function UserDashboardPage(user) {
+    const userName = user.firstName ? `${user.firstName} ${user.lastName}` : (user.name || user.nombreCompleto || 'Usuario');
 
-    const misCitas = [
-        { date: "2026-04-28", hour: "09:00", doctor: "Dr. Diego Messi",  especialidad: "Traumatología", motivo: "Control Post-Operatorio", status: "Confirmado" },
-        { date: "2026-04-30", hour: "11:00", doctor: "Dr. Daniel Durán", especialidad: "Cardiología",   motivo: "Evaluación Cardíaca",    status: "Pendiente"  },
-        { date: "2026-04-23", hour: "10:00", doctor: "Dr. Diego Messi",  especialidad: "Traumatología", motivo: "Consulta Inicial",        status: "Confirmado" },
-        { date: "2026-03-15", hour: "09:30", doctor: "Dr. Diego Messi",    especialidad: "Traumatología", motivo: "Primera Consulta",        status: "Confirmado" },
-        { date: "2026-03-10", hour: "14:00", doctor: "Dr. Daniel Durán",  especialidad: "Cardiología",   motivo: "Examen de rutina",        status: "Confirmado" },
-        { date: "2026-04-30", hour: "15:00", doctor: "Dr. Martin Castillo", especialidad: "Neurología",  motivo: "Evaluación Mental",       status: "Pendiente"  },
-        { date: "2026-03-05", hour: "10:00", doctor: "Dr. Martin Castillo", especialidad: "Neurología",  motivo: "Examen de rutina",        status: "Confirmado" },
-    ];
+    let misCitas = [];
+    let historialClinico = {};
 
-    const historialClinico = {
-        "Dr. Diego Messi": [
-            { fecha: "2026-03-15", motivo: "Primera Consulta", diagnostico: "Esguince de rodilla grado II",   tratamiento: "Reposo 15 días, antiinflamatorios" },
-            { fecha: "2026-04-23", motivo: "Consulta Inicial", diagnostico: "Evolución satisfactoria",        tratamiento: "Ejercicios de rehabilitación" },
-            { fecha: "2026-04-28", motivo: "Control Post-Operatorio", diagnostico: "Recuperación completa",          tratamiento: "Alta médica" },
-        ],
-        "Dr. Daniel Durán": [
-            { fecha: "2026-03-10", motivo: "Examen de rutina",  diagnostico: "Leve hipertensión arterial",  tratamiento: "Medicación diaria, control en 1 mes" },
-            { fecha: "2026-04-30", motivo: "Evaluación Cardíaca", diagnostico: "Pendiente de evaluación",  tratamiento: "Pendiente" },
-        ],
-        "Dr. Martin Castillo": [
-            { fecha: "2026-03-10", motivo: "Examen de rutina",  diagnostico: "Divergencia neuronal",  tratamiento: "Medicación diaria, control en 1 mes" },
-            { fecha: "2026-04-30", motivo: "Evaluación Mental", diagnostico: "Pendiente de evaluación",  tratamiento: "Pendiente" },
-        ],        
-    };
+    try {
+        const consultas = await apiFetch(`/consultation/user/${user.id}`);
+        
+        misCitas = consultas.map(c => {
+            const d = new Date(c.dateTime);
+            return {
+                date: c.dateTime,
+                hour: `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`,
+                doctor: `Dr(a). ${c.doctor?.user?.firstName || ''} ${c.doctor?.user?.lastName || 'N/A'}`,
+                especialidad: c.doctor?.area?.name || 'Medicina General',
+                motivo: c.reason || 'Consulta General',
+                status: c.status
+            };
+        });
 
-    const today = new Date('2026-04-28');
-    const proximas = misCitas.filter(c => new Date(c.date + 'T00:00:00') >= today);
+        // Agrupar historial por doctor solo si tienen medical record
+        consultas.filter(c => c.medicalRecord).forEach(c => {
+            const docName = `Dr(a). ${c.doctor?.user?.firstName || ''} ${c.doctor?.user?.lastName || 'N/A'}`;
+            if (!historialClinico[docName]) historialClinico[docName] = [];
+            
+            historialClinico[docName].push({
+                fecha: c.dateTime,
+                motivo: c.reason,
+                diagnostico: c.medicalRecord.diagnosis,
+                tratamiento: c.medicalRecord.prescription || c.medicalRecord.clinicalNotes
+            });
+        });
+
+    } catch (error) {
+        console.error("Error cargando dashboard de usuario", error);
+    }
+
+    const today = new Date();
+    const proximas = misCitas.filter(c => new Date(c.date) >= today);
     const doctoresConsultados = [...new Set(misCitas.map(c => c.doctor))].length;
     const proximaCita = proximas.length > 0 ? proximas[0] : null;
 
@@ -140,6 +151,14 @@ export function UserDashboardPage(user) {
                     <a href="#" class="nav-btn" data-target="user-section-historial">
                         <i class="fa-solid fa-file-medical"></i> Historial Clínico
                     </a>
+                    ${(user.roles && user.roles.length > 1) ? `
+                    <hr>
+                    <div class="role-switcher" style="padding: 5px 15px;">
+                        <p style="font-size:12px; color:#a0aec0; margin-bottom:10px; font-weight:bold;">CAMBIAR DE PANEL</p>
+                        ${user.roles.includes('DOCTOR') ? `<a href="doctor_dashboard.html" class="nav-btn" style="margin-bottom:5px; background:#e2e8f0; color:#2c3e50;"><i class="fa-solid fa-user-md"></i> Panel Médico</a>` : ''}
+                        ${user.roles.includes('ADMIN') ? `<a href="admin_dashboard.html" class="nav-btn" style="margin-bottom:5px; background:#e2e8f0; color:#2c3e50;"><i class="fa-solid fa-user-tie"></i> Panel Admin</a>` : ''}
+                    </div>
+                    ` : ''}
                     <hr>
                     <a href="#" id="user-logout-btn" class="logout-link">
                         <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
@@ -242,9 +261,9 @@ export function initUserDashboardEvents() {
 
     buttons.forEach(btn => {
         btn.addEventListener('click', (e) => {
-            e.preventDefault();
             const target = btn.getAttribute('data-target');
-            if (!target) return;
+            if (!target) return; // Permite el comportamiento por defecto si no es un tab
+            e.preventDefault();
 
             buttons.forEach(b => b.classList.remove('activate'));
             sections.forEach(s => s.style.display = 'none');

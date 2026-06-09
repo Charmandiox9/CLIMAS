@@ -1,20 +1,32 @@
-const specialtiesList = [
-    { name: "Medicina General", icon: "fa-stethoscope" },
-    { name: "Pediatría", icon: "fa-baby" },
-    { name: "Cardiología", icon: "fa-heart-pulse" },
-    { name: "Neurología", icon: "fa-brain" },
-    { name: "Traumatología", icon: "fa-bone" },
-    { name: "Kinesiología", icon: "fa-person-walking" }
-];
+import { apiFetch } from '../utils/api.js';
 
-export function Specialties() {
-    const cards = specialtiesList.map(item => `
-        <div class="specialty-card">
-            <i class="fa-solid ${item.icon} specialty-icon"></i>
-            <h3>${item.name}</h3>
-            <p>Ver especialistas disponibles →</p>
-        </div>
-    `).join('');
+function getIconForArea(areaName) {
+    const nameStr = areaName.toLowerCase();
+    if (nameStr.includes('cardi')) return 'fa-heart-pulse';
+    if (nameStr.includes('pediatr')) return 'fa-baby';
+    if (nameStr.includes('neuro')) return 'fa-brain';
+    if (nameStr.includes('trauma')) return 'fa-bone';
+    if (nameStr.includes('kine')) return 'fa-person-walking';
+    if (nameStr.includes('odont')) return 'fa-tooth';
+    if (nameStr.includes('oftalm')) return 'fa-eye';
+    return 'fa-stethoscope';
+}
+
+export async function Specialties() {
+    let cards = '';
+    try {
+        const areas = await apiFetch('/area?isActive=true');
+        cards = areas.map(item => `
+            <div class="specialty-card">
+                <i class="fa-solid ${getIconForArea(item.name)} specialty-icon"></i>
+                <h3>${item.name}</h3>
+                <p>Ver especialistas disponibles →</p>
+            </div>
+        `).join('');
+    } catch (error) {
+        console.error("Error al cargar especialidades", error);
+        cards = '<p style="text-align:center;">No se pudieron cargar las especialidades.</p>';
+    }
 
     return `
     <section class="specialties-section">

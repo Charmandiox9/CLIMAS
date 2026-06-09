@@ -350,9 +350,7 @@ Se devolverá el \`id\` principal del Usuario, pero también el sub-objeto \`pat
       },
     },
   })
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN')
+  // Endpoint público: No requiere Auth ni roles
   getDoctors() {
     return this.userService.getDoctors();
   }

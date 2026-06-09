@@ -440,11 +440,6 @@
             }
           }
         },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
         "summary": "Obtener todos los doctores",
         "tags": [
           "Users"
@@ -2249,25 +2244,20 @@
               }
             }
           },
-          "401": {
-            "description": "No autorizado. Se requiere Token JWT.",
+          "400": {
+            "description": "Datos inválidos",
             "content": {
               "application/json": {
                 "schema": {
                   "example": {
-                    "statusCode": 401,
-                    "message": "Unauthorized"
+                    "statusCode": 400,
+                    "message": "Bad Request"
                   }
                 }
               }
             }
           }
         },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
         "summary": "Obtener todas las áreas",
         "tags": [
           "Area"

@@ -72,10 +72,8 @@ Puedes filtrar por áreas activas o inactivas enviando el parámetro opcional \`
       ],
     },
   })
-  @ApiResponse({ status: 401, description: 'No autorizado. Se requiere Token JWT.', schema: { example: { statusCode: 401, message: 'Unauthorized' } } })
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN', 'DOCTOR', 'PATIENT')
+  // Endpoint público: No requiere Auth
+  @ApiResponse({ status: 400, description: 'Datos inválidos', schema: { example: { statusCode: 400, message: 'Bad Request' } } })
   findAll(@Query('isActive') isActive?: string) {
     const isAct = isActive === 'false' ? false : true;
     return this.areaService.findAll(isAct);
