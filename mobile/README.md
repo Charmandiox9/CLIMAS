@@ -2,14 +2,14 @@
 
 Esta es la aplicación móvil oficial para el personal de la clínica, desarrollada en Flutter.
 
-## ⚙️ Requisitos Previos
+## Requisitos Previos
 - **Flutter SDK** (>= 3.0.0)
 - **Android Studio** (Con emulador o dispositivo físico)
 - Conexión a la API del backend NestJS local o remota.
 
 ---
 
-## 🛠️ Configuración e Instalación
+## Configuracion e Instalacion
 
 ### 1. Clonar e Instalar
 En la terminal (dentro de esta carpeta `/mobile`), descarga las dependencias:
@@ -38,7 +38,7 @@ Como usamos biometría y escaneo de red, se requiere aceptar permisos en el disp
 
 ---
 
-## 🚀 Ejecutar la Aplicación
+## Ejecutar la Aplicacion
 
 Con un emulador abierto o tu teléfono conectado por USB, ejecuta:
 ```bash
@@ -49,7 +49,7 @@ O simplemente dale al botón "Play" (Run) desde **Android Studio** o **VS Code**
 
 ---
 
-## 🏗️ Estructura del Código
+## Estructura del Codigo
 - `lib/screens/`: Contiene las vistas de la app (Login, Pantalla de Asistencia).
 - `lib/services/`: Lógica pura y llamadas HTTP a tu backend (API Service, Auth Service).
 - `lib/utils/`: Funciones compartidas y validadores (chequeo de BSSID, biometría).

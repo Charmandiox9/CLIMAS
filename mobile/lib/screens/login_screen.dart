@@ -46,27 +46,27 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.local_hospital, size: 100, color: Colors.blue),
+              const Icon(Icons.local_hospital, size: 80, color: Colors.indigo),
               const SizedBox(height: 20),
-              const Text('CLIMAS', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.blue)),
+              const Text('CLIMAS', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.indigo, letterSpacing: 1.5)),
               const Text('Portal del Personal', style: TextStyle(fontSize: 16, color: Colors.grey)),
               const SizedBox(height: 40),
               TextField(
                 controller: _emailController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Correo Electrónico', 
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.email)
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  prefixIcon: const Icon(Icons.email_outlined)
                 ),
                 keyboardType: TextInputType.emailAddress,
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _passwordController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Contraseña', 
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.lock)
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  prefixIcon: const Icon(Icons.lock_outline)
                 ),
                 obscureText: true,
               ),
@@ -76,9 +76,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: 55,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
+                    backgroundColor: Colors.indigo,
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 2,
                   ),
                   onPressed: _isLoading ? null : _login,
                   child: _isLoading 

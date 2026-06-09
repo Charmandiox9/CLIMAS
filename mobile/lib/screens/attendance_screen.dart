@@ -65,7 +65,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('✅ Asistencia marcada exitosamente', style: TextStyle(color: Colors.white, fontSize: 16)), 
+            content: Text('Asistencia marcada exitosamente', style: TextStyle(color: Colors.white, fontSize: 16)), 
             backgroundColor: Colors.green
           ),
         );
@@ -109,12 +109,12 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: Colors.blue.withOpacity(0.1),
+                      color: Colors.indigo.withOpacity(0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.fingerprint, size: 100, color: Colors.blue),
+                    child: const Icon(Icons.fingerprint, size: 100, color: Colors.indigo),
                   ),
                   const SizedBox(height: 30),
                   const Text(
@@ -136,13 +136,13 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                     height: 60,
                     child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
+                        backgroundColor: Colors.indigo,
                         foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                        elevation: 5,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        elevation: 2,
                       ),
                       icon: const Icon(Icons.touch_app, size: 28),
-                      label: const Text('MARCAR AHORA', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      label: const Text('MARCAR AHORA', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
                       onPressed: _markAttendance,
                     ),
                   ),

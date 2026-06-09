@@ -69,7 +69,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.calendar_month, color: Colors.blue),
+                          const Icon(Icons.calendar_month, color: Colors.indigo),
                           const SizedBox(width: 8),
                           Text(
                             _formatDate(record['date']),
@@ -83,7 +83,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         children: [
                           _buildTimeColumn('Entrada', _formatTime(record['entryTime']), Icons.login, Colors.green),
                           _buildTimeColumn('Sal. Colación', _formatTime(record['lunchStartTime']), Icons.restaurant, Colors.orange),
-                          _buildTimeColumn('Ent. Colación', _formatTime(record['lunchEndTime']), Icons.restaurant_menu, Colors.blue),
+                          _buildTimeColumn('Ent. Colación', _formatTime(record['lunchEndTime']), Icons.restaurant_menu, Colors.indigo),
                           _buildTimeColumn('Salida', _formatTime(record['exitTime']), Icons.logout, Colors.red),
                         ],
                       ),
