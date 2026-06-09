@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/login_screen.dart';
 import 'screens/attendance_screen.dart';
+import 'screens/history_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,6 +34,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/login': (context) => const LoginScreen(),
         '/attendance': (context) => const AttendanceScreen(),
+        '/history': (context) => const HistoryScreen(),
       },
       debugShowCheckedModeBanner: false,
     );

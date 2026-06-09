@@ -90,7 +90,16 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       appBar: AppBar(
         title: const Text('Mi Jornada'),
         actions: [
-          IconButton(icon: const Icon(Icons.logout), onPressed: _logout),
+          IconButton(
+            icon: const Icon(Icons.history),
+            tooltip: 'Ver Historial',
+            onPressed: () => Navigator.pushNamed(context, '/history'),
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout), 
+            tooltip: 'Cerrar Sesión',
+            onPressed: _logout,
+          ),
         ],
       ),
       body: Center(
