@@ -21,7 +21,6 @@ class ApiService {
     if (response.statusCode == 200 || response.statusCode == 201) {
       final data = jsonDecode(response.body);
       final prefs = await SharedPreferences.getInstance();
-      // Guardar el JWT para futuras llamadas
       await prefs.setString('token', data['access_token'] ?? data['token']);
       return true;
     }

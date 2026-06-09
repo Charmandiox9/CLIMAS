@@ -2657,6 +2657,7 @@
             "enum": [
               "ADMIN",
               "DOCTOR",
+              "WORKER",
               "PATIENT"
             ]
           }
@@ -2829,6 +2830,7 @@
             "enum": [
               "ADMIN",
               "DOCTOR",
+              "WORKER",
               "PATIENT"
             ]
           }

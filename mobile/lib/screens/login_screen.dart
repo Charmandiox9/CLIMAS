@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../services/api_service.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -22,7 +24,21 @@ class _LoginScreenState extends State<LoginScreen> {
         _passwordController.text,
       );
       if (success && mounted) {
-        Navigator.pushReplacementNamed(context, '/attendance');
+        final prefs = await SharedPreferences.getInstance();
+        final token = prefs.getString('token');
+        if (token != null) {
+          Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+          List<dynamic> roles = decodedToken['roles'] ?? [];
+          if (roles.length > 1) {
+            Navigator.pushReplacementNamed(context, '/profile_selection');
+          } else if (roles.contains('ADMIN')) {
+            Navigator.pushReplacementNamed(context, '/admin');
+          } else if (roles.contains('DOCTOR')) {
+            Navigator.pushReplacementNamed(context, '/doctor');
+          } else {
+            Navigator.pushReplacementNamed(context, '/attendance');
+          }
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Credenciales inválidas'), backgroundColor: Colors.red),

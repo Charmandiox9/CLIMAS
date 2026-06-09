@@ -24,6 +24,7 @@ enum ConsultationStatus {
 enum Role {
   ADMIN
   DOCTOR
+  WORKER
   PATIENT
 }
 
