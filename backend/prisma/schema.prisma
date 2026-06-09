@@ -155,8 +155,8 @@ model AuditLog {
 }
 
 model Attendance {
-  id             String    @id @default(cuid())
-  date           DateTime  @default(now()) @db.Date
+  id              String    @id @default(cuid())
+  date            DateTime  @default(now()) @db.Date
   entryTime      DateTime?
   lunchStartTime DateTime?
   lunchEndTime   DateTime?
