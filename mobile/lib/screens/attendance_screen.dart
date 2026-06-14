@@ -3,7 +3,9 @@ import 'package:local_auth/local_auth.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
+import 'package:geolocator/geolocator.dart';
 import '../services/api_service.dart';
+import 'qr_scanner_screen.dart';
 
 class AttendanceScreen extends StatefulWidget {
   const AttendanceScreen({super.key});
@@ -81,6 +83,33 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
         throw Exception('Autenticación biométrica fallida o cancelada.');
       }
     }
+
+    final reqLat = dotenv.env['CLINIC_LAT'];
+    final reqLng = dotenv.env['CLINIC_LNG'];
+    final reqRadius = dotenv.env['CLINIC_RADIUS_METERS'];
+    
+    if (reqLat != null && reqLng != null && reqRadius != null && reqLat.isNotEmpty && reqLng.isNotEmpty && reqRadius.isNotEmpty) {
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          throw Exception('Permisos de ubicación denegados.');
+        }
+      }
+      if (permission == LocationPermission.deniedForever) {
+        throw Exception('Permisos de ubicación permanentemente denegados.');
+      }
+      
+      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      double distanceInMeters = Geolocator.distanceBetween(
+        position.latitude, position.longitude, 
+        double.parse(reqLat), double.parse(reqLng)
+      );
+      
+      if (distanceInMeters > double.parse(reqRadius)) {
+        throw Exception('Estás muy lejos de la clínica (${distanceInMeters.toStringAsFixed(0)}m). Acércate para marcar.');
+      }
+    }
   }
 
   void _markAttendance() async {
@@ -94,6 +123,23 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     setState(() => _isLoading = true);
     try {
       await _verifySecurity();
+
+      // Abrir cámara para el QR
+      if (!mounted) return;
+      final now = DateTime.now();
+      final todayString = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+      final expectedQrData = "CLIMAS-ATTENDANCE-$todayString";
+
+      final bool? qrSuccess = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => QrScannerScreen(expectedQrData: expectedQrData)),
+      );
+
+      if (qrSuccess != true) {
+        setState(() => _isLoading = false);
+        return; // Escaneo cancelado
+      }
+
       await _apiService.markAttendance();
       await _fetchTodayAttendance();
       

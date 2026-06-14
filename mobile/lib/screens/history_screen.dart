@@ -78,14 +78,19 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         ],
                       ),
                       const Divider(height: 24),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          _buildTimeColumn('Entrada', _formatTime(record['entryTime']), Icons.login, Colors.green),
-                          _buildTimeColumn('Sal. Colación', _formatTime(record['lunchStartTime']), Icons.restaurant, Colors.orange),
-                          _buildTimeColumn('Ent. Colación', _formatTime(record['lunchEndTime']), Icons.restaurant_menu, Colors.indigo),
-                          _buildTimeColumn('Salida', _formatTime(record['exitTime']), Icons.logout, Colors.red),
-                        ],
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            _buildTimeColumn('Entrada', _formatTime(record['entryTime']), Icons.login, Colors.green),
+                            const SizedBox(width: 20),
+                            _buildTimeColumn('Sal. Colación', _formatTime(record['lunchStartTime']), Icons.restaurant, Colors.orange),
+                            const SizedBox(width: 20),
+                            _buildTimeColumn('Ent. Colación', _formatTime(record['lunchEndTime']), Icons.restaurant_menu, Colors.indigo),
+                            const SizedBox(width: 20),
+                            _buildTimeColumn('Salida', _formatTime(record['exitTime']), Icons.logout, Colors.red),
+                          ],
+                        ),
                       ),
                     ],
                   ),

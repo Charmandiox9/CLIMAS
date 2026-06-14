@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:intl/intl.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import '../services/api_service.dart';
 import 'attendance_screen.dart';
 import 'staff_detail_screen.dart';
@@ -78,6 +79,35 @@ class _AdminDashboardState extends State<AdminDashboard> {
     );
   }
 
+  void _showDailyQrCode() {
+    final now = DateTime.now();
+    final todayString = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+    final qrData = "CLIMAS-ATTENDANCE-$todayString";
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('QR de Asistencia (Hoy)', textAlign: TextAlign.center),
+        content: SizedBox(
+          width: 250,
+          height: 250,
+          child: QrImageView(
+            data: qrData,
+            version: QrVersions.auto,
+            size: 250.0,
+            backgroundColor: Colors.white,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cerrar'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildMetricsView() {
     if (_isLoading) return const Center(child: CircularProgressIndicator());
     final now = DateTime.now();
@@ -114,6 +144,18 @@ class _AdminDashboardState extends State<AdminDashboard> {
           const Text('Métricas Generales', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.indigo)),
           const SizedBox(height: 20),
           _buildStatCard('Total de Citas Históricas', _consultations.length.toString(), Icons.auto_graph, Colors.blue),
+          const SizedBox(height: 30),
+          ElevatedButton.icon(
+            onPressed: _showDailyQrCode,
+            icon: const Icon(Icons.qr_code_2, size: 28),
+            label: const Text('Mostrar QR de Asistencia del Día'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.indigo,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          )
         ],
       ),
     );
