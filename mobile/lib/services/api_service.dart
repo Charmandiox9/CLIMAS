@@ -139,4 +139,19 @@ class ApiService {
       body: jsonEncode(body),
     );
   }
+
+  Future<void> saveMedicalRecord(Map<String, dynamic> payload) async {
+    final token = await _getToken();
+    final response = await http.post(
+      Uri.parse('$baseUrl/medical-record'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(payload),
+    );
+    if (response.statusCode != 201 && response.statusCode != 200) {
+      throw Exception('Failed to save medical record: ${response.body}');
+    }
+  }
 }

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional, IsArray } from 'class-validator';
 
 export class CreateMedicalRecordDto {
   @ApiProperty({
@@ -35,4 +35,15 @@ export class CreateMedicalRecordDto {
   @IsNotEmpty()
   @IsString()
   consultationId: string;
+
+  @ApiProperty({
+    description: 'Lista de URLs de evidencia multimedia (fotos/videos)',
+    example: ['https://firebasestorage...'],
+    required: false,
+    isArray: true,
+  })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  mediaUrls?: string[];
 }

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:gal/gal.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
+import '../services/api_service.dart';
 
 class ConsultationDetailScreen extends StatefulWidget {
   final Map<String, dynamic> consultation;
@@ -16,6 +18,9 @@ class ConsultationDetailScreen extends StatefulWidget {
 class _ConsultationDetailScreenState extends State<ConsultationDetailScreen> {
   final ImagePicker _picker = ImagePicker();
   final List<File> _attachedMedia = [];
+  final TextEditingController _notesController = TextEditingController();
+  final ApiService _apiService = ApiService();
+  bool _isSaving = false;
 
   Future<void> _takeMedia({required bool isVideo}) async {
     try {
@@ -154,6 +159,7 @@ class _ConsultationDetailScreenState extends State<ConsultationDetailScreen> {
             const Text('Evolución y Notas:', style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             TextField(
+              controller: _notesController,
               maxLines: 4,
               decoration: InputDecoration(
                 hintText: 'Escriba las notas clínicas aquí...',
@@ -205,11 +211,56 @@ class _ConsultationDetailScreenState extends State<ConsultationDetailScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Historial y evidencia listos para subir al servidor.')));
+                onPressed: _isSaving ? null : () async {
+                  if (_notesController.text.trim().isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Por favor escribe algunas notas clínicas.')),
+                    );
+                    return;
+                  }
+
+                  setState(() => _isSaving = true);
+                  
+                  try {
+                    List<String> mediaUrls = [];
+                    // Subir a Firebase Storage
+                    for (var file in _attachedMedia) {
+                      final fileName = file.path.split('/').last;
+                      final storageRef = FirebaseStorage.instance
+                          .ref()
+                          .child('medical_records/${widget.consultation['id']}/$fileName');
+                      
+                      final uploadTask = await storageRef.putFile(file);
+                      final downloadUrl = await uploadTask.ref.getDownloadURL();
+                      mediaUrls.add(downloadUrl);
+                    }
+
+                    // Enviar al Backend
+                    await _apiService.saveMedicalRecord({
+                      'consultationId': widget.consultation['id'],
+                      'clinicalNotes': _notesController.text.trim(),
+                      'mediaUrls': mediaUrls,
+                    });
+
+                    if (!mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Ficha guardada exitosamente.'), backgroundColor: Colors.green),
+                    );
+                    Navigator.pop(context);
+
+                  } catch (e) {
+                    if (!mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error al guardar: $e'), backgroundColor: Colors.red),
+                    );
+                  } finally {
+                    if (mounted) setState(() => _isSaving = false);
+                  }
                 },
-                icon: const Icon(Icons.cloud_upload),
-                label: const Text('Guardar Historial'),
+                icon: _isSaving 
+                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                    : const Icon(Icons.cloud_upload),
+                label: Text(_isSaving ? 'Guardando...' : 'Guardar Historial'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.indigo,
                   foregroundColor: Colors.white,

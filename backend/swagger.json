@@ -3040,11 +3040,26 @@
             "type": "string",
             "description": "ID de la consulta",
             "example": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+          },
+          "mediaUrls": {
+            "type": "array",
+            "items": {
+              "required": false,
+              "description": "Lista de URLs de evidencia multimedia (fotos/videos)",
+              "example": [
+                "https://firebasestorage..."
+              ],
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
           }
         },
         "required": [
           "clinicalNotes",
-          "consultationId"
+          "consultationId",
+          "mediaUrls"
         ]
       },
       "UpdateMedicalRecordDto": {
@@ -3069,8 +3084,25 @@
             "type": "string",
             "description": "ID de la consulta",
             "example": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+          },
+          "mediaUrls": {
+            "type": "array",
+            "items": {
+              "required": false,
+              "description": "Lista de URLs de evidencia multimedia (fotos/videos)",
+              "example": [
+                "https://firebasestorage..."
+              ],
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
           }
-        }
+        },
+        "required": [
+          "mediaUrls"
+        ]
       },
       "CreateConsultationDto": {
         "type": "object",
