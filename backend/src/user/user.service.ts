@@ -43,7 +43,7 @@ export class UserService {
       data: {
         ...rest,
         password: hashedPassword,
-        roles: roles ? { set: roles as Role[] } : undefined,
+        roles: roles ? { set: roles } : undefined,
       },
     });
   }
