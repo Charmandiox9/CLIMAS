@@ -131,6 +131,7 @@ model MedicalRecord {
   clinicalNotes String      @db.Text 
   prescription  String?     @db.Text 
   diagnosis     String?
+  mediaUrls     String[]    @default([])
 
   consultationId String      @unique
   consultation   Consultation @relation(fields: [consultationId], references: [id])

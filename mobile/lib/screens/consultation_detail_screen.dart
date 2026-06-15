@@ -1,23 +1,87 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:gal/gal.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:io';
+import '../services/api_service.dart';
 
-class ConsultationDetailScreen extends StatelessWidget {
+class ConsultationDetailScreen extends StatefulWidget {
   final Map<String, dynamic> consultation;
 
   const ConsultationDetailScreen({super.key, required this.consultation});
 
   @override
+  State<ConsultationDetailScreen> createState() => _ConsultationDetailScreenState();
+}
+
+class _ConsultationDetailScreenState extends State<ConsultationDetailScreen> {
+  final ImagePicker _picker = ImagePicker();
+  final List<File> _attachedMedia = [];
+  final TextEditingController _notesController = TextEditingController();
+  final ApiService _apiService = ApiService();
+  bool _isSaving = false;
+
+  Future<void> _takeMedia({required bool isVideo}) async {
+    try {
+      // Pedimos permiso de galeria/fotos primero para asegurar que Gal puede guardar
+      final hasAccess = await Gal.hasAccess(toAlbum: true);
+      if (!hasAccess) {
+        final request = await Gal.requestAccess(toAlbum: true);
+        if (!request) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Se requieren permisos de almacenamiento para guardar la evidencia.')),
+          );
+          return;
+        }
+      }
+
+      final XFile? file = isVideo 
+          ? await _picker.pickVideo(source: ImageSource.camera)
+          : await _picker.pickImage(source: ImageSource.camera);
+
+      if (file != null) {
+        // 1. Guardar localmente en la galería del dispositivo
+        if (isVideo) {
+          await Gal.putVideo(file.path);
+        } else {
+          await Gal.putImage(file.path);
+        }
+
+        // 2. Mantener referencia para subir a la BD (Firebase/Backend) en el futuro
+        setState(() {
+          _attachedMedia.add(File(file.path));
+        });
+
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${isVideo ? "Video" : "Foto"} guardada en el dispositivo y adjuntada a la ficha.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al capturar evidencia: $e'), backgroundColor: Colors.red),
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final date = DateTime.parse(consultation['dateTime']).toLocal();
-    final patient = consultation['patient']?['user'];
-    final doctor = consultation['doctor']?['user'];
+    final date = DateTime.parse(widget.consultation['dateTime']).toLocal();
+    final patient = widget.consultation['patient']?['user'];
+    final doctor = widget.consultation['doctor']?['user'];
     
     final patientName = patient != null ? '${patient['firstName']} ${patient['lastName']}' : 'Desconocido';
     final doctorName = doctor != null ? 'Dr. ${doctor['firstName']} ${doctor['lastName']}' : 'Desconocido';
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Detalle de la Cita'),
+        title: const Text('Ficha Clínica'),
         backgroundColor: Colors.indigo,
         foregroundColor: Colors.white,
       ),
@@ -28,13 +92,13 @@ class ConsultationDetailScreen extends StatelessWidget {
           children: [
             _buildInfoCard(context, 'Información del Paciente', Icons.person, [
               'Nombre: $patientName',
-              'Motivo de consulta: ${consultation['reason'] ?? 'No especificado'}',
+              'Motivo de consulta: ${widget.consultation['reason'] ?? 'No especificado'}',
             ]),
             const SizedBox(height: 16),
             _buildInfoCard(context, 'Detalles de la Cita', Icons.event, [
               'Fecha: ${DateFormat('dd/MM/yyyy').format(date)}',
               'Hora: ${DateFormat('HH:mm').format(date)}',
-              'Estado: ${consultation['status']}',
+              'Estado: ${widget.consultation['status']}',
               'Atiende: $doctorName',
             ]),
             const SizedBox(height: 16),
@@ -95,6 +159,7 @@ class ConsultationDetailScreen extends StatelessWidget {
             const Text('Evolución y Notas:', style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             TextField(
+              controller: _notesController,
               maxLines: 4,
               decoration: InputDecoration(
                 hintText: 'Escriba las notas clínicas aquí...',
@@ -103,18 +168,103 @@ class ConsultationDetailScreen extends StatelessWidget {
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
+            const Text('Evidencia Clínica Adjunta:', style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () => _takeMedia(isVideo: false),
+                    icon: const Icon(Icons.camera_alt),
+                    label: const Text('Tomar Foto'),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () => _takeMedia(isVideo: true),
+                    icon: const Icon(Icons.videocam),
+                    label: const Text('Grabar Video'),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            if (_attachedMedia.isNotEmpty)
+              Wrap(
+                spacing: 8,
+                children: _attachedMedia.map((file) {
+                  final isVideo = file.path.endsWith('.mp4');
+                  return Chip(
+                    avatar: Icon(isVideo ? Icons.movie : Icons.image, size: 16),
+                    label: Text(file.path.split('/').last, overflow: TextOverflow.ellipsis),
+                    onDeleted: () {
+                      setState(() {
+                        _attachedMedia.remove(file);
+                      });
+                    },
+                  );
+                }).toList(),
+              ),
+            const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Historial guardado exitosamente (Mock)')));
+                onPressed: _isSaving ? null : () async {
+                  if (_notesController.text.trim().isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Por favor escribe algunas notas clínicas.')),
+                    );
+                    return;
+                  }
+
+                  setState(() => _isSaving = true);
+                  
+                  try {
+                    List<String> mediaUrls = [];
+                    // Subir a Firebase Storage
+                    for (var file in _attachedMedia) {
+                      final fileName = file.path.split('/').last;
+                      final storageRef = FirebaseStorage.instance
+                          .ref()
+                          .child('medical_records/${widget.consultation['id']}/$fileName');
+                      
+                      final uploadTask = await storageRef.putFile(file);
+                      final downloadUrl = await uploadTask.ref.getDownloadURL();
+                      mediaUrls.add(downloadUrl);
+                    }
+
+                    // Enviar al Backend
+                    await _apiService.saveMedicalRecord({
+                      'consultationId': widget.consultation['id'],
+                      'clinicalNotes': _notesController.text.trim(),
+                      'mediaUrls': mediaUrls,
+                    });
+
+                    if (!mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Ficha guardada exitosamente.'), backgroundColor: Colors.green),
+                    );
+                    Navigator.pop(context);
+
+                  } catch (e) {
+                    if (!mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error al guardar: $e'), backgroundColor: Colors.red),
+                    );
+                  } finally {
+                    if (mounted) setState(() => _isSaving = false);
+                  }
                 },
-                icon: const Icon(Icons.save),
-                label: const Text('Guardar Historial'),
+                icon: _isSaving 
+                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                    : const Icon(Icons.cloud_upload),
+                label: Text(_isSaving ? 'Guardando...' : 'Guardar Historial'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.indigo,
                   foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
               ),
             )
