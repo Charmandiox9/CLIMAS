@@ -18,6 +18,8 @@ import {
   ApiOperation,
   ApiTags,
   ApiResponse,
+  ApiCreatedResponse,
+  ApiOkResponse
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
@@ -30,15 +32,19 @@ export class ServiceController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Crear un nuevo servicio' })
-  @ApiResponse({
-    status: 201,
-    description: 'Servicio creado exitosamente',
+  @ApiOperation({ 
+    summary: 'Crear un nuevo servicio',
+    description: `Permite a un administrador crear un nuevo servicio médico en el sistema (Ej. "Consultoría Nutricional", "Electrocardiograma").
+
+**Nota**: Se requiere enviar un \`areaId\` válido que relacione este servicio con una especialidad/área del centro médico.`
+  })
+  @ApiCreatedResponse({
+    description: 'Servicio creado exitosamente.',
     schema: {
       example: {
         id: '12345678-1234-1234-1234-123456789012',
-        name: 'Service Name',
-        description: 'Service Description',
+        name: 'Consulta de control',
+        description: 'Chequeo de rutina',
         price: 100,
         duration: 60,
         areaId: '12345678-1234-1234-1234-123456789012',
@@ -57,12 +63,17 @@ export class ServiceController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Obtener todos los servicios' })
-  @ApiResponse({
-    status: 200,
-    description: 'Servicios obtenidos exitosamente',
+  @ApiOperation({ 
+    summary: 'Obtener todos los servicios',
+    description: `Obtiene el catálogo de servicios ofrecidos. 
+    
+Útil para mostrarle al Doctor o Administrador las opciones disponibles al momento de **crear una consulta**.
+El arreglo devuelto contendrá el \`id\` que se debe usar en el campo \`serviceIds\` de la consulta.`
+  })
+  @ApiOkResponse({
+    description: 'Servicios obtenidos exitosamente.',
     schema: {
-      example: {
+      example: [{
         id: '12345678-1234-1234-1234-123456789012',
         name: 'Consultoría Nutricional',
         description: 'Evaluación y orientación nutricional personalizada.',
@@ -81,7 +92,7 @@ export class ServiceController {
           updatedAt: '2022-01-01T00:00:00.000Z',
         },
         consultations: [],
-      },
+      }],
     },
   })
   findAll(@Param('isActive') isActive: boolean) {

@@ -24,6 +24,7 @@ enum ConsultationStatus {
 enum Role {
   ADMIN
   DOCTOR
+  WORKER
   PATIENT
 }
 
@@ -39,12 +40,14 @@ model User {
   phone     String?
   roles     Role[] @default([PATIENT])
   isActive    Boolean  @default(true)
+  fcmToken    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   auditLogs AuditLog[] 
   doctor    Doctor?    
   patient   Patient?  
+  attendances Attendance[]
 }
 
 model Doctor {
@@ -149,4 +152,19 @@ model AuditLog {
   usuario          User     @relation(fields: [userCode], references: [id])
 
   @@map("audit_log")
+}
+
+model Attendance {
+  id              String    @id @default(cuid())
+  date            DateTime  @default(now()) @db.Date
+  entryTime      DateTime?
+  lunchStartTime DateTime?
+  lunchEndTime   DateTime?
+  exitTime       DateTime?
+
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 }

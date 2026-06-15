@@ -4,7 +4,7 @@ CLIMAS es una aplicación integral para la gestión de clínicas médicas. Permi
 
 El proyecto está estructurado como un **monorepo**, separando claramente la lógica del servidor (backend) y la interfaz de usuario (frontend).
 
-## 🚀 Tecnologías Utilizadas
+## Tecnologias Utilizadas
 
 ### Frontend
 - **HTML5 & CSS3**
@@ -21,14 +21,14 @@ El proyecto está estructurado como un **monorepo**, separando claramente la ló
 
 ---
 
-## 📁 Estructura del Repositorio
+## Estructura del Repositorio
 
 - `/frontend`: Contiene la aplicación web (HTML, hojas de estilo en CSS y lógica en JavaScript).
 - `/backend`: Contiene la API REST desarrollada con NestJS y la configuración de la base de datos (esquema de Prisma).
 
 ---
 
-## ⚙️ Requisitos Previos
+## Requisitos Previos
 
 Asegúrate de tener instalado lo siguiente en tu entorno local:
 - [Node.js](https://nodejs.org/) (v18 o superior)
@@ -37,7 +37,7 @@ Asegúrate de tener instalado lo siguiente en tu entorno local:
 
 ---
 
-## 🛠️ Instalación y Ejecución
+## Instalacion y Ejecucion
 
 ### Backend
 
@@ -76,7 +76,7 @@ Dado que está construido con Vanilla JS, HTML y CSS:
 
 ---
 
-## 📚 Documentación de la API
+## Documentacion de la API
 
 La API cuenta con documentación interactiva mediante **Swagger**.
 - Con el backend en ejecución, navega a: `http://localhost:3000/api/docs`.
@@ -84,7 +84,7 @@ La API cuenta con documentación interactiva mediante **Swagger**.
 
 ---
 
-## 🌿 Branching (GitFlow)
+## Branching (GitFlow)
 
 | Rama | Propósito |
 |------|-----------|
@@ -103,7 +103,7 @@ La API cuenta con documentación interactiva mediante **Swagger**.
 
 ---
 
-## 👥 Integrantes
+## Integrantes
 
 - Martín Castillo
 - Diego Contreras

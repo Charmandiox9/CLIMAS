@@ -11,6 +11,9 @@ import { ServiceModule } from './service/service.module';
 import { MedicalRecordModule } from './medical-record/medical-record.module';
 import { ConsultationModule } from './consultation/consultation.module';
 import { AreaModule } from './area/area.module';
+import { AttendanceModule } from './attendance/attendance.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { CronModule } from './cron/cron.module';
 
 @Module({
   imports: [
@@ -24,6 +27,9 @@ import { AreaModule } from './area/area.module';
     MedicalRecordModule,
     ConsultationModule,
     AreaModule,
+    AttendanceModule,
+    NotificationsModule,
+    CronModule,
   ],
   controllers: [AppController],
   providers: [

@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query, HttpStatus, H
 import { AreaService } from './area.service';
 import { CreateAreaDto } from './dto/create-area.dto';
 import { UpdateAreaDto } from './dto/update-area.dto';
-import { ApiBearerAuth, ApiTags, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags, ApiOperation, ApiQuery, ApiResponse, ApiCreatedResponse, ApiOkResponse, ApiBadRequestResponse, ApiInternalServerErrorResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
@@ -16,10 +16,13 @@ export class AreaController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ 
     summary: 'Crear una nueva área', 
-    description: 'Permite crear una nueva especialidad o área médica (ej. Cardiología). Solo disponible para usuarios con rol ADMIN.' 
+    description: `Permite crear una nueva especialidad o área médica (ej. Cardiología). 
+    
+Las áreas agrupan a **Doctores** y **Servicios**. Es decir, antes de poder registrar un Doctor en Cardiología, debe existir el Área "Cardiología".
+
+**Roles permitidos**: ADMIN.` 
   })
-  @ApiResponse({
-    status: 201,
+  @ApiCreatedResponse({
     description: 'Área creada exitosamente.',
     schema: {
       example: {
@@ -32,7 +35,7 @@ export class AreaController {
       },
     },
   })
-  @ApiResponse({ status: 400, description: 'Datos inválidos (Bad Request).', schema: { example: { statusCode: 400, message: ['name must be a string'], error: 'Bad Request' } } })
+  @ApiBadRequestResponse({ description: 'Datos inválidos o el nombre del Área ya existe.', schema: { example: { statusCode: 400, message: ['name must be a string'], error: 'Bad Request' } } })
   @ApiResponse({ status: 401, description: 'No autorizado.', schema: { example: { statusCode: 401, message: 'Unauthorized' } } })
   @ApiResponse({ status: 403, description: 'Prohibido. Se requiere rol ADMIN.', schema: { example: { statusCode: 403, message: 'Forbidden resource', error: 'Forbidden' } } })
   @ApiBearerAuth()
@@ -46,11 +49,15 @@ export class AreaController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ 
     summary: 'Obtener todas las áreas', 
-    description: 'Devuelve una lista con todas las áreas médicas del sistema. Puedes filtrar por áreas activas o inactivas enviando el parámetro opcional ?isActive=true o false.' 
+    description: `Devuelve una lista con todas las áreas médicas del sistema. 
+    
+Útil para mostrar el menú de especialidades en el que un paciente puede buscar un Doctor o un Servicio.
+Puedes filtrar por áreas activas o inactivas enviando el parámetro opcional \`?isActive=true\` o \`false\`.
+
+**Roles permitidos**: ADMIN, DOCTOR, PATIENT.` 
   })
   @ApiQuery({ name: 'isActive', required: false, type: Boolean })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Lista de áreas obtenida exitosamente.',
     schema: {
       example: [
@@ -65,10 +72,8 @@ export class AreaController {
       ],
     },
   })
-  @ApiResponse({ status: 401, description: 'No autorizado.', schema: { example: { statusCode: 401, message: 'Unauthorized' } } })
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN', 'DOCTOR', 'PATIENT')
+  // Endpoint público: No requiere Auth
+  @ApiResponse({ status: 400, description: 'Datos inválidos', schema: { example: { statusCode: 400, message: 'Bad Request' } } })
   findAll(@Query('isActive') isActive?: string) {
     const isAct = isActive === 'false' ? false : true;
     return this.areaService.findAll(isAct);

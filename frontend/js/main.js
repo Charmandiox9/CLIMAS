@@ -48,6 +48,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         dashContainer.innerHTML = DashboardPage(session);
     }   
 
+    const skeletonHTML = `
+        <style>
+            @keyframes pulse-sk { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+            .skeleton-box { background: #e2e8f0; border-radius: 8px; animation: pulse-sk 1.5s infinite ease-in-out; }
+            .skeleton-container { display: flex; gap: 20px; padding: 20px; max-width: 1200px; margin: 0 auto; height: 100vh;}
+            .skeleton-sidebar { width: 250px; height: 100%; display: flex; flex-direction: column; gap: 15px; }
+            .skeleton-main { flex: 1; display: flex; flex-direction: column; gap: 20px; }
+        </style>
+        <div class="skeleton-container">
+            <div class="skeleton-sidebar">
+                <div class="skeleton-box" style="height: 150px; border-radius: 12px;"></div>
+                <div class="skeleton-box" style="height: 40px;"></div>
+                <div class="skeleton-box" style="height: 40px;"></div>
+                <div class="skeleton-box" style="height: 40px;"></div>
+            </div>
+            <div class="skeleton-main">
+                <div class="skeleton-box" style="height: 60px; border-radius: 12px;"></div>
+                <div class="skeleton-box" style="height: 200px; border-radius: 12px;"></div>
+                <div class="skeleton-box" style="flex: 1; border-radius: 12px;"></div>
+            </div>
+        </div>
+    `;
+
     const heroContainer = document.getElementById('hero');
     const aboutContainer = document.getElementById('about-page');
     const scheduleContainer = document.getElementById('schedule-page');
@@ -55,7 +78,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (heroContainer) {
         heroContainer.innerHTML = Hero();
         const specialtiesContainer = document.getElementById('specialties');
-        if (specialtiesContainer) specialtiesContainer.innerHTML = Specialties();
+        if (specialtiesContainer) {
+            specialtiesContainer.innerHTML = `
+                <div style="display:flex; justify-content:center; gap:20px; padding:40px;">
+                    <div style="width:200px; height:150px; background:#e2e8f0; border-radius:12px; animation:pulse-sk 1.5s infinite ease-in-out;"></div>
+                    <div style="width:200px; height:150px; background:#e2e8f0; border-radius:12px; animation:pulse-sk 1.5s infinite ease-in-out;"></div>
+                    <div style="width:200px; height:150px; background:#e2e8f0; border-radius:12px; animation:pulse-sk 1.5s infinite ease-in-out;"></div>
+                </div>
+            `;
+            Specialties().then(html => specialtiesContainer.innerHTML = html);
+        }
     }
 
     if (aboutContainer) {
@@ -73,8 +105,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!session) {
             window.location.href = 'login.html';
         } else {
-            doctorDashContainer.innerHTML = await DashboardPage(session);
-            initDoctorDashboardEvents();
+            doctorDashContainer.innerHTML = skeletonHTML;
+            DashboardPage(session).then(html => {
+                doctorDashContainer.innerHTML = html;
+                initDoctorDashboardEvents();
+            });
         }
     }
 
@@ -84,8 +119,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!session) {
             window.location.href = 'login.html';
         } else {
-            userDashContainer.innerHTML = UserDashboardPage(session);
-            initUserDashboardEvents();
+            userDashContainer.innerHTML = skeletonHTML;
+            UserDashboardPage(session).then(html => {
+                userDashContainer.innerHTML = html;
+                initUserDashboardEvents();
+            });
         }
     }
 
@@ -93,7 +131,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (adminDashContainer) {
         const session = JSON.parse(localStorage.getItem('user_session'));
-        if (session && session.role === 'admin') {
+        if (session && session.roles && session.roles.includes('ADMIN')) {
+            adminDashContainer.innerHTML = skeletonHTML;
             AdminDashboardPage(session).then(html => {
                 adminDashContainer.innerHTML = html;
                 initAdminDashboardEvents();

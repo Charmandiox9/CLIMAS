@@ -1,41 +1,47 @@
+import { apiFetch } from '../utils/api.js';
+
 export async function AdminDashboardPage(admin) {
-  const res = await fetch('../assets/data/equipomedico.json');
-  const data = await res.json();
+  let users = [];
+  let doctors = [];
+  let specialties = [];
+  let appointments = [];
 
-  const users = [...data.users];
-  const doctors = [...data.doctors];
-
-  const specialties = [
-    "Cardiología",
-    "Neurología",
-    "Pediatría",
-    "Medicina General",
-    "Kinesiología",
-    "Traumatología"
-  ];
-
-  const appointments = [
-    { hour: "09:00", patient: "Alan Brito", reason: "Control Post-Operatorio", status: "Confirmado" },
-    { hour: "10:30", patient: "Elena Nito", reason: "Consulta General", status: "Pendiente" },
-    { hour: "12:00", patient: "Zacarias Labarca", reason: "Revisión de Exámenes", status: "En espera" }
-  ];
+  try {
+    users = await apiFetch('/user');
+    doctors = await apiFetch('/user/doctors');
+    const areas = await apiFetch('/area');
+    specialties = areas.map(a => a.name);
+    
+    const consultationsData = await apiFetch('/consultation');
+    appointments = consultationsData.map(c => {
+      const d = new Date(c.dateTime);
+      return {
+        hour: `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`,
+        patient: `${c.patient?.user?.firstName || 'N/A'} ${c.patient?.user?.lastName || ''}`,
+        reason: c.reason || 'Consulta General',
+        status: c.status
+      };
+    });
+  } catch (error) {
+    console.error("Error cargando datos de admin", error);
+  }
 
   const usersCards = users.map(user => `
     <div class="user-card">
-      <h4>${user.id}</h4>
-      <h4>${user.name}</h4>
+      <h4>ID: ${user.id}</h4>
+      <h4>${user.firstName} ${user.lastName}</h4>
       <h4>${user.email}</h4>
     </div>
   `).join('');
 
   const doctorsCards = doctors.map(doc => `
     <div class="doctor-card">
-      <img src="../assets/${doc.FotoPerfil || 'img/drs/default.png'}" class="doctor-avatar">
-      <h4>${doc.id}</h4>
-      <h4>${doc.nombreCompleto}</h4>
+      <img src="../assets/img/drs/default.png" class="doctor-avatar">
+      <h4>ID: ${doc.doctor?.id}</h4>
+      <h4>Dr(a). ${doc.firstName} ${doc.lastName}</h4>
       <h4>${doc.email}</h4>
-      <h4>${doc.Especialidad}</h4>
-      <h4>${doc.disponibilidad}</h4>
+      <h4>${doc.doctor?.area?.name || 'General'}</h4>
+      <h4>Licencia: ${doc.doctor?.medicalLicense || 'N/A'}</h4>
     </div>
   `).join('');
 
@@ -63,8 +69,8 @@ export async function AdminDashboardPage(admin) {
     <div class="dash-layout">
       <aside class="dash-sidebar">
         <div class="profile-section">
-          <img src="../assets/${admin.FotoPerfil || 'img/drs/Gemini_Generated_Image_rst2fvrst2fvrst2.png'}" class="doctor-avatar">
-          <h3>${admin.name}</h3>
+          <img src="../assets/img/drs/Gemini_Generated_Image_rst2fvrst2fvrst2.png" class="doctor-avatar">
+          <h3>${admin.firstName} ${admin.lastName}</h3>
           <p>Administrador</p>
         </div>
         <nav class="dash-nav">
@@ -83,6 +89,14 @@ export async function AdminDashboardPage(admin) {
           <a href="#" class="nav-btn" data-target="section-citas">
             <i class="fa-solid fa-calendar-day"></i> Agenda de Citas
           </a>
+          ${(admin.roles && admin.roles.length > 1) ? `
+          <hr>
+          <div class="role-switcher" style="padding: 5px 15px;">
+              <p style="font-size:12px; color:#a0aec0; margin-bottom:10px; font-weight:bold;">CAMBIAR DE PANEL</p>
+              ${admin.roles.includes('PATIENT') ? `<a href="user_dashboard.html" class="nav-btn" style="margin-bottom:5px; background:#e2e8f0; color:#2c3e50;"><i class="fa-solid fa-user-injured"></i> Panel Paciente</a>` : ''}
+              ${admin.roles.includes('DOCTOR') ? `<a href="doctor_dashboard.html" class="nav-btn" style="margin-bottom:5px; background:#e2e8f0; color:#2c3e50;"><i class="fa-solid fa-user-md"></i> Panel Médico</a>` : ''}
+          </div>
+          ` : ''}
           <hr>
           <a href="#" id="logout-btn" class="logout-link">
             <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
@@ -122,8 +136,9 @@ export function initDashboardEvents() {
 
   buttons.forEach(btn => {
     btn.addEventListener('click', (e) => {
-      e.preventDefault();
       const target = btn.getAttribute('data-target');
+      if (!target) return;
+      e.preventDefault();
 
       buttons.forEach(b => b.classList.remove('activate'));
       sections.forEach(s => s.style.display = 'none');

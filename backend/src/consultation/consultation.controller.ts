@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, HttpCode
 import { ConsultationService } from './consultation.service';
 import { CreateConsultationDto } from './dto/create-consultation.dto';
 import { UpdateConsultationDto } from './dto/update-consultation.dto';
-import { ApiBearerAuth, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags, ApiOperation, ApiResponse, ApiBadRequestResponse, ApiInternalServerErrorResponse, ApiNotFoundResponse, ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
@@ -16,10 +16,17 @@ export class ConsultationController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ 
     summary: 'Crear una nueva consulta', 
-    description: 'Programa una nueva cita médica. Se requiere vincularla a un Doctor, a un Paciente, y a al menos un Servicio válido. Disponible para ADMIN y DOCTOR.' 
+    description: `Programa una nueva cita médica en el sistema.
+
+### 🛑 Importante: Flujo a seguir
+Para evitar errores al crear una consulta, asegúrate de:
+1. **Obtener Doctor**: Consultar \`GET /doctor\` para obtener el **ID real del doctor** y enviarlo en \`doctorId\`. (No usar el ID de \`User\`).
+2. **Obtener Paciente**: Consultar \`GET /patient\` para obtener el **ID real del paciente** y enviarlo en \`patientId\`. (No usar el ID de \`User\`).
+3. **Servicios (Opcional)**: Consultar \`GET /service\` para extraer los IDs de los servicios y enviarlos en \`serviceIds\` como un arreglo de strings.
+
+**Roles permitidos**: ADMIN y DOCTOR.` 
   })
-  @ApiResponse({
-    status: 201,
+  @ApiCreatedResponse({
     description: 'Consulta creada exitosamente.',
     schema: {
       example: {
@@ -34,9 +41,10 @@ export class ConsultationController {
       },
     },
   })
-  @ApiResponse({ status: 400, description: 'Datos inválidos (Bad Request).', schema: { example: { statusCode: 400, message: ['dateTime must be a Date instance'], error: 'Bad Request' } } })
-  @ApiResponse({ status: 401, description: 'No autorizado.', schema: { example: { statusCode: 401, message: 'Unauthorized' } } })
+  @ApiBadRequestResponse({ description: 'Datos inválidos (Bad Request). Ej: Formato de fecha incorrecto o serviceIds no es un array.', schema: { example: { statusCode: 400, message: ['dateTime must be a Date instance'], error: 'Bad Request' } } })
+  @ApiResponse({ status: 401, description: 'No autorizado. Se requiere Token JWT.', schema: { example: { statusCode: 401, message: 'Unauthorized' } } })
   @ApiResponse({ status: 403, description: 'Prohibido. Se requiere rol ADMIN o DOCTOR.', schema: { example: { statusCode: 403, message: 'Forbidden resource', error: 'Forbidden' } } })
+  @ApiInternalServerErrorResponse({ description: 'Error interno del servidor. Suele ocurrir por violación de Foreign Key (ej. enviar el ID de un User en lugar del de un Doctor o Paciente).', schema: { example: { statusCode: 500, message: 'Internal server error' } } })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN', 'DOCTOR')
@@ -48,10 +56,17 @@ export class ConsultationController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ 
     summary: 'Obtener todas las consultas', 
-    description: 'Obtiene el registro histórico completo de todas las consultas médicas del sistema. Solo disponible para usuarios con rol ADMIN.' 
+    description: `Obtiene el registro histórico completo de todas las consultas médicas del sistema.
+    
+**Incluye relaciones:** 
+- Datos básicos del doctor.
+- Datos básicos del paciente.
+- Servicios brindados.
+- Registro Médico (clinical notes, prescription, diagnosis) asociado.
+
+**Roles permitidos**: ADMIN.` 
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Lista de consultas obtenida exitosamente.',
     schema: {
       example: [
@@ -68,8 +83,9 @@ export class ConsultationController {
       ],
     },
   })
-  @ApiResponse({ status: 401, description: 'No autorizado.', schema: { example: { statusCode: 401, message: 'Unauthorized' } } })
+  @ApiResponse({ status: 401, description: 'No autorizado. Se requiere Token JWT.', schema: { example: { statusCode: 401, message: 'Unauthorized' } } })
   @ApiResponse({ status: 403, description: 'Prohibido. Se requiere rol ADMIN.', schema: { example: { statusCode: 403, message: 'Forbidden resource', error: 'Forbidden' } } })
+  @ApiBadRequestResponse({ description: 'No hay consultas registradas.', schema: { example: { statusCode: 400, message: 'No hay consultas registradas' } } })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
@@ -80,11 +96,14 @@ export class ConsultationController {
   @Get('user/:userId')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ 
-    summary: 'Obtener consultas por ID de usuario', 
-    description: 'Retorna todas las citas asociadas a un usuario en específico, sin importar si este actuó como Doctor o como Paciente en dichas citas.' 
+    summary: 'Obtener consultas por ID de usuario (User ID)', 
+    description: `Retorna todas las citas asociadas a un **usuario** en específico. 
+    
+Este endpoint busca inteligentemente en la base de datos para saber si el usuario participó en la cita médica, **ya sea como Doctor o como Paciente**.
+
+**Roles permitidos**: ADMIN, DOCTOR, PATIENT.` 
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Consultas del usuario obtenidas exitosamente.',
     schema: {
       example: [
@@ -101,7 +120,8 @@ export class ConsultationController {
       ],
     },
   })
-  @ApiResponse({ status: 401, description: 'No autorizado.', schema: { example: { statusCode: 401, message: 'Unauthorized' } } })
+  @ApiResponse({ status: 401, description: 'No autorizado. Se requiere Token JWT.', schema: { example: { statusCode: 401, message: 'Unauthorized' } } })
+  @ApiBadRequestResponse({ description: 'No hay consultas para este usuario.', schema: { example: { statusCode: 400, message: 'No hay consultas para este usuario' } } })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN', 'DOCTOR', 'PATIENT')
@@ -113,10 +133,16 @@ export class ConsultationController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ 
     summary: 'Obtener consulta por ID', 
-    description: 'Busca y retorna la información completa de una consulta específica, incluyendo detalles del doctor, paciente y servicios brindados.' 
+    description: `Busca y retorna la información completa de una consulta médica en específico.
+
+**Incluye relaciones:**
+- Información del doctor y paciente.
+- Servicios asociados.
+- Notas clínicas y diagnóstico si tiene un MedicalRecord asociado.
+
+**Roles permitidos**: ADMIN, DOCTOR, PATIENT.` 
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Consulta obtenida exitosamente.',
     schema: {
       example: {
@@ -131,8 +157,8 @@ export class ConsultationController {
       },
     },
   })
-  @ApiResponse({ status: 401, description: 'No autorizado.', schema: { example: { statusCode: 401, message: 'Unauthorized' } } })
-  @ApiResponse({ status: 404, description: 'Consulta no encontrada.', schema: { example: { statusCode: 404, message: 'Consultation not found', error: 'Not Found' } } })
+  @ApiResponse({ status: 401, description: 'No autorizado. Se requiere Token JWT.', schema: { example: { statusCode: 401, message: 'Unauthorized' } } })
+  @ApiBadRequestResponse({ description: 'Consulta no encontrada.', schema: { example: { statusCode: 400, message: 'No existe consulta con este ID', error: 'Bad Request' } } })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN', 'DOCTOR', 'PATIENT')
@@ -144,10 +170,17 @@ export class ConsultationController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ 
     summary: 'Actualizar consulta por ID', 
-    description: 'Permite re-agendar, cambiar el estado (ej. de SCHEDULED a COMPLETED) o modificar el motivo de una cita médica. Disponible para ADMIN y DOCTOR.' 
+    description: `Permite re-agendar, cambiar el estado de la cita o modificar el motivo.
+
+### Casos de uso comunes:
+- **Cambio de estado**: Puedes pasar el \`status\` a \`COMPLETED\`, \`CANCELED\`, o \`NO_SHOW\`.
+- **Re-agendar**: Modificar el \`dateTime\` de la cita.
+
+Solo se deben enviar los campos que se desean modificar (es una actualización parcial).
+
+**Roles permitidos**: ADMIN, DOCTOR.` 
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Consulta actualizada exitosamente.',
     schema: {
       example: {
@@ -162,10 +195,9 @@ export class ConsultationController {
       },
     },
   })
-  @ApiResponse({ status: 400, description: 'Datos inválidos (Bad Request).', schema: { example: { statusCode: 400, message: ['status must be a valid enum value'], error: 'Bad Request' } } })
-  @ApiResponse({ status: 401, description: 'No autorizado.', schema: { example: { statusCode: 401, message: 'Unauthorized' } } })
+  @ApiBadRequestResponse({ description: 'Datos inválidos (Bad Request) o ID de consulta no existe.', schema: { example: { statusCode: 400, message: ['status must be a valid enum value'], error: 'Bad Request' } } })
+  @ApiResponse({ status: 401, description: 'No autorizado. Se requiere Token JWT.', schema: { example: { statusCode: 401, message: 'Unauthorized' } } })
   @ApiResponse({ status: 403, description: 'Prohibido. Se requiere rol ADMIN o DOCTOR.', schema: { example: { statusCode: 403, message: 'Forbidden resource', error: 'Forbidden' } } })
-  @ApiResponse({ status: 404, description: 'Consulta no encontrada.', schema: { example: { statusCode: 404, message: 'Consultation not found', error: 'Not Found' } } })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN', 'DOCTOR')
@@ -177,10 +209,13 @@ export class ConsultationController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ 
     summary: 'Eliminar consulta por ID', 
-    description: 'Borra definitivamente una consulta médica de los registros. Esta acción es destructiva y solo puede ser ejecutada por un ADMIN.' 
+    description: `Borra definitivamente una consulta médica de los registros y sus relaciones. 
+
+**¡Acción destructiva!** Generalmente es mejor cambiar el estado de la consulta a \`CANCELED\` usando el método PATCH.
+
+**Roles permitidos**: ADMIN.` 
   })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Consulta eliminada exitosamente.',
     schema: {
       example: {
@@ -195,9 +230,9 @@ export class ConsultationController {
       },
     },
   })
-  @ApiResponse({ status: 401, description: 'No autorizado.', schema: { example: { statusCode: 401, message: 'Unauthorized' } } })
+  @ApiResponse({ status: 401, description: 'No autorizado. Se requiere Token JWT.', schema: { example: { statusCode: 401, message: 'Unauthorized' } } })
   @ApiResponse({ status: 403, description: 'Prohibido. Se requiere rol ADMIN.', schema: { example: { statusCode: 403, message: 'Forbidden resource', error: 'Forbidden' } } })
-  @ApiResponse({ status: 404, description: 'Consulta no encontrada.', schema: { example: { statusCode: 404, message: 'Consultation not found', error: 'Not Found' } } })
+  @ApiBadRequestResponse({ description: 'Consulta no encontrada.', schema: { example: { statusCode: 400, message: 'No existe consulta con este ID', error: 'Bad Request' } } })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')

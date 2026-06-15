@@ -25,6 +25,7 @@
     },
     "/user": {
       "post": {
+        "description": "Crea un usuario genérico en el sistema.\n\n**Nota:** Este endpoint **NO** crea automáticamente el perfil de `Doctor` ni `Patient`. Si deseas registrar un Doctor o un Paciente completo, usa los endpoints específicos:\n- `POST /user/doctor`\n- `POST /user/patient`\n\n**Roles permitidos**: ADMIN.\n    ",
         "operationId": "UserController_create",
         "parameters": [],
         "requestBody": {
@@ -60,7 +61,7 @@
             }
           },
           "400": {
-            "description": "RUT o email ya existe",
+            "description": "Datos inválidos o el RUT/Email ya existe en la base de datos.",
             "content": {
               "application/json": {
                 "schema": {
@@ -106,7 +107,7 @@
             "bearer": []
           }
         ],
-        "summary": "Crear un nuevo usuario",
+        "summary": "Crear un nuevo usuario (ADMIN/General)",
         "tags": [
           "Users"
         ]
@@ -179,6 +180,7 @@
     },
     "/user/doctor": {
       "post": {
+        "description": "Crea de forma atómica un **Usuario** y su perfil de **Doctor** asociado.\n\n### Detalles importantes:\n- Debes enviar el `areaId` real de un área existente.\n- Retorna la información completa, incluyendo el `id` del registro `Doctor` (este es el que se usa luego para crear `Consultations`).\n\n**Roles permitidos**: ADMIN.",
         "operationId": "UserController_createDoctor",
         "parameters": [],
         "requestBody": {
@@ -193,12 +195,12 @@
         },
         "responses": {
           "201": {
-            "description": "Doctor creado exitosamente",
+            "description": "Usuario y perfil de Doctor creados exitosamente.",
             "content": {
               "application/json": {
                 "schema": {
                   "example": {
-                    "id": "123e4567-e89b-12d3-a456-426614174000",
+                    "id": "user-uuid",
                     "firstName": "María",
                     "lastName": "González",
                     "rut": "98765432-1",
@@ -222,7 +224,7 @@
             }
           },
           "400": {
-            "description": "RUT o email ya existe",
+            "description": "Datos inválidos o el RUT/Email ya existe.",
             "content": {
               "application/json": {
                 "schema": {
@@ -261,6 +263,9 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Error interno. Posiblemente el `areaId` no exista en la tabla Area."
           }
         },
         "security": [
@@ -276,6 +281,7 @@
     },
     "/user/patient": {
       "post": {
+        "description": "Crea de forma atómica un **Usuario** y su perfil de **Patient** asociado.\n\n### Retorno:\nSe devolverá el `id` principal del Usuario, pero también el sub-objeto `patient`. El `id` dentro de `patient` es el que debes usar para registrar **Consultas Médicas**.\n\n**Roles permitidos**: ADMIN.",
         "operationId": "UserController_createPatient",
         "parameters": [],
         "requestBody": {
@@ -290,12 +296,12 @@
         },
         "responses": {
           "201": {
-            "description": "Paciente creado exitosamente",
+            "description": "Usuario y perfil de Paciente creados exitosamente.",
             "content": {
               "application/json": {
                 "schema": {
                   "example": {
-                    "id": "123e4567-e89b-12d3-a456-426614174000",
+                    "id": "user-uuid",
                     "firstName": "Carlos",
                     "lastName": "López",
                     "rut": "11223344-5",
@@ -317,7 +323,7 @@
             }
           },
           "400": {
-            "description": "RUT o email ya existe",
+            "description": "Datos inválidos o RUT/Email ya existe.",
             "content": {
               "application/json": {
                 "schema": {
@@ -371,17 +377,18 @@
     },
     "/user/doctors": {
       "get": {
+        "description": "Retorna la lista de todos los usuarios que tienen el rol de **DOCTOR**.\n\nÚtil para poblar selects en el frontend cuando se va a agendar una consulta. \n**Recuerda**: Usa el `doctor.id` devuelto en esta lista para las consultas, no el `id` del nivel superior (que es el del User).",
         "operationId": "UserController_getDoctors",
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Lista de doctores obtenida exitosamente",
+            "description": "Lista de doctores obtenida exitosamente.",
             "content": {
               "application/json": {
                 "schema": {
                   "example": [
                     {
-                      "id": "123e4567-e89b-12d3-a456-426614174000",
+                      "id": "user-uuid",
                       "firstName": "María",
                       "lastName": "González",
                       "rut": "98765432-1",
@@ -433,11 +440,6 @@
             }
           }
         },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
         "summary": "Obtener todos los doctores",
         "tags": [
           "Users"
@@ -446,17 +448,18 @@
     },
     "/user/patients": {
       "get": {
+        "description": "Retorna la lista de todos los usuarios con rol de **PATIENT**.\n\nÚtil para agendar consultas o buscar pacientes.\n**Recuerda**: Extrae el `patient.id` del objeto devuelto para vincular consultas, no el `id` superior.",
         "operationId": "UserController_getPatients",
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Lista de pacientes obtenida exitosamente",
+            "description": "Lista de pacientes obtenida exitosamente.",
             "content": {
               "application/json": {
                 "schema": {
                   "example": [
                     {
-                      "id": "123e4567-e89b-12d3-a456-426614174000",
+                      "id": "user-uuid",
                       "firstName": "Carlos",
                       "lastName": "López",
                       "rut": "11223344-5",
@@ -852,6 +855,21 @@
         ]
       }
     },
+    "/user/me/fcm-token": {
+      "patch": {
+        "operationId": "UserController_updateFcmToken",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Actualizar el token FCM del usuario autenticado",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
     "/auth/login": {
       "post": {
         "operationId": "AuthController_signIn",
@@ -956,6 +974,7 @@
     },
     "/service": {
       "post": {
+        "description": "Permite a un administrador crear un nuevo servicio médico en el sistema (Ej. \"Consultoría Nutricional\", \"Electrocardiograma\").\n\n**Nota**: Se requiere enviar un `areaId` válido que relacione este servicio con una especialidad/área del centro médico.",
         "operationId": "ServiceController_create",
         "parameters": [],
         "requestBody": {
@@ -970,14 +989,14 @@
         },
         "responses": {
           "201": {
-            "description": "Servicio creado exitosamente",
+            "description": "Servicio creado exitosamente.",
             "content": {
               "application/json": {
                 "schema": {
                   "example": {
                     "id": "12345678-1234-1234-1234-123456789012",
-                    "name": "Service Name",
-                    "description": "Service Description",
+                    "name": "Consulta de control",
+                    "description": "Chequeo de rutina",
                     "price": 100,
                     "duration": 60,
                     "areaId": "12345678-1234-1234-1234-123456789012",
@@ -1001,6 +1020,7 @@
         ]
       },
       "get": {
+        "description": "Obtiene el catálogo de servicios ofrecidos. \n    \nÚtil para mostrarle al Doctor o Administrador las opciones disponibles al momento de **crear una consulta**.\nEl arreglo devuelto contendrá el `id` que se debe usar en el campo `serviceIds` de la consulta.",
         "operationId": "ServiceController_findAll",
         "parameters": [
           {
@@ -1014,30 +1034,32 @@
         ],
         "responses": {
           "200": {
-            "description": "Servicios obtenidos exitosamente",
+            "description": "Servicios obtenidos exitosamente.",
             "content": {
               "application/json": {
                 "schema": {
-                  "example": {
-                    "id": "12345678-1234-1234-1234-123456789012",
-                    "name": "Consultoría Nutricional",
-                    "description": "Evaluación y orientación nutricional personalizada.",
-                    "price": 100,
-                    "duration": 60,
-                    "areaId": "12345678-1234-1234-1234-123456789012",
-                    "isActive": true,
-                    "createdAt": "2022-01-01T00:00:00.000Z",
-                    "updatedAt": "2022-01-01T00:00:00.000Z",
-                    "area": {
+                  "example": [
+                    {
                       "id": "12345678-1234-1234-1234-123456789012",
-                      "name": "Nutrición",
-                      "description": "Área encargada de la nutrición",
+                      "name": "Consultoría Nutricional",
+                      "description": "Evaluación y orientación nutricional personalizada.",
+                      "price": 100,
+                      "duration": 60,
+                      "areaId": "12345678-1234-1234-1234-123456789012",
                       "isActive": true,
                       "createdAt": "2022-01-01T00:00:00.000Z",
-                      "updatedAt": "2022-01-01T00:00:00.000Z"
-                    },
-                    "consultations": []
-                  }
+                      "updatedAt": "2022-01-01T00:00:00.000Z",
+                      "area": {
+                        "id": "12345678-1234-1234-1234-123456789012",
+                        "name": "Nutrición",
+                        "description": "Área encargada de la nutrición",
+                        "isActive": true,
+                        "createdAt": "2022-01-01T00:00:00.000Z",
+                        "updatedAt": "2022-01-01T00:00:00.000Z"
+                      },
+                      "consultations": []
+                    }
+                  ]
                 }
               }
             }
@@ -1210,6 +1232,7 @@
     },
     "/medical-record": {
       "post": {
+        "description": "Crea el registro clínico asociado a una consulta médica ya existente.\n\n### 🛑 Importante: Relación 1 a 1\nEn la base de datos, `MedicalRecord` tiene una relación uno a uno con `Consultation`. \n**No puedes** crear más de un registro médico para la misma `consultationId`. Si lo intentas, recibirás un error interno por violación de clave única (Unique constraint).\n\n**Roles permitidos**: ADMIN, DOCTOR.",
         "operationId": "MedicalRecordController_create",
         "parameters": [],
         "requestBody": {
@@ -1224,7 +1247,7 @@
         },
         "responses": {
           "201": {
-            "description": "Registro médico creado exitosamente",
+            "description": "Registro médico creado exitosamente.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1254,6 +1277,9 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Error interno. Usualmente ocurre cuando intentas enviar un `consultationId` que ya tiene un registro médico asociado o que no existe."
           }
         },
         "security": [
@@ -1484,6 +1510,7 @@
     },
     "/medical-record/patient/{patientId}": {
       "get": {
+        "description": "Devuelve todos los registros médicos asociados a un **paciente específico**.\n\n**Recuerda**: El `patientId` que debes enviar aquí es el ID del perfil de paciente (`patient.id`), **NO** el `userId` del paciente.\n\n**Roles permitidos**: ADMIN, DOCTOR, PATIENT.",
         "operationId": "MedicalRecordController_findByPatientId",
         "parameters": [
           {
@@ -1536,7 +1563,7 @@
             "bearer": []
           }
         ],
-        "summary": "Obtener un registro médico por ID de paciente",
+        "summary": "Obtener historial clínico por Paciente (patientId)",
         "tags": [
           "Medical Record"
         ]
@@ -1544,6 +1571,7 @@
     },
     "/medical-record/doctor/{doctorId}": {
       "get": {
+        "description": "Devuelve todos los registros médicos que fueron redactados por un **doctor específico**.\n\n**Recuerda**: El `doctorId` que debes enviar aquí es el ID del perfil de doctor (`doctor.id`), **NO** el `userId` del doctor.\n\n**Roles permitidos**: ADMIN, DOCTOR, PATIENT.",
         "operationId": "MedicalRecordController_findByDoctorId",
         "parameters": [
           {
@@ -1596,7 +1624,7 @@
             "bearer": []
           }
         ],
-        "summary": "Obtener un registro médico por ID de doctor",
+        "summary": "Obtener registros médicos creados por un Doctor (doctorId)",
         "tags": [
           "Medical Record"
         ]
@@ -1604,7 +1632,7 @@
     },
     "/consultation": {
       "post": {
-        "description": "Programa una nueva cita médica. Se requiere vincularla a un Doctor, a un Paciente, y a al menos un Servicio válido. Disponible para ADMIN y DOCTOR.",
+        "description": "Programa una nueva cita médica en el sistema.\n\n### 🛑 Importante: Flujo a seguir\nPara evitar errores al crear una consulta, asegúrate de:\n1. **Obtener Doctor**: Consultar `GET /doctor` para obtener el **ID real del doctor** y enviarlo en `doctorId`. (No usar el ID de `User`).\n2. **Obtener Paciente**: Consultar `GET /patient` para obtener el **ID real del paciente** y enviarlo en `patientId`. (No usar el ID de `User`).\n3. **Servicios (Opcional)**: Consultar `GET /service` para extraer los IDs de los servicios y enviarlos en `serviceIds` como un arreglo de strings.\n\n**Roles permitidos**: ADMIN y DOCTOR.",
         "operationId": "ConsultationController_create",
         "parameters": [],
         "requestBody": {
@@ -1638,7 +1666,7 @@
             }
           },
           "400": {
-            "description": "Datos inválidos (Bad Request).",
+            "description": "Datos inválidos (Bad Request). Ej: Formato de fecha incorrecto o serviceIds no es un array.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1654,7 +1682,7 @@
             }
           },
           "401": {
-            "description": "No autorizado.",
+            "description": "No autorizado. Se requiere Token JWT.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1679,6 +1707,19 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Error interno del servidor. Suele ocurrir por violación de Foreign Key (ej. enviar el ID de un User en lugar del de un Doctor o Paciente).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 500,
+                    "message": "Internal server error"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1692,7 +1733,7 @@
         ]
       },
       "get": {
-        "description": "Obtiene el registro histórico completo de todas las consultas médicas del sistema. Solo disponible para usuarios con rol ADMIN.",
+        "description": "Obtiene el registro histórico completo de todas las consultas médicas del sistema.\n    \n**Incluye relaciones:** \n- Datos básicos del doctor.\n- Datos básicos del paciente.\n- Servicios brindados.\n- Registro Médico (clinical notes, prescription, diagnosis) asociado.\n\n**Roles permitidos**: ADMIN.",
         "operationId": "ConsultationController_findAll",
         "parameters": [],
         "responses": {
@@ -1717,8 +1758,21 @@
               }
             }
           },
+          "400": {
+            "description": "No hay consultas registradas.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 400,
+                    "message": "No hay consultas registradas"
+                  }
+                }
+              }
+            }
+          },
           "401": {
-            "description": "No autorizado.",
+            "description": "No autorizado. Se requiere Token JWT.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1758,7 +1812,7 @@
     },
     "/consultation/user/{userId}": {
       "get": {
-        "description": "Retorna todas las citas asociadas a un usuario en específico, sin importar si este actuó como Doctor o como Paciente en dichas citas.",
+        "description": "Retorna todas las citas asociadas a un **usuario** en específico. \n    \nEste endpoint busca inteligentemente en la base de datos para saber si el usuario participó en la cita médica, **ya sea como Doctor o como Paciente**.\n\n**Roles permitidos**: ADMIN, DOCTOR, PATIENT.",
         "operationId": "ConsultationController_findByUserId",
         "parameters": [
           {
@@ -1792,8 +1846,21 @@
               }
             }
           },
+          "400": {
+            "description": "No hay consultas para este usuario.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 400,
+                    "message": "No hay consultas para este usuario"
+                  }
+                }
+              }
+            }
+          },
           "401": {
-            "description": "No autorizado.",
+            "description": "No autorizado. Se requiere Token JWT.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1811,7 +1878,7 @@
             "bearer": []
           }
         ],
-        "summary": "Obtener consultas por ID de usuario",
+        "summary": "Obtener consultas por ID de usuario (User ID)",
         "tags": [
           "Consultation"
         ]
@@ -1819,7 +1886,7 @@
     },
     "/consultation/{id}": {
       "get": {
-        "description": "Busca y retorna la información completa de una consulta específica, incluyendo detalles del doctor, paciente y servicios brindados.",
+        "description": "Busca y retorna la información completa de una consulta médica en específico.\n\n**Incluye relaciones:**\n- Información del doctor y paciente.\n- Servicios asociados.\n- Notas clínicas y diagnóstico si tiene un MedicalRecord asociado.\n\n**Roles permitidos**: ADMIN, DOCTOR, PATIENT.",
         "operationId": "ConsultationController_findOne",
         "parameters": [
           {
@@ -1851,28 +1918,28 @@
               }
             }
           },
+          "400": {
+            "description": "Consulta no encontrada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 400,
+                    "message": "No existe consulta con este ID",
+                    "error": "Bad Request"
+                  }
+                }
+              }
+            }
+          },
           "401": {
-            "description": "No autorizado.",
+            "description": "No autorizado. Se requiere Token JWT.",
             "content": {
               "application/json": {
                 "schema": {
                   "example": {
                     "statusCode": 401,
                     "message": "Unauthorized"
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Consulta no encontrada.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "example": {
-                    "statusCode": 404,
-                    "message": "Consultation not found",
-                    "error": "Not Found"
                   }
                 }
               }
@@ -1890,7 +1957,7 @@
         ]
       },
       "patch": {
-        "description": "Permite re-agendar, cambiar el estado (ej. de SCHEDULED a COMPLETED) o modificar el motivo de una cita médica. Disponible para ADMIN y DOCTOR.",
+        "description": "Permite re-agendar, cambiar el estado de la cita o modificar el motivo.\n\n### Casos de uso comunes:\n- **Cambio de estado**: Puedes pasar el `status` a `COMPLETED`, `CANCELED`, o `NO_SHOW`.\n- **Re-agendar**: Modificar el `dateTime` de la cita.\n\nSolo se deben enviar los campos que se desean modificar (es una actualización parcial).\n\n**Roles permitidos**: ADMIN, DOCTOR.",
         "operationId": "ConsultationController_update",
         "parameters": [
           {
@@ -1933,7 +2000,7 @@
             }
           },
           "400": {
-            "description": "Datos inválidos (Bad Request).",
+            "description": "Datos inválidos (Bad Request) o ID de consulta no existe.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1949,7 +2016,7 @@
             }
           },
           "401": {
-            "description": "No autorizado.",
+            "description": "No autorizado. Se requiere Token JWT.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1974,20 +2041,6 @@
                 }
               }
             }
-          },
-          "404": {
-            "description": "Consulta no encontrada.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "example": {
-                    "statusCode": 404,
-                    "message": "Consultation not found",
-                    "error": "Not Found"
-                  }
-                }
-              }
-            }
           }
         },
         "security": [
@@ -2001,7 +2054,7 @@
         ]
       },
       "delete": {
-        "description": "Borra definitivamente una consulta médica de los registros. Esta acción es destructiva y solo puede ser ejecutada por un ADMIN.",
+        "description": "Borra definitivamente una consulta médica de los registros y sus relaciones. \n\n**¡Acción destructiva!** Generalmente es mejor cambiar el estado de la consulta a `CANCELED` usando el método PATCH.\n\n**Roles permitidos**: ADMIN.",
         "operationId": "ConsultationController_remove",
         "parameters": [
           {
@@ -2033,8 +2086,22 @@
               }
             }
           },
+          "400": {
+            "description": "Consulta no encontrada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "statusCode": 400,
+                    "message": "No existe consulta con este ID",
+                    "error": "Bad Request"
+                  }
+                }
+              }
+            }
+          },
           "401": {
-            "description": "No autorizado.",
+            "description": "No autorizado. Se requiere Token JWT.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2059,20 +2126,6 @@
                 }
               }
             }
-          },
-          "404": {
-            "description": "Consulta no encontrada.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "example": {
-                    "statusCode": 404,
-                    "message": "Consultation not found",
-                    "error": "Not Found"
-                  }
-                }
-              }
-            }
           }
         },
         "security": [
@@ -2088,7 +2141,7 @@
     },
     "/area": {
       "post": {
-        "description": "Permite crear una nueva especialidad o área médica (ej. Cardiología). Solo disponible para usuarios con rol ADMIN.",
+        "description": "Permite crear una nueva especialidad o área médica (ej. Cardiología). \n    \nLas áreas agrupan a **Doctores** y **Servicios**. Es decir, antes de poder registrar un Doctor en Cardiología, debe existir el Área \"Cardiología\".\n\n**Roles permitidos**: ADMIN.",
         "operationId": "AreaController_create",
         "parameters": [],
         "requestBody": {
@@ -2120,7 +2173,7 @@
             }
           },
           "400": {
-            "description": "Datos inválidos (Bad Request).",
+            "description": "Datos inválidos o el nombre del Área ya existe.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2174,7 +2227,7 @@
         ]
       },
       "get": {
-        "description": "Devuelve una lista con todas las áreas médicas del sistema. Puedes filtrar por áreas activas o inactivas enviando el parámetro opcional ?isActive=true o false.",
+        "description": "Devuelve una lista con todas las áreas médicas del sistema. \n    \nÚtil para mostrar el menú de especialidades en el que un paciente puede buscar un Doctor o un Servicio.\nPuedes filtrar por áreas activas o inactivas enviando el parámetro opcional `?isActive=true` o `false`.\n\n**Roles permitidos**: ADMIN, DOCTOR, PATIENT.",
         "operationId": "AreaController_findAll",
         "parameters": [
           {
@@ -2206,25 +2259,20 @@
               }
             }
           },
-          "401": {
-            "description": "No autorizado.",
+          "400": {
+            "description": "Datos inválidos",
             "content": {
               "application/json": {
                 "schema": {
                   "example": {
-                    "statusCode": 401,
-                    "message": "Unauthorized"
+                    "statusCode": 400,
+                    "message": "Bad Request"
                   }
                 }
               }
             }
           }
         },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
         "summary": "Obtener todas las áreas",
         "tags": [
           "Area"
@@ -2495,6 +2543,76 @@
           "Area"
         ]
       }
+    },
+    "/attendance/mark": {
+      "post": {
+        "operationId": "AttendanceController_markAttendance",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Registrar la siguiente marca de asistencia del día",
+        "tags": [
+          "Attendance"
+        ]
+      }
+    },
+    "/attendance/history": {
+      "get": {
+        "operationId": "AttendanceController_getHistory",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obtener el historial de asistencia",
+        "tags": [
+          "Attendance"
+        ]
+      }
+    },
+    "/attendance/all": {
+      "get": {
+        "operationId": "AttendanceController_getAllAttendances",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Obtener historial de asistencia de todo el personal (Solo Admin)",
+        "tags": [
+          "Attendance"
+        ]
+      }
     }
   },
   "info": {
@@ -2575,7 +2693,8 @@
               "enum": [
                 "PATIENT",
                 "ADMIN",
-                "DOCTOR"
+                "DOCTOR",
+                "WORKER"
               ]
             },
             "example": [
@@ -2584,6 +2703,7 @@
             "enum": [
               "ADMIN",
               "DOCTOR",
+              "WORKER",
               "PATIENT"
             ]
           }
@@ -2747,7 +2867,8 @@
               "enum": [
                 "PATIENT",
                 "ADMIN",
-                "DOCTOR"
+                "DOCTOR",
+                "WORKER"
               ]
             },
             "example": [
@@ -2756,6 +2877,7 @@
             "enum": [
               "ADMIN",
               "DOCTOR",
+              "WORKER",
               "PATIENT"
             ]
           }
@@ -2767,12 +2889,12 @@
           "email": {
             "type": "string",
             "format": "email",
-            "example": "jhondoe@climas.com"
+            "example": "johndoe.admin@climas.com"
           },
           "password": {
             "type": "string",
             "minLength": 6,
-            "example": "securepassword"
+            "example": "securepassword123"
           }
         },
         "required": [
@@ -2955,13 +3077,13 @@
         "properties": {
           "dateTime": {
             "type": "object",
-            "description": "Fecha y hora de la consulta",
+            "description": "Fecha y hora de la consulta médica (formato ISO 8601).",
             "example": "2026-06-02T10:00:00.000Z"
           },
           "reason": {
             "type": "string",
-            "description": "Motivo de la consulta",
-            "example": "Dolor de espalda"
+            "description": "Motivo principal de la consulta. Ayuda al doctor a tener contexto previo a la cita.",
+            "example": "Dolor de espalda agudo y persistente"
           },
           "status": {
             "enum": [
@@ -2971,24 +3093,24 @@
               "NO_SHOW"
             ],
             "type": "string",
-            "description": "Estado de la consulta",
+            "description": "Estado actual de la consulta. Por defecto, al crear una cita nueva el estado es `SCHEDULED`.",
             "default": "SCHEDULED"
           },
           "doctorId": {
             "type": "string",
-            "description": "ID del doctor",
+            "description": "El ID único del doctor. **¡Atención!** Este debe ser el ID de la tabla `Doctor`, **NO** el ID del `User` asociado a ese doctor.",
             "example": "cuid-doctor-123"
           },
           "patientId": {
             "type": "string",
-            "description": "ID del paciente",
+            "description": "El ID único del paciente. **¡Atención!** Este debe ser el ID de la tabla `Patient`, **NO** el ID del `User` asociado a ese paciente.",
             "example": "cuid-patient-123"
           },
           "serviceIds": {
             "type": "array",
             "items": {
               "required": false,
-              "description": "Lista de IDs de servicios",
+              "description": "Arreglo de IDs de los servicios a realizar durante la consulta. Debe ser un arreglo simple de strings.",
               "example": [
                 "cuid-service-1"
               ],
@@ -3011,13 +3133,13 @@
         "properties": {
           "dateTime": {
             "type": "object",
-            "description": "Fecha y hora de la consulta",
+            "description": "Fecha y hora de la consulta médica (formato ISO 8601).",
             "example": "2026-06-02T10:00:00.000Z"
           },
           "reason": {
             "type": "string",
-            "description": "Motivo de la consulta",
-            "example": "Dolor de espalda"
+            "description": "Motivo principal de la consulta. Ayuda al doctor a tener contexto previo a la cita.",
+            "example": "Dolor de espalda agudo y persistente"
           },
           "status": {
             "enum": [
@@ -3027,24 +3149,24 @@
               "NO_SHOW"
             ],
             "type": "string",
-            "description": "Estado de la consulta",
+            "description": "Estado actual de la consulta. Por defecto, al crear una cita nueva el estado es `SCHEDULED`.",
             "default": "SCHEDULED"
           },
           "doctorId": {
             "type": "string",
-            "description": "ID del doctor",
+            "description": "El ID único del doctor. **¡Atención!** Este debe ser el ID de la tabla `Doctor`, **NO** el ID del `User` asociado a ese doctor.",
             "example": "cuid-doctor-123"
           },
           "patientId": {
             "type": "string",
-            "description": "ID del paciente",
+            "description": "El ID único del paciente. **¡Atención!** Este debe ser el ID de la tabla `Patient`, **NO** el ID del `User` asociado a ese paciente.",
             "example": "cuid-patient-123"
           },
           "serviceIds": {
             "type": "array",
             "items": {
               "required": false,
-              "description": "Lista de IDs de servicios",
+              "description": "Arreglo de IDs de los servicios a realizar durante la consulta. Debe ser un arreglo simple de strings.",
               "example": [
                 "cuid-service-1"
               ],

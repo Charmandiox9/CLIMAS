@@ -1,19 +1,16 @@
-const specialties = {
-  "Cardiología": ["Dr. Juan Pérez", "Dra. María Gómez"],
-  "Neurología": ["Dr. Carlos López", "Dra. Ana Martínez"],
-  "Pediatría": ["Dr. Luis Rodríguez", "Dra. Laura Sánchez"],
-  "Medicina General": ["Dr. Andrés Fernández", "Dra. Sofía Ramírez"],
-  "Kinesiología": ["Dr. Pablo Torres", "Dra. Camila Díaz"],
-  "Traumatología": ["Dr. Diego Morales", "Dra. Valentina Castro"]
-}
+import { apiFetch } from '../utils/api.js';
+
+let doctoresBD = [];
+let especialidadesBD = [];
 
 const schedules = {
-  "Lunes": ["9:00 AM", "10:00 AM", "11:00 AM"],
-  "Martes": ["1:00 PM", "2:00 PM", "3:00 PM"],
-  "Miércoles": ["9:00 AM", "10:00 AM", "11:00 AM"],
-  "Jueves": ["1:00 PM", "2:00 PM", "3:00 PM"],
-  "Viernes": ["9:00 AM", "10:00 AM", "11:00 AM"]
-}
+  "09:00 AM": "09:00",
+  "10:00 AM": "10:00",
+  "11:00 AM": "11:00",
+  "01:00 PM": "13:00",
+  "02:00 PM": "14:00",
+  "03:00 PM": "15:00"
+};
 
 
 export const SchedulePage = () => {
@@ -34,8 +31,7 @@ export const SchedulePage = () => {
               <h3>Especialidad</h3>
               <label for="specialty">Seleccione el área de atención:</label>
               <select id="specialty" name="specialty" required>
-                <option value="" disabled selected>Seleccione especialidad</option>
-                ${Object.keys(specialties).map(s => `<option value="${s}">${s}</option>`).join('')}
+                <option value="" disabled selected>Cargando especialidades...</option>
               </select>
             </div>
 
@@ -47,15 +43,18 @@ export const SchedulePage = () => {
               </select>
             </div>
 
+              <h3>Fecha de Atención</h3>
+              <label for="fecha">Seleccione un día:</label>
+              <input type="date" id="fecha" name="fecha" required>
+            </div>
+
             <div class="selection-card">
               <h3>Horario</h3>
-              <label for="schedule">Días y horas disponibles:</label>
+              <label for="schedule">Horas disponibles:</label>
               <select id="schedule" name="schedule" required>
                 <option value="" disabled selected>Seleccione un horario</option>
-                ${Object.entries(schedules).map(([day, times]) => `
-                  <optgroup label="${day}">
-                    ${times.map(t => `<option value="${day} ${t}">${t}</option>`).join('')}
-                  </optgroup>
+                ${Object.entries(schedules).map(([label, val]) => `
+                  <option value="${val}">${label}</option>
                 `).join('')}
               </select>
             </div>
@@ -70,36 +69,79 @@ export const SchedulePage = () => {
   `;
 }
 
-export const initScheduleEvents = () => {
+export const initScheduleEvents = async () => {
   const form = document.getElementById('schedule-form');
   const specialtySelect = document.getElementById('specialty');
   const doctorSelect = document.getElementById('doctor');
+  const fechaInput = document.getElementById('fecha');
 
   if (!specialtySelect || !doctorSelect) return;
 
+  // Set min date to today
+  const today = new Date().toISOString().split('T')[0];
+  if(fechaInput) fechaInput.min = today;
+
+  try {
+    const areas = await apiFetch('/area?isActive=true');
+    doctoresBD = await apiFetch('/user/doctors');
+    
+    specialtySelect.innerHTML = `
+      <option value="" disabled selected>Seleccione especialidad</option>
+      ${areas.map(a => `<option value="${a.id}">${a.name}</option>`).join('')}
+    `;
+  } catch (error) {
+    console.error("Error cargando datos:", error);
+  }
+
   specialtySelect.addEventListener('change', (e) => {
-    const selectedSpecialty = e.target.value;
-    const doctors = specialties[selectedSpecialty];
+    const selectedAreaId = e.target.value;
+    const docsInArea = doctoresBD.filter(d => d.doctor?.area?.id === selectedAreaId);
 
     doctorSelect.disabled = false;
-
     doctorSelect.innerHTML = `
       <option value="" disabled selected>Seleccione un médico</option>
-      ${doctors.map(doc => `<option value="${doc}">${doc}</option>`).join('')}
+      ${docsInArea.map(doc => `<option value="${doc.doctor?.id}">Dr(a). ${doc.firstName} ${doc.lastName}</option>`).join('')}
     `;
   });
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const formData = new FormData(form);
-    const data = {
-      especialidad: formData.get('specialty'),
-      doctor: formData.get('doctor'),
-      horario: formData.get('schedule')
-    };
+    const sessionStr = localStorage.getItem('user_session');
+    if (!sessionStr) {
+      alert("Debe iniciar sesión como paciente para agendar citas.");
+      window.location.href = 'login.html';
+      return;
+    }
+    const session = JSON.parse(sessionStr);
 
-    console.log("Cita agendada:", data);
-    alert(`Cita confirmada con el ${data.doctor}`);
+    if (!session.roles?.includes('PATIENT')) {
+      alert("Solo pacientes pueden agendar citas.");
+      return;
+    }
+
+    const formData = new FormData(form);
+    const doctorId = formData.get('doctor');
+    const fecha = formData.get('fecha');
+    const hora = formData.get('schedule');
+    
+    const dateTime = new Date(`${fecha}T${hora}:00`);
+
+    try {
+      await apiFetch('/consultation', {
+        method: 'POST',
+        body: JSON.stringify({
+          dateTime: dateTime.toISOString(),
+          reason: "Consulta agendada por web",
+          doctorId: doctorId,
+          patientId: session.patient?.id || session.id // Handle potential missing patient.id
+        })
+      });
+
+      alert("Cita confirmada exitosamente.");
+      window.location.href = 'user_dashboard.html';
+    } catch (error) {
+      alert(`Error al agendar cita: ${error.message}`);
+    }
   });
 };
