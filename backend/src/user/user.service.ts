@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Role } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -37,12 +38,20 @@ export class UserService {
     );
 
     const { roles, ...rest } = createUserDto;
+    const isPatient = roles ? roles.includes(Role.PATIENT) : true;
 
     return this.prisma.user.create({
       data: {
         ...rest,
         password: hashedPassword,
         roles: roles ? { set: roles } : undefined,
+        ...(isPatient && {
+          patient: {
+            create: {
+              dob: new Date(),
+            },
+          },
+        }),
       },
     });
   }
