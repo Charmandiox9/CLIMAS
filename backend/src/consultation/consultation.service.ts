@@ -13,48 +13,59 @@ export class ConsultationService {
 
   async create(createConsultationDto: CreateConsultationDto) {
     const { serviceIds, ...consultationData } = createConsultationDto;
-    const data = await this.prisma.consultation.create({
-      data: {
-        ...consultationData,
-        services: serviceIds
-          ? {
-              connect: serviceIds.map((id) => ({ id })),
-            }
-          : undefined,
-      },
-      select: {
-        id: true,
-        dateTime: true,
-        reason: true,
-        status: true,
-        doctorId: true,
-        patientId: true,
-        createdAt: true,
-        updatedAt: true,
-        doctor: {
-          select: {
-            userId: true,
-            user: {
-              select: {
-                firstName: true,
-                lastName: true,
+    let data;
+    try {
+      data = await this.prisma.consultation.create({
+        data: {
+          ...consultationData,
+          services: serviceIds
+            ? {
+                connect: serviceIds.map((id) => ({ id })),
+              }
+            : undefined,
+        },
+        select: {
+          id: true,
+          dateTime: true,
+          reason: true,
+          status: true,
+          doctorId: true,
+          patientId: true,
+          createdAt: true,
+          updatedAt: true,
+          doctor: {
+            select: {
+              userId: true,
+              user: {
+                select: {
+                  firstName: true,
+                  lastName: true,
+                },
               },
             },
           },
-        },
-        patient: {
-          select: {
-            user: {
-              select: {
-                firstName: true,
-                lastName: true,
+          patient: {
+            select: {
+              user: {
+                select: {
+                  firstName: true,
+                  lastName: true,
+                },
               },
             },
           },
+          services: true,
         },
-        services: true,
-      },
-    });
+      });
+    } catch (error) {
+      if (error.code === 'P2003') {
+        throw new BadRequestException('El ID del doctor o del paciente proporcionado no es válido o no existe. (Asegúrate de usar el ID de Doctor/Patient, no de User)');
+      }
+      if (error.code === 'P2025') {
+        throw new BadRequestException('Uno o más IDs de los servicios proporcionados no existen.');
+      }
+      throw error;
+    }
 
     try {
       const dateStr = new Date(data.dateTime).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' });
