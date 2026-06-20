@@ -57,4 +57,33 @@ export class NotificationsService {
       this.logger.error(`Error enviando push a ${userId}:`, error);
     }
   }
+
+  async sendPushToAll(title: string, body: string, data?: Record<string, string>) {
+    if (!this.initialized) return;
+
+    const users = await this.prisma.user.findMany({
+      where: { fcmToken: { not: null } },
+      select: { fcmToken: true },
+    });
+
+    const tokens = users.map(u => u.fcmToken).filter(t => t != null) as string[];
+
+    if (tokens.length === 0) {
+      this.logger.log('No hay usuarios con fcmToken para enviar la notificación global.');
+      return;
+    }
+
+    try {
+      const message = {
+        notification: { title, body },
+        data,
+        tokens,
+      };
+
+      const response = await getMessaging().sendEachForMulticast(message);
+      this.logger.log(`Push global enviado. Éxitos: ${response.successCount}, Fallos: ${response.failureCount}`);
+    } catch (error) {
+      this.logger.error('Error enviando push global:', error);
+    }
+  }
 }

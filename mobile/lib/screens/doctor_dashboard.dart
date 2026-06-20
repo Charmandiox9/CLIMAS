@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:intl/intl.dart';
+import 'package:table_calendar/table_calendar.dart';
 import '../services/api_service.dart';
 import 'attendance_screen.dart';
 import 'consultation_detail_screen.dart';
@@ -20,6 +21,8 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
   List<dynamic> _consultations = [];
   bool _isLoading = true;
   String _searchQuery = '';
+  DateTime _focusedDay = DateTime.now();
+  DateTime? _selectedDay;
 
   @override
   void initState() {
@@ -74,6 +77,12 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
 
   List<dynamic> get _allConsultations {
     final sorted = List<dynamic>.from(_consultations.where((c) {
+      final date = DateTime.parse(c['dateTime']).toLocal();
+      if (_selectedDay != null) {
+        if (date.year != _selectedDay!.year || date.month != _selectedDay!.month || date.day != _selectedDay!.day) {
+          return false;
+        }
+      }
       if (_searchQuery.isEmpty) return true;
       final patient = c['patient']?['user'];
       final name = patient != null ? '${patient['firstName']} ${patient['lastName']}'.toLowerCase() : '';
@@ -149,45 +158,101 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
     if (_isLoading) return const Center(child: CircularProgressIndicator());
     final allList = _allConsultations;
     
-    return Column(
-      children: [
-        _buildSearchBar(),
-        Expanded(
-          child: allList.isEmpty
-              ? const Center(child: Text('No hay citas en tu agenda.', style: TextStyle(fontSize: 16, color: Colors.grey)))
-              : RefreshIndicator(
-                  onRefresh: _fetchConsultations,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: allList.length,
-                    itemBuilder: (context, index) {
-                      final item = allList[index];
-                      final date = DateTime.parse(item['dateTime']).toLocal();
-                      final patientName = item['patient']?['user'] != null 
-                          ? '${item['patient']['user']['firstName']} ${item['patient']['user']['lastName']}' 
-                          : 'Paciente Desconocido';
-                      return Card(
-                        elevation: 1,
-                        margin: const EdgeInsets.only(bottom: 10),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(10),
-                          onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => ConsultationDetailScreen(consultation: item)));
-                          },
-                          child: ListTile(
-                            title: Text(patientName, style: const TextStyle(fontWeight: FontWeight.bold)),
-                            subtitle: Text('${DateFormat('dd/MM/yyyy HH:mm').format(date)}\nEstado: ${item['status']}'),
-                            isThreeLine: true,
-                            trailing: const Icon(Icons.chevron_right),
+    return SafeArea(
+      child: OrientationBuilder(
+        builder: (context, orientation) {
+          final isLandscape = orientation == Orientation.landscape;
+          
+          final calendarWidget = TableCalendar(
+            firstDay: DateTime.utc(2020, 1, 1),
+            lastDay: DateTime.utc(2030, 12, 31),
+            focusedDay: _focusedDay,
+            selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+            calendarFormat: isLandscape ? CalendarFormat.week : CalendarFormat.month,
+            availableCalendarFormats: const {
+              CalendarFormat.month: 'Mes',
+              CalendarFormat.week: 'Semana',
+            },
+            onDaySelected: (selectedDay, focusedDay) {
+              setState(() {
+                if (isSameDay(_selectedDay, selectedDay)) {
+                  _selectedDay = null; // deseleccionar
+                } else {
+                  _selectedDay = selectedDay;
+                }
+                _focusedDay = focusedDay;
+              });
+            },
+            onPageChanged: (focusedDay) {
+              _focusedDay = focusedDay;
+            },
+          );
+
+          final listWidget = Expanded(
+            child: allList.isEmpty
+                ? const Center(child: Text('No hay citas para esta fecha.', style: TextStyle(fontSize: 16, color: Colors.grey)))
+                : RefreshIndicator(
+                    onRefresh: _fetchConsultations,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: allList.length,
+                      itemBuilder: (context, index) {
+                        final item = allList[index];
+                        final date = DateTime.parse(item['dateTime']).toLocal();
+                        final patientName = item['patient']?['user'] != null 
+                            ? '${item['patient']['user']['firstName']} ${item['patient']['user']['lastName']}' 
+                            : 'Paciente Desconocido';
+                        return Card(
+                          elevation: 1,
+                          margin: const EdgeInsets.only(bottom: 10),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(10),
+                            onTap: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => ConsultationDetailScreen(consultation: item)));
+                            },
+                            child: ListTile(
+                              title: Text(patientName, style: const TextStyle(fontWeight: FontWeight.bold)),
+                              subtitle: Text('${DateFormat('dd/MM/yyyy HH:mm').format(date)}\nEstado: ${item['status']}'),
+                              isThreeLine: true,
+                              trailing: const Icon(Icons.chevron_right),
+                            ),
                           ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
+                  ),
+          );
+
+          if (isLandscape) {
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        calendarWidget,
+                        _buildSearchBar(),
+                      ],
+                    ),
                   ),
                 ),
-        ),
-      ],
+                listWidget,
+              ],
+            );
+          } else {
+            return Column(
+              children: [
+                calendarWidget,
+                _buildSearchBar(),
+                listWidget,
+              ],
+            );
+          }
+        },
+      ),
     );
   }
 

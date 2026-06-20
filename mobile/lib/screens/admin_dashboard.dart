@@ -108,6 +108,62 @@ class _AdminDashboardState extends State<AdminDashboard> {
     );
   }
 
+  void _showNotificationDialog() {
+    final titleCtrl = TextEditingController();
+    final bodyCtrl = TextEditingController();
+    bool isSending = false;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('Enviar Notificación Global'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: titleCtrl,
+                    decoration: const InputDecoration(labelText: 'Título', border: OutlineInputBorder()),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: bodyCtrl,
+                    decoration: const InputDecoration(labelText: 'Mensaje', border: OutlineInputBorder()),
+                    maxLines: 3,
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: isSending ? null : () => Navigator.pop(context),
+                  child: const Text('Cancelar'),
+                ),
+                ElevatedButton(
+                  onPressed: isSending ? null : () async {
+                    if (titleCtrl.text.isEmpty || bodyCtrl.text.isEmpty) return;
+                    setDialogState(() => isSending = true);
+                    try {
+                      await _apiService.sendGlobalNotification(titleCtrl.text, bodyCtrl.text);
+                      if (!mounted) return;
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Notificación enviada a todos.'), backgroundColor: Colors.green));
+                    } catch (e) {
+                      setDialogState(() => isSending = false);
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+                    }
+                  },
+                  child: isSending ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Text('Enviar a Todos'),
+                )
+              ],
+            );
+          }
+        );
+      },
+    );
+  }
+
   Widget _buildMetricsView() {
     if (_isLoading) return const Center(child: CircularProgressIndicator());
     final now = DateTime.now();
@@ -155,7 +211,19 @@ class _AdminDashboardState extends State<AdminDashboard> {
               padding: const EdgeInsets.symmetric(vertical: 16),
               textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-          )
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton.icon(
+            onPressed: _showNotificationDialog,
+            icon: const Icon(Icons.notifications_active, size: 28),
+            label: const Text('Enviar Notificación Global'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ),
         ],
       ),
     );

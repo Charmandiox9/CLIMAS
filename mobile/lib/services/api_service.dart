@@ -154,4 +154,22 @@ class ApiService {
       throw Exception('Failed to save medical record: ${response.body}');
     }
   }
+
+  Future<void> sendGlobalNotification(String title, String body) async {
+    final token = await _getToken();
+    final response = await http.post(
+      Uri.parse('$baseUrl/notifications/send-global'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'title': title,
+        'body': body,
+      }),
+    );
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      throw Exception('Failed to send notification: ${response.body}');
+    }
+  }
 }
