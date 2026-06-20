@@ -216,18 +216,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
               textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),
-          const SizedBox(height: 16),
-          ElevatedButton.icon(
-            onPressed: _showNotificationDialog,
-            icon: const Icon(Icons.notifications_active, size: 28),
-            label: const Text('Enviar Notificación Global'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-          ),
         ],
       ),
     );
