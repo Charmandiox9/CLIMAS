@@ -94,6 +94,7 @@ export class ConsultationService {
         updatedAt: true,
         doctor: {
           select: {
+            userId: true,
             user: {
               select: {
                 firstName: true,
@@ -146,6 +147,7 @@ export class ConsultationService {
         updatedAt: true,
         doctor: {
           select: {
+            userId: true,
             user: {
               select: {
                 firstName: true,
@@ -203,6 +205,7 @@ export class ConsultationService {
         updatedAt: true,
         doctor: {
           select: {
+            userId: true,
             user: {
               select: {
                 firstName: true,

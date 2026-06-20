@@ -250,9 +250,48 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
   Widget _buildStaffView() {
     if (_isLoading) return const Center(child: CircularProgressIndicator());
-    final filtered = _attendances.where((item) {
+    final Map<String, dynamic> staffMap = {};
+    for (var item in _attendances) {
+      final userId = item['userId'];
+      if (userId == null) continue;
+      
+      if (!staffMap.containsKey(userId)) {
+        staffMap[userId] = {
+          'userId': userId,
+          'user': item['user'],
+          'attendances': <dynamic>[],
+          'todayAttendance': null,
+          'todayConsultationsCount': 0,
+        };
+        
+        // Contar citas de hoy si es doctor
+        final now = DateTime.now();
+        int count = 0;
+        for (var c in _consultations) {
+          final docUserId = c['doctor']?['userId'];
+          if (docUserId == userId) {
+            final cDate = DateTime.parse(c['dateTime']).toLocal();
+            if (cDate.year == now.year && cDate.month == now.month && cDate.day == now.day) {
+              count++;
+            }
+          }
+        }
+        staffMap[userId]['todayConsultationsCount'] = count;
+      }
+      
+      staffMap[userId]['attendances'].add(item);
+      
+      // Chequear si es de hoy para setearlo
+      final date = DateTime.parse(item['date']).toLocal();
+      final now = DateTime.now();
+      if (date.year == now.year && date.month == now.month && date.day == now.day) {
+        staffMap[userId]['todayAttendance'] = item;
+      }
+    }
+
+    final uniqueStaffList = staffMap.values.where((staff) {
       if (_searchQuery.isEmpty) return true;
-      final user = item['user'];
+      final user = staff['user'];
       final name = user != null ? '${user['firstName']} ${user['lastName']}'.toLowerCase() : '';
       return name.contains(_searchQuery.toLowerCase());
     }).toList();
@@ -261,19 +300,21 @@ class _AdminDashboardState extends State<AdminDashboard> {
       children: [
         _buildSearchBar('Buscar empleado...'),
         Expanded(
-          child: filtered.isEmpty
+          child: uniqueStaffList.isEmpty
               ? const Center(child: Text('No hay registros coincidentes.', style: TextStyle(fontSize: 16, color: Colors.grey)))
               : RefreshIndicator(
                   onRefresh: _fetchAdminData,
                   child: ListView.builder(
                     padding: const EdgeInsets.all(16),
-                    itemCount: filtered.length,
+                    itemCount: uniqueStaffList.length,
                     itemBuilder: (context, index) {
-                      final item = filtered[index];
-                      final date = DateTime.parse(item['date']).toLocal();
-                      final user = item['user'];
+                      final staffGroup = uniqueStaffList[index];
+                      final user = staffGroup['user'];
                       final name = user != null ? '${user['firstName']} ${user['lastName']}' : 'Usuario Desconocido';
                       final roles = user != null && user['roles'] != null ? user['roles'].join(', ') : 'Sin rol';
+                      
+                      final todayAttendance = staffGroup['todayAttendance'];
+                      final count = staffGroup['todayConsultationsCount'];
                       
                       return Card(
                         margin: const EdgeInsets.only(bottom: 12),
@@ -281,15 +322,15 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         child: InkWell(
                           borderRadius: BorderRadius.circular(12),
                           onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => StaffDetailScreen(staff: item)));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => StaffDetailScreen(staffGroup: staffGroup)));
                           },
                           child: ListTile(
                             leading: const CircleAvatar(backgroundColor: Colors.indigo, child: Icon(Icons.badge, color: Colors.white)),
                             title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                            subtitle: Text('$roles\nFecha: ${DateFormat('dd/MM/yyyy').format(date)}'),
-                            trailing: item['entryTime'] != null 
-                                ? Text('Entró: ${DateFormat('HH:mm').format(DateTime.parse(item['entryTime']).toLocal())}', style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold))
-                                : const Text('Sin entrada', style: TextStyle(color: Colors.red)),
+                            subtitle: Text('$roles\nCitas hoy: $count'),
+                            trailing: todayAttendance != null && todayAttendance['entryTime'] != null 
+                                ? Text('Entró: ${DateFormat('HH:mm').format(DateTime.parse(todayAttendance['entryTime']).toLocal())}', style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold))
+                                : const Text('Sin entrada hoy', style: TextStyle(color: Colors.red)),
                             isThreeLine: true,
                           ),
                         ),
