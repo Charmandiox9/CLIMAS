@@ -5,8 +5,9 @@ import 'package:intl/intl.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../services/api_service.dart';
 import 'attendance_screen.dart';
-import 'staff_detail_screen.dart';
 import 'consultation_detail_screen.dart';
+import 'staff_detail_screen.dart';
+import '../widgets/admin_notification_dialog.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -22,6 +23,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
   
   List<dynamic> _attendances = [];
   List<dynamic> _consultations = [];
+  List<dynamic> _staff = [];
   bool _isLoading = true;
   String _searchQuery = '';
 
@@ -49,10 +51,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
     try {
       final atts = await _apiService.getAllAttendances();
       final cons = await _apiService.getAllConsultations();
+      final staffList = await _apiService.getAllStaff();
       if (mounted) {
         setState(() {
           _attendances = atts;
           _consultations = cons;
+          _staff = staffList;
           _isLoading = false;
         });
       }
@@ -251,33 +255,36 @@ class _AdminDashboardState extends State<AdminDashboard> {
   Widget _buildStaffView() {
     if (_isLoading) return const Center(child: CircularProgressIndicator());
     final Map<String, dynamic> staffMap = {};
-    for (var item in _attendances) {
-      final userId = item['userId'];
+    for (var user in _staff) {
+      final userId = user['id'];
       if (userId == null) continue;
       
-      if (!staffMap.containsKey(userId)) {
-        staffMap[userId] = {
-          'userId': userId,
-          'user': item['user'],
-          'attendances': <dynamic>[],
-          'todayAttendance': null,
-          'todayConsultationsCount': 0,
-        };
-        
-        // Contar citas de hoy si es doctor
-        final now = DateTime.now();
-        int count = 0;
-        for (var c in _consultations) {
-          final docUserId = c['doctor']?['userId'];
-          if (docUserId == userId) {
-            final cDate = DateTime.parse(c['dateTime']).toLocal();
-            if (cDate.year == now.year && cDate.month == now.month && cDate.day == now.day) {
-              count++;
-            }
+      staffMap[userId] = {
+        'userId': userId,
+        'user': user,
+        'attendances': <dynamic>[],
+        'todayAttendance': null,
+        'todayConsultationsCount': 0,
+      };
+      
+      // Contar citas de hoy si es doctor
+      final now = DateTime.now();
+      int count = 0;
+      for (var c in _consultations) {
+        final docUserId = c['doctor']?['userId'];
+        if (docUserId == userId) {
+          final cDate = DateTime.parse(c['dateTime']).toLocal();
+          if (cDate.year == now.year && cDate.month == now.month && cDate.day == now.day) {
+            count++;
           }
         }
-        staffMap[userId]['todayConsultationsCount'] = count;
       }
+      staffMap[userId]['todayConsultationsCount'] = count;
+    }
+    
+    for (var item in _attendances) {
+      final userId = item['userId'];
+      if (userId == null || !staffMap.containsKey(userId)) continue;
       
       staffMap[userId]['attendances'].add(item);
       
@@ -439,6 +446,18 @@ class _AdminDashboardState extends State<AdminDashboard> {
           BottomNavigationBarItem(icon: Icon(Icons.fingerprint), label: 'Tu Asistencia'),
         ],
       ),
+      floatingActionButton: _currentIndex != 3 ? FloatingActionButton.extended(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) => const AdminNotificationDialog(),
+          );
+        },
+        icon: const Icon(Icons.campaign),
+        label: const Text('Notificar'),
+        backgroundColor: Colors.indigo,
+        foregroundColor: Colors.white,
+      ) : null,
     );
   }
 }
