@@ -49,6 +49,12 @@ export class NotificationsService {
         notification: { title, body },
         data,
         token: user.fcmToken,
+        android: {
+          priority: 'high',
+          notification: {
+            channelId: 'high_importance_channel',
+          },
+        },
       };
 
       const response = await getMessaging().send(message);
@@ -78,6 +84,12 @@ export class NotificationsService {
         notification: { title, body },
         data,
         tokens,
+        android: {
+          priority: 'high' as const,
+          notification: {
+            channelId: 'high_importance_channel',
+          },
+        },
       };
 
       const response = await getMessaging().sendEachForMulticast(message);
