@@ -138,11 +138,28 @@ class _DoctorDashboardState extends State<DoctorDashboard> {
                             Navigator.push(context, MaterialPageRoute(builder: (context) => ConsultationDetailScreen(consultation: item)));
                           },
                           child: ListTile(
-                            leading: const CircleAvatar(backgroundColor: Colors.indigo, child: Icon(Icons.person, color: Colors.white)),
-                            title: Text(patientName, style: const TextStyle(fontWeight: FontWeight.bold)),
-                            subtitle: Text('Motivo: ${item['reason'] ?? 'Sin especificar'}\nEstado: ${item['status']}'),
-                            isThreeLine: true,
-                            trailing: Text(DateFormat('HH:mm').format(date), style: const TextStyle(color: Colors.indigo, fontWeight: FontWeight.bold, fontSize: 16)),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                            leading: CircleAvatar(
+                              backgroundColor: Colors.indigo.shade100,
+                              child: Text(patientName[0].toUpperCase(), style: const TextStyle(color: Colors.indigo, fontWeight: FontWeight.bold)),
+                            ),
+                            title: Text(patientName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 4),
+                                Row(
+                                  children: [
+                                    const Icon(Icons.access_time, size: 16, color: Colors.grey),
+                                    const SizedBox(width: 4),
+                                    Text(DateFormat('HH:mm').format(date)),
+                                  ],
+                                ),
+                                const SizedBox(height: 4),
+                                Text('Motivo: ${item['reason'] ?? 'Sin especificar'}', maxLines: 1, overflow: TextOverflow.ellipsis),
+                              ],
+                            ),
+                            trailing: const Icon(Icons.chevron_right),
                           ),
                         ),
                       );

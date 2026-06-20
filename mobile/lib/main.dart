@@ -21,6 +21,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   debugPrint("Manejando mensaje en segundo plano: ${message.messageId}");
 }
 
+final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
@@ -35,9 +37,31 @@ void main() async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
     await messaging.requestPermission(
       alert: true,
+      alert: true,
       badge: true,
       sound: true,
     );
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      if (message.notification != null) {
+        scaffoldMessengerKey.currentState?.showSnackBar(
+          SnackBar(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(message.notification!.title ?? 'Notificación', style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text(message.notification!.body ?? ''),
+              ],
+            ),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.indigo,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
+    });
+
   } catch (e) {
     debugPrint("Firebase init error: $e");
   }
@@ -86,6 +110,7 @@ class MyApp extends StatelessWidget {
         textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
         useMaterial3: true,
       ),
+      scaffoldMessengerKey: scaffoldMessengerKey,
       initialRoute: initialRoute,
       routes: {
         '/login': (context) => const LoginScreen(),
