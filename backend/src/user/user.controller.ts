@@ -416,6 +416,13 @@ Se devolverá el \`id\` principal del Usuario, pero también el sub-objeto \`pat
     return this.userService.getPatients();
   }
 
+  @Get('staff')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Obtener todo el personal (DOCTOR, ADMIN, RECEPTIONIST)' })
+  getStaff() {
+    return this.userService.getStaff();
+  }
+
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Obtener un usuario por ID' })
@@ -634,6 +641,7 @@ Se devolverá el \`id\` principal del Usuario, pero también el sub-objeto \`pat
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Actualizar el token FCM del usuario autenticado' })
   async updateFcmToken(@Req() req, @Body('token') token: string) {
-    return this.userService.updateFcmToken(req.user.userId, token);
+    const userId = req.user?.sub || req.user?.id;
+    return this.userService.updateFcmToken(userId, token);
   }
 }

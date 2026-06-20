@@ -247,6 +247,24 @@ export class UserService {
     });
   }
 
+  getStaff() {
+    return this.prisma.user.findMany({
+      where: {
+        roles: { hasSome: [Role.DOCTOR, Role.ADMIN, Role.WORKER] },
+      },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        rut: true,
+        email: true,
+        phone: true,
+        roles: true,
+        isActive: true,
+      },
+    });
+  }
+
   async disableUser(id: string) {
     const user = await this.prisma.user.findUnique({ where: { id } });
     if (!user) throw new BadRequestException('Usuario no encontrado');

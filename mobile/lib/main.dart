@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import 'firebase_options.dart';
@@ -20,6 +21,9 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   debugPrint("Manejando mensaje en segundo plano: ${message.messageId}");
 }
+
+final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,6 +42,45 @@ void main() async {
       badge: true,
       sound: true,
     );
+
+    const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+    const AndroidNotificationChannel channel = AndroidNotificationChannel(
+      'high_importance_channel',
+      'Notificaciones Importantes',
+      description: 'Este canal se usa para notificaciones flotantes',
+      importance: Importance.high,
+    );
+
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification?.android;
+
+      if (notification != null && android != null) {
+        flutterLocalNotificationsPlugin.show(
+          notification.hashCode,
+          notification.title,
+          notification.body,
+          NotificationDetails(
+            android: AndroidNotificationDetails(
+              channel.id,
+              channel.name,
+              channelDescription: channel.description,
+              importance: Importance.high,
+              priority: Priority.high,
+              icon: '@mipmap/ic_launcher',
+            ),
+          ),
+        );
+      }
+    });
+
   } catch (e) {
     debugPrint("Firebase init error: $e");
   }
@@ -86,6 +129,7 @@ class MyApp extends StatelessWidget {
         textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
         useMaterial3: true,
       ),
+      scaffoldMessengerKey: scaffoldMessengerKey,
       initialRoute: initialRoute,
       routes: {
         '/login': (context) => const LoginScreen(),

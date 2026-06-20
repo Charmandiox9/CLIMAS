@@ -520,6 +520,28 @@
         ]
       }
     },
+    "/user/staff": {
+      "get": {
+        "operationId": "UserController_getStaff",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Obtener todo el personal (DOCTOR, ADMIN, RECEPTIONIST)",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
     "/user/{id}": {
       "get": {
         "operationId": "UserController_findOne",
@@ -2136,6 +2158,36 @@
         "summary": "Eliminar consulta por ID",
         "tags": [
           "Consultation"
+        ]
+      }
+    },
+    "/notifications/send-to-user": {
+      "post": {
+        "operationId": "NotificationsController_sendToUser",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Send push notification to a specific user",
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/notifications/send-global": {
+      "post": {
+        "operationId": "NotificationsController_sendGlobal",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Send push notification to all users",
+        "tags": [
+          "Notifications"
         ]
       }
     },

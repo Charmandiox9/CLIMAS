@@ -5,8 +5,9 @@ import 'package:intl/intl.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../services/api_service.dart';
 import 'attendance_screen.dart';
-import 'staff_detail_screen.dart';
 import 'consultation_detail_screen.dart';
+import 'staff_detail_screen.dart';
+import '../widgets/admin_notification_dialog.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -22,6 +23,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
   
   List<dynamic> _attendances = [];
   List<dynamic> _consultations = [];
+  List<dynamic> _staff = [];
   bool _isLoading = true;
   String _searchQuery = '';
 
@@ -49,10 +51,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
     try {
       final atts = await _apiService.getAllAttendances();
       final cons = await _apiService.getAllConsultations();
+      final staffList = await _apiService.getAllStaff();
       if (mounted) {
         setState(() {
           _attendances = atts;
           _consultations = cons;
+          _staff = staffList;
           _isLoading = false;
         });
       }
@@ -108,6 +112,62 @@ class _AdminDashboardState extends State<AdminDashboard> {
     );
   }
 
+  void _showNotificationDialog() {
+    final titleCtrl = TextEditingController();
+    final bodyCtrl = TextEditingController();
+    bool isSending = false;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('Enviar Notificación Global'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: titleCtrl,
+                    decoration: const InputDecoration(labelText: 'Título', border: OutlineInputBorder()),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: bodyCtrl,
+                    decoration: const InputDecoration(labelText: 'Mensaje', border: OutlineInputBorder()),
+                    maxLines: 3,
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: isSending ? null : () => Navigator.pop(context),
+                  child: const Text('Cancelar'),
+                ),
+                ElevatedButton(
+                  onPressed: isSending ? null : () async {
+                    if (titleCtrl.text.isEmpty || bodyCtrl.text.isEmpty) return;
+                    setDialogState(() => isSending = true);
+                    try {
+                      await _apiService.sendGlobalNotification(titleCtrl.text, bodyCtrl.text);
+                      if (!mounted) return;
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Notificación enviada a todos.'), backgroundColor: Colors.green));
+                    } catch (e) {
+                      setDialogState(() => isSending = false);
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+                    }
+                  },
+                  child: isSending ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Text('Enviar a Todos'),
+                )
+              ],
+            );
+          }
+        );
+      },
+    );
+  }
+
   Widget _buildMetricsView() {
     if (_isLoading) return const Center(child: CircularProgressIndicator());
     final now = DateTime.now();
@@ -155,7 +215,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               padding: const EdgeInsets.symmetric(vertical: 16),
               textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-          )
+          ),
         ],
       ),
     );
@@ -182,9 +242,51 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
   Widget _buildStaffView() {
     if (_isLoading) return const Center(child: CircularProgressIndicator());
-    final filtered = _attendances.where((item) {
+    final Map<String, dynamic> staffMap = {};
+    for (var user in _staff) {
+      final userId = user['id'];
+      if (userId == null) continue;
+      
+      staffMap[userId] = {
+        'userId': userId,
+        'user': user,
+        'attendances': <dynamic>[],
+        'todayAttendance': null,
+        'todayConsultationsCount': 0,
+      };
+      
+      // Contar citas de hoy si es doctor
+      final now = DateTime.now();
+      int count = 0;
+      for (var c in _consultations) {
+        final docUserId = c['doctor']?['userId'];
+        if (docUserId == userId) {
+          final cDate = DateTime.parse(c['dateTime']).toLocal();
+          if (cDate.year == now.year && cDate.month == now.month && cDate.day == now.day) {
+            count++;
+          }
+        }
+      }
+      staffMap[userId]['todayConsultationsCount'] = count;
+    }
+    
+    for (var item in _attendances) {
+      final userId = item['userId'];
+      if (userId == null || !staffMap.containsKey(userId)) continue;
+      
+      staffMap[userId]['attendances'].add(item);
+      
+      // Chequear si es de hoy para setearlo
+      final date = DateTime.parse(item['date']).toLocal();
+      final now = DateTime.now();
+      if (date.year == now.year && date.month == now.month && date.day == now.day) {
+        staffMap[userId]['todayAttendance'] = item;
+      }
+    }
+
+    final uniqueStaffList = staffMap.values.where((staff) {
       if (_searchQuery.isEmpty) return true;
-      final user = item['user'];
+      final user = staff['user'];
       final name = user != null ? '${user['firstName']} ${user['lastName']}'.toLowerCase() : '';
       return name.contains(_searchQuery.toLowerCase());
     }).toList();
@@ -193,19 +295,21 @@ class _AdminDashboardState extends State<AdminDashboard> {
       children: [
         _buildSearchBar('Buscar empleado...'),
         Expanded(
-          child: filtered.isEmpty
+          child: uniqueStaffList.isEmpty
               ? const Center(child: Text('No hay registros coincidentes.', style: TextStyle(fontSize: 16, color: Colors.grey)))
               : RefreshIndicator(
                   onRefresh: _fetchAdminData,
                   child: ListView.builder(
                     padding: const EdgeInsets.all(16),
-                    itemCount: filtered.length,
+                    itemCount: uniqueStaffList.length,
                     itemBuilder: (context, index) {
-                      final item = filtered[index];
-                      final date = DateTime.parse(item['date']).toLocal();
-                      final user = item['user'];
+                      final staffGroup = uniqueStaffList[index];
+                      final user = staffGroup['user'];
                       final name = user != null ? '${user['firstName']} ${user['lastName']}' : 'Usuario Desconocido';
                       final roles = user != null && user['roles'] != null ? user['roles'].join(', ') : 'Sin rol';
+                      
+                      final todayAttendance = staffGroup['todayAttendance'];
+                      final count = staffGroup['todayConsultationsCount'];
                       
                       return Card(
                         margin: const EdgeInsets.only(bottom: 12),
@@ -213,15 +317,15 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         child: InkWell(
                           borderRadius: BorderRadius.circular(12),
                           onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => StaffDetailScreen(staff: item)));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => StaffDetailScreen(staffGroup: staffGroup)));
                           },
                           child: ListTile(
                             leading: const CircleAvatar(backgroundColor: Colors.indigo, child: Icon(Icons.badge, color: Colors.white)),
                             title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                            subtitle: Text('$roles\nFecha: ${DateFormat('dd/MM/yyyy').format(date)}'),
-                            trailing: item['entryTime'] != null 
-                                ? Text('Entró: ${DateFormat('HH:mm').format(DateTime.parse(item['entryTime']).toLocal())}', style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold))
-                                : const Text('Sin entrada', style: TextStyle(color: Colors.red)),
+                            subtitle: Text('$roles\nCitas hoy: $count'),
+                            trailing: todayAttendance != null && todayAttendance['entryTime'] != null 
+                                ? Text('Entró: ${DateFormat('HH:mm').format(DateTime.parse(todayAttendance['entryTime']).toLocal())}', style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold))
+                                : const Text('Sin entrada hoy', style: TextStyle(color: Colors.red)),
                             isThreeLine: true,
                           ),
                         ),
@@ -330,6 +434,18 @@ class _AdminDashboardState extends State<AdminDashboard> {
           BottomNavigationBarItem(icon: Icon(Icons.fingerprint), label: 'Tu Asistencia'),
         ],
       ),
+      floatingActionButton: _currentIndex != 3 ? FloatingActionButton.extended(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) => const AdminNotificationDialog(),
+          );
+        },
+        icon: const Icon(Icons.campaign),
+        label: const Text('Notificar'),
+        backgroundColor: Colors.indigo,
+        foregroundColor: Colors.white,
+      ) : null,
     );
   }
 }

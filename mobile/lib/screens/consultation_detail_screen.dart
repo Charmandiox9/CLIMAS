@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:gal/gal.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
 import '../services/api_service.dart';
 
@@ -222,24 +221,13 @@ class _ConsultationDetailScreenState extends State<ConsultationDetailScreen> {
                   setState(() => _isSaving = true);
                   
                   try {
-                    List<String> mediaUrls = [];
-                    // Subir a Firebase Storage
-                    for (var file in _attachedMedia) {
-                      final fileName = file.path.split('/').last;
-                      final storageRef = FirebaseStorage.instance
-                          .ref()
-                          .child('medical_records/${widget.consultation['id']}/$fileName');
-                      
-                      final uploadTask = await storageRef.putFile(file);
-                      final downloadUrl = await uploadTask.ref.getDownloadURL();
-                      mediaUrls.add(downloadUrl);
-                    }
+                    List<String> localMediaPaths = _attachedMedia.map((file) => file.path).toList();
 
-                    // Enviar al Backend
+                    // Enviar al Backend (usando las rutas locales del móvil como referencia, o ninguna si lo dejamos solo local)
                     await _apiService.saveMedicalRecord({
                       'consultationId': widget.consultation['id'],
                       'clinicalNotes': _notesController.text.trim(),
-                      'mediaUrls': mediaUrls,
+                      'mediaUrls': localMediaPaths,
                     });
 
                     if (!mounted) return;
