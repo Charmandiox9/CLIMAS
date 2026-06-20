@@ -171,5 +171,19 @@ class ApiService {
     if (response.statusCode != 200 && response.statusCode != 201) {
       throw Exception('Failed to send notification: ${response.body}');
     }
+  Future<List<dynamic>> getAllStaff() async {
+    final token = await _getToken();
+    if (token == null) return [];
+    final response = await http.get(
+      Uri.parse('$baseUrl/user/staff'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    }
+    return [];
   }
 }
